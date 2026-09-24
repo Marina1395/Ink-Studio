@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="3IGWp6uFNpzmwf1EQqxF">
+    <mxGraphModel dx="866" dy="479" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="qonakeMe0GYTPX7K1q9d-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="600" width="400" x="150" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-2" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="400" x="150" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="LOGO Inkstudio" vertex="1">
+          <mxGeometry height="20" width="100" x="156" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Marina" vertex="1">
+          <mxGeometry height="30" width="60" x="381" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cerrar sesión" vertex="1">
+          <mxGeometry height="30" width="110" x="448" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="SOLICITAR CITA" vertex="1">
+          <mxGeometry height="20" width="140" x="280" y="151" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-9" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Servicio" vertex="1">
+          <mxGeometry height="40" width="130" x="130" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-10" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="154" x="172" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Artista" vertex="1">
+          <mxGeometry height="40" width="130" x="124" y="276" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-12" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="154" x="168" y="316" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Fecha" vertex="1">
+          <mxGeometry height="40" width="130" x="124" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-14" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="154" x="168" y="391" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Descripción del tatuaje / piercing" vertex="1">
+          <mxGeometry height="30" width="220" x="142" y="432" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-16" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="80" width="347" x="172" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="qonakeMe0GYTPX7K1q9d-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Solicitar cita" vertex="1">
+          <mxGeometry height="30" width="173" x="255" y="600" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

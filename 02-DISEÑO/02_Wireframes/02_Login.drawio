@@ -1,0 +1,40 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="qdv-5NOGVnv9Jzbt3NDS">
+    <mxGraphModel dx="1338" dy="740" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Quia_KlGaW_yWjCNRO98-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="720" width="600" x="113" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="LOGO InkStudio" vertex="1">
+          <mxGeometry height="20" width="120" x="353" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="INICIAR SESION" vertex="1">
+          <mxGeometry height="20" width="100" x="364" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Correo electrónico" vertex="1">
+          <mxGeometry height="10" width="150" x="108" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-5" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="270" x="137" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Contraseña" vertex="1">
+          <mxGeometry height="30" width="60" x="137" y="396" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-7" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="270" x="137" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="☐ Recordarme " vertex="1">
+          <mxGeometry height="30" width="110" x="137" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Iniciar sesión" vertex="1">
+          <mxGeometry height="45" width="160" x="330" y="562" as="geometry" />
+        </mxCell>
+        <mxCell id="Quia_KlGaW_yWjCNRO98-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="¿Has olvidado tu contraseña?" vertex="1">
+          <mxGeometry height="40" width="170" x="329" y="640" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

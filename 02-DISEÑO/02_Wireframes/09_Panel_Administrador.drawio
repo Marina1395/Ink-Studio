@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="k0CKYpQ7_XSobUBt_aEU">
+    <mxGraphModel dx="1239" dy="664" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="-OPjuosscors-JFOWHLc-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="450" width="620" x="110" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-2" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="620" x="110" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-3" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="LOGO InkStudio" vertex="1">
+          <mxGeometry height="30" width="110" x="115" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Administrador" vertex="1">
+          <mxGeometry height="30" width="60" x="500" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cerrar sesión&amp;nbsp;" vertex="1">
+          <mxGeometry height="30" width="100" x="610" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="PANEL DE ADMINISTRADOR" vertex="1">
+          <mxGeometry height="30" width="180" x="322" y="166" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="65" width="172" x="225" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="65" width="172" x="430" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="65" width="172" x="225" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="65" width="172" x="430" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Ver estadísticas" vertex="1">
+          <mxGeometry height="40" width="220" x="302" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Gestionar citas" vertex="1">
+          <mxGeometry height="30" width="100" x="261" y="247.5" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Gestionar artistas" vertex="1">
+          <mxGeometry height="22.5" width="100" x="466" y="251.25" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Gestionar clientes" vertex="1">
+          <mxGeometry height="30" width="110" x="256" y="328.5" as="geometry" />
+        </mxCell>
+        <mxCell id="-OPjuosscors-JFOWHLc-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Gestionar sevicios" vertex="1">
+          <mxGeometry height="30" width="120" x="446" y="327.5" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

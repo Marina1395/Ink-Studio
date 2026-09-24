@@ -1,0 +1,120 @@
+
+//Importamos la conexion con la base de datos de Postgre SQL
+const pool = require("../db/connection");
+
+//Ahora vamos a obtener todos los artistas
+const getArtistas = async () => {
+
+    const result = await pool.query(
+
+        "SELECT * FROM artista"
+
+    );
+
+    return result.rows;
+
+};
+
+
+
+
+//Obtener un artista por su id de usuario
+const getArtistaById = async(id_usuario) => {
+
+    const result = await pool.query(
+
+        "SELECT * FROM artista WHERE id_usuario = $1",
+        [id_usuario]
+);
+
+return result.rows[0];
+
+};
+
+
+
+//Crear un artista
+const createArtista = async(id_usuario, especialidad, descripcion) => {
+
+    const result = await pool.query(
+
+        "INSERT INTO artista (id_usuario,especialidad,descripcion) VALUES ($1,$2,$3) RETURNING * ",
+    
+
+    [
+        id_usuario,
+        especialidad,
+        descripcion
+    ]
+    );
+ 
+    return result.rows[0];
+};
+
+
+
+
+//Actualizar artista
+const updateArtista = async(id_usuario,artista) => {
+
+    const result = await pool.query(
+
+    "UPDATE artista SET especialidad =$1,descripcion = $2 WHERE id_usuario= $3 RETURNING *",
+
+    [
+
+        artista.especialidad,
+        artista.descripcion,
+        id_usuario
+
+    ]
+
+);
+
+return result.rows[0];
+
+};
+
+
+
+//Borrar artista
+const deleteArtista = async(id_usuario) => {
+
+
+     const result = await pool.query(
+    "DELETE FROM artista WHERE id_usuario = $1  RETURNING *",
+    [
+        id_usuario
+        
+    ]
+);
+
+return result.rows[0];
+
+};
+
+
+//EXPORTAMOS LAS FUNCIONES PARA PODER USARALAS DESDE CONTROLLER
+module.exports = {
+
+    getArtistas,
+    getArtistaById,
+    createArtista,
+    updateArtista,
+    deleteArtista
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+

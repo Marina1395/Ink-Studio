@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="u2WcEr0JDEOdl_765Cz3">
+    <mxGraphModel dx="1051" dy="581" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="480" width="430" x="175" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-3" parent="1" style="line;strokeWidth=1;rotatable=0;dashed=0;labelPosition=right;align=left;verticalAlign=middle;spacingTop=0;spacingLeft=6;points=[];portConstraint=eastwest;" value="" vertex="1">
+          <mxGeometry height="10" width="430" x="176" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-4" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="LOGO InkStudio" vertex="1">
+          <mxGeometry height="20" width="120" x="176" y="139" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-5" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Marina" vertex="1">
+          <mxGeometry height="30" width="60" x="440" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cerrar sesión" vertex="1">
+          <mxGeometry height="30" width="80" x="513" y="134" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-7" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Bienvenido, Marina" vertex="1">
+          <mxGeometry height="20" width="130" x="316" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="¿Qué deseas hacer hoy?" vertex="1">
+          <mxGeometry width="160" x="301" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="70" width="130" x="220" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="70" width="130" x="421" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="70" width="130" x="220" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="70" width="130" x="421" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-13" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Solictirar cita" vertex="1">
+          <mxGeometry height="30" width="104" x="228" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Mis citas" vertex="1">
+          <mxGeometry height="30" width="60" x="456" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="modificar perfil" vertex="1">
+          <mxGeometry height="30" width="94" x="238" y="484" as="geometry" />
+        </mxCell>
+        <mxCell id="Jtvt9pj-DT0iM3pBxYOc-16" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Cerrar sesión" vertex="1">
+          <mxGeometry height="30" width="94" x="439" y="480" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
