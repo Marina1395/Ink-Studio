@@ -1,5 +1,5 @@
 
-//1. Importamos el modelo de servicio
+//======Importamos el modelo de servicio=========
 const servicioModel = require("../models/servicio.model");
 
 
@@ -63,10 +63,10 @@ const createServicio = async (req, res) => {
 
     try {
 
-        const { id_servicio, nombre, descripcion, precio } = req.body;
+        const { nombre, descripcion, precio } = req.body;
 
         const nuevoServicio = await servicioModel.createServicio(
-            id_servicio,
+            
             nombre,
             descripcion,
             precio

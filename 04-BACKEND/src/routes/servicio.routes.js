@@ -17,14 +17,18 @@ const servicioController = require("../controllers/servicio.controller");
 /*Obtener todos los servicios--->*/
 router.get("/",servicioController.getServicios);
 
+
 /*Obtener los servicios mediante su id---->*/
-router.get("/:id_servicio",servicioController.getServicioById)
+router.get("/:id_servicio",servicioController.getServicioById);
+
 
 /*Crear un servicio---->*/
-router.post("/",servicioController. createServicio);
+router.post("/",servicioController.createServicio);
+
 
 /*Actualizar un servicio---->*/
 router.put("/:id_servicio",servicioController.updateServicio);
+
 
 /*Eliminar un servicio---->*/
 router.delete("/:id_servicio",servicioController.deleteServicio);
