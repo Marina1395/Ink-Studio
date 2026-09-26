@@ -1,17 +1,18 @@
 
-//1.Importamos trabajo de model
+//1.======IMPORTAMOS TRABAJO DE MODEL======
 const trabajoModel = require("../models/trabajo.model");
 
 
-//2.Esta funcion se ejecuta cuando recibimos una petición para obtener los resultados de los trabajos
 
+
+//.=====FUNCIÓN PARA OBTENER LOS TRABAJOS=====/
 const getTrabajos = async(req,res)=>{
 
 
     try{
 
         //*Llamamos a la funcion getTrabajos del modelo
-        //*Await espera a que postgre nos devuelva los gastos
+        //*Await espera a que postgre nos devuelva los trabajos
 
         const resultado = await trabajoModel.getTrabajos();
         res.json(resultado);
@@ -38,23 +39,19 @@ const getTrabajos = async(req,res)=>{
 
 
 
-
-
-
-//3.Esta función ejecuta crearTrabajo
+//=====FUNCION CREATE TRABAJO======/
 const createTrabajo = async (req,res) =>{
 
     //Llamamos a la funcion crearTrabajo del modelo
 
     try{
 
-        const { id_trabajo,id_artista,titulo,descripcion } = req.body;
+        const {id_artista,titulo,descripcion } = req.body;
 
         //Llamamos a la funcion createTrabajo del modelo
 
         const resultado = await trabajoModel.createTrabajo(
 
-            id_trabajo,
             id_artista,
             titulo,
             descripcion
@@ -83,7 +80,7 @@ const createTrabajo = async (req,res) =>{
 
 
 
-//Aquí seria la opción de obtener un trabajo por su id
+//======TENER TRABAJO POR SU ID ======
 const getTrabajoById = async(req,res) => {
 
     try{
@@ -94,6 +91,16 @@ const getTrabajoById = async(req,res) => {
 
         //Llamamos a la funcion getTrabajoById del modelo
         const resultado = await trabajoModel.getTrabajoById(id_trabajo);
+
+
+        //Si no existe ese trabajo mostramos un error 404
+        if (!resultado) {
+
+            return res.status(404).json({
+                error: "Trabajo no encontrado"
+            });
+
+        }
 
 
         //Enviamos el trabajo encontrado como respuesta
@@ -118,7 +125,8 @@ const getTrabajoById = async(req,res) => {
 
 
 
-//Aquí sería la función de actualizar un trabajo
+
+//=====ACTUALIZAR TRABAJO======/
 const updateTrabajo= async(req,res) => {
 
 
@@ -140,6 +148,16 @@ const updateTrabajo= async(req,res) => {
             descripcion
        );
 
+       if (!resultado) {
+
+    return res.status(404).json({
+
+        error: "Trabajo no encontrado"
+
+       });
+
+    }
+
        //Enviamos el trabajo actualizado al cliente
 
        res.json(resultado);
@@ -157,10 +175,12 @@ const updateTrabajo= async(req,res) => {
     }
 
 
-}
+};
 
-//FUNCIÓN PARA ELIMINAR EL TRABAJO
 
+
+
+//======FUNCIÓN PARA ELIMINAR EL TRABAJO=====
 const deleteTrabajo = async (req, res) => {
 
     try {
@@ -171,9 +191,20 @@ const deleteTrabajo = async (req, res) => {
         //Llamamos a la función deleteTrabajo del modelo
         const resultado = await trabajoModel.deleteTrabajo(id_trabajo);
 
+        //Si el trabajo no existe mostramos un error 404
+        if (!resultado) {
+
+            return res.status(404).json({
+                error: "Trabajo no encontrado"
+            });
+
+        }
+
+
         //Enviamos el trabajo eliminado al cliente
         res.json(resultado);
 
+        
     } catch (error) {
 
         //Mostramos el error por consola

@@ -1,12 +1,12 @@
 
 
-//1.Importamos  la conexión con la base de datos  PostgreSQL
+//1.======Importamos  la conexión con la base de datos  PostgreSQL======
 const pool = require("../db/connection");
 
 
 
 
-//2.Ahora vamos a obtener todos los trabajos
+//2.======Obtener todos los trabajos======
 const getTrabajos = async () => {
 
     const result = await pool.query(
@@ -20,7 +20,7 @@ const getTrabajos = async () => {
 };
 
 
-//3.Obtener trabajo por su id
+//3.======Obtener trabajo por su id======
 const getTrabajoById = async(id_trabajo) => {
 
     const result  = await pool.query(
@@ -33,17 +33,16 @@ const getTrabajoById = async(id_trabajo) => {
 };
 
 
-//4.Crear un trabajo
-
-const createTrabajo = async(id_trabajo,id_artista,titulo, descripcion) => {
+//4.======Crear un trabajo======
+const createTrabajo = async(id_artista,titulo, descripcion) => {
 
     const result = await pool.query(
 
-        "INSERT INTO trabajo(id_trabajo,id_artista,titulo,descripcion) VALUES ($1,$2,$3,$4) RETURNING *",
+        "INSERT INTO trabajo(id_artista,titulo,descripcion) VALUES ($1,$2,$3) RETURNING *",
     
     [
 
-        id_trabajo,
+       
         id_artista,
         titulo,
         descripcion
@@ -58,7 +57,7 @@ const createTrabajo = async(id_trabajo,id_artista,titulo, descripcion) => {
 
 
 
-//5.Actualizar trabajo
+//5.======Actualizar trabajo======
 const updateTrabajo = async (id_trabajo,id_artista,titulo,descripcion) => {
 
     const result = await pool.query(
@@ -75,9 +74,9 @@ const updateTrabajo = async (id_trabajo,id_artista,titulo,descripcion) => {
 
     );
 
-    return result.rows[0]
+    return result.rows[0];
 
-}
+};
 
 
 //6.Eliminar un trabajo
@@ -86,20 +85,22 @@ const deleteTrabajo = async(id_trabajo) => {
     const result = await pool.query(
 
         "DELETE FROM trabajo WHERE id_trabajo = $1 RETURNING *",
-        [
+        
 
-            id_trabajo
+            [id_trabajo]
 
 
 
-        ]
+        
     );
 
     return result.rows[0];
 
     
-}
+};
 
+
+//7.Exportar módulos
 module.exports={
 
     getTrabajos,
