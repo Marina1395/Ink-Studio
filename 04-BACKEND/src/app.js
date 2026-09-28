@@ -20,6 +20,7 @@ const clienteRoutes = require("./routes/cliente.routes");
 const artistaRoutes = require("./routes/artista.routes");
 const trabajoRoutes = require("./routes/trabajo.routes");
 const servicioRoutes = require("./routes/servicio.routes");
+const citaRoutes = require("./routes/cita.routes");
 
 
 
@@ -42,6 +43,7 @@ app.use("/clientes",clienteRoutes);
 app.use("/artistas",artistaRoutes);
 app.use("/trabajos",trabajoRoutes);
 app.use("/servicios",servicioRoutes);
+app.use("/citas",citaRoutes);
 
 
  
