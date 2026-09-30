@@ -1,7 +1,10 @@
 // Aquí trabajaremos con los datos de los usuarios.
-
-
 const pool = require("../db/connection");
+
+
+
+//IMPORTAMOS BCRYPT PARA TRABAJAR DE FORMA SEGURA CON LAS CONTRASEÑAS
+const bcrypt = require("bcrypt");
 
 const getUsers = () =>  {
 
@@ -12,23 +15,19 @@ const getUsers = () =>  {
 
 
 
-//=====CREAR UN USUARIO=======
-//Esta función sirve para crear un nuevo usuario dentro de la tabla usuario
+//=====CREAR UN USUARIO=======//
+const createUser = async (nombre,email,contrasena,rol) =>{
 
-const createUser = (nombre,email,contrasena,rol) =>{
+    /*Crearemos el hash*/
+    const contrasenaHash = await bcrypt.hash(contrasena,10);
 
 
-    //INSERT SIRVE PARA INTRODUCIR UN NUEVO REGISTRO EN LA TABLA USUARIO
-
-    //$1,$2,$3 y $4 SON ESPACIOS RESERVADOS PARA LOS DATOS QUE RECIBIMOS, QUE SON: nombre,email,contraseña y rol
-
-    // RETURNING * hace que PostgreSQL nos devuelva el usuario que acabamos de crear.
 
     return pool.query(
 
-        'INSERT INTO usuario (nombre,email,contrasena, rol) VALUES ($1, $2, $3, $4) RETURNING*',
+        'INSERT INTO usuario (nombre,email,contrasena, rol) VALUES ($1, $2, $3, $4) RETURNING id_usuario, nombre, email, rol',
 
-        [nombre, email, contrasena, rol]
+        [nombre, email, contrasenaHash, rol]
 
     );
 
