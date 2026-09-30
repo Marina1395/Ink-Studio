@@ -21,6 +21,7 @@ const artistaRoutes = require("./routes/artista.routes");
 const trabajoRoutes = require("./routes/trabajo.routes");
 const servicioRoutes = require("./routes/servicio.routes");
 const citaRoutes = require("./routes/cita.routes");
+const mensajeRoutes = require("./routes/mensaje.routes");
 
 
 
@@ -44,6 +45,8 @@ app.use("/artistas",artistaRoutes);
 app.use("/trabajos",trabajoRoutes);
 app.use("/servicios",servicioRoutes);
 app.use("/citas",citaRoutes);
+app.use("/mensajes",mensajeRoutes);
+
 
 
  
