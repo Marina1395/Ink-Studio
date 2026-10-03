@@ -1,12 +1,19 @@
 
-// Aquí decidiremos qué hacer cuando recibamos peticiones relacionadas con usuarios.
-// Importamos el modelo de usuario.
-// El modelo es el encargado de comunicarse con PostgreSQ
+
 
 const usuarioModel = require("../models/user.model");
 
-//Esta función se ejecutara  cuando recibamos una peticion
-//para obtener los resultados.
+
+
+const bcrypt = require("bcrypt");
+
+
+
+//3-=====USAMOS LIBRERIA JSONWEBTOKEN EN CONTROLLER=====//
+const jwt = require ("jsonwebtoken");
+
+
+
 
 const getUsers = async (req,res) => {
 
@@ -201,6 +208,100 @@ const deleteUser = async(req,res) => {
 
 
 
+//======LOGIN DE USUARIO======//
+
+const loginUser = async (req, res) => {
+
+    try {
+
+        //Recogemos el email y la contraseña enviados por el usuario
+        const { email, contrasena } = req.body;
+
+        //Buscamos al usuario por su email
+        const usuario = await usuarioModel.getUserByEmail(email);
+
+        //Si no existe ningún usuario con ese email
+        if (!usuario) {
+
+            return res.status(401).json({
+                error: "Email o contraseña incorrectos"
+            });
+
+        }
+
+
+        //Creamos un token para el usuario que ha iniciado sesión
+        const token = jwt.sign(
+
+
+            {
+
+                id_usuario: usuario.id_usuario,
+                rol: usuario.rol
+
+            },
+
+            process.env.JWT_SECRET,
+            {
+
+                expiresIn: "1h"
+
+            }
+
+        );
+
+
+
+        // Comparamos la contraseña escrita con el hash guardado
+        const contrasenaCorrecta = await bcrypt.compare(
+            contrasena,
+            usuario.contrasena
+        );
+
+        // Si la contraseña no coincide
+        if (!contrasenaCorrecta) {
+
+            return res.status(401).json({
+                error: "Email o contraseña incorrectos"
+            });
+
+        }
+
+        // Si todo es correcto
+        res.status(200).json({
+
+            mensaje: "Login correcto",
+
+            token: token,
+
+            usuario: {
+
+                id_usuario: usuario.id_usuario,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                rol: usuario.rol
+
+            }
+
+        
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            error: "Error al iniciar sesión"
+        });
+
+    }
+
+};
+
+
+
+
+
 
 
 //EXPORTAMOS LAS FUNCIONES PARA PODER UTILIZARLAS
@@ -211,7 +312,8 @@ module.exports = {
     createUser,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    loginUser
 
 };
 

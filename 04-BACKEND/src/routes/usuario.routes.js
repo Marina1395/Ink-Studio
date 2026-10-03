@@ -6,16 +6,27 @@ const express = require("express");
 
 
 //Importamos el controller de usuarios
-//Aquí estará la función que se encargará de obtener los usuarios.
 const usuarioController = require("../controllers/user.controller");
+
+
+//Importamos el middelware que comprueba el Token
+const { verificarToken } =require("../middlewares/auth.middleware");
+
 
 
 //Creamos un router de express
 const router = express.Router();
 
 
+
+//Iniciar sesión
+router.post("/login", usuarioController.loginUser);
+
+
+
+
 //Obtener todos los usuarios
-router.get("/", usuarioController.getUsers);
+router.get("/", verificarToken, usuarioController.getUsers);
 
 
 //"Dame el usuario cuyo ID sea el que aparece en la URL."

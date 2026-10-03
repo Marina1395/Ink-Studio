@@ -8,7 +8,8 @@ const bcrypt = require("bcrypt");
 
 const getUsers = () =>  {
 
-    return pool.query('SELECT*FROM usuario');
+    return pool.query('SELECT id_usuario,nombre,email, rol FROM usuario');
+
 
 };
 
@@ -41,7 +42,7 @@ const getUserById = (id_usuario) => {
 
     return pool.query(
 
-        'SELECT * FROM usuario WHERE id_usuario = $1',
+        'SELECT * FROM usuario WHERE id_usuario,nombre, email, rol FROM usuario WHERE id_usuario = $1',
         [id_usuario]
     );
 
@@ -50,15 +51,23 @@ const getUserById = (id_usuario) => {
 
 //======ACTUALIZAR UN USUARIO======//
 
-const updateUser =(id_usuario,nombre,email,contrasena,rol) =>{
+const updateUser = async (id_usuario,nombre,email,contrasena,rol) =>{
 
-    return pool.query(
+    //Hasheamos la contraseña antes de guardarla
+    const contrasenaHash = await bcrypt.hash(contrasena,10);
 
-        'UPDATE usuario SET nombre=$1, email=$2, contrasena=$3, rol=$4 WHERE id_usuario = $5 RETURNING *',
+    const result = await pool.query(
 
-        [nombre, email, contrasena, rol ,id_usuario]
+
+        `UPDATE usuario SET nombre=$1, email=$2, contrasena=$3, rol=$4
+         WHERE id_usuario = $5
+         RETURNING id_usuario, nombre, email, rol`,
+
+        [nombre, email, contrasenaHash, rol ,id_usuario]
 
     );
+
+    return result;
 
 };
 
@@ -70,6 +79,7 @@ const deleteUser = async (id) => {
 
         'DELETE  FROM usuario WHERE id_usuario = $1',
         [id]
+
  );
 
  return resultado;
@@ -77,12 +87,22 @@ const deleteUser = async (id) => {
 };
 
 
+//======BUSCAR USUARIO POR EMAIL PARA LOGIN======//
+
+const getUserByEmail = async (email) => {
+
+    const result = await pool.query(
+        'SELECT * FROM usuario WHERE email = $1',
+        [email]
+    );
+
+    return result.rows[0];
+
+};
 
 
 
 //EXPORTAMOS LAS FUNCIONES PARA PODER UTILIZARLAS DESDE EL CONTROLLER
-
-
 
 module.exports = {
 
@@ -90,7 +110,8 @@ module.exports = {
     createUser,
     getUserById,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUserByEmail
     
 };
 
