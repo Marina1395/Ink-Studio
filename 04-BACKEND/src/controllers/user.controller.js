@@ -49,21 +49,94 @@ const getUsers = async (req,res) => {
 
 
 
-//AQUI VA LA NUEVA FUNCIÓN DE createUser
-
+//=====CREAR FUNCIÓN PARA CREAR USUARIO=====//
 const createUser = async (req, res)=> {
 
     try{
 
         //Recogemos los datos que nos envia el usuario
+        const{ nombre, email, contrasena} = req.body;
 
-        const{ nombre, email, contrasena, rol} = req.body;
+
+        //Comprobamos que todos los campos obligatorios tengan datos
+        if (!nombre || !email || !contrasena) {
+
+            return res.status(400).json({
+
+                error:"Nombre, email y contraseña son obligatorios"
+
+
+            });
+
+        }    
+
+
+        /* Comprobamos las condiciones del nombre*/
+        if(nombre.trim().length < 2 || nombre.trim().length > 100){
+
+            return res.status(400).json({
+
+
+                error: "El nombre debe tener entre 2 y 100 caracteres"
+
+            });
+
+        }
+
+
+
+
+        /*Comprobamos que la CONTRASEÑA tenga al menos 8 caracteres*/
+         if(contrasena.length <8 || contrasena.length > 72){
+
+            return res.status(400).json({
+
+
+                error: "La contraseña debe tener al menos 8 caracteres"
+
+            });
+
+        }
+
+
+
+       /*Comprobamos que el email tenga un formato válido*/
+       const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+       if (!formatoEmail.test(email)) {
+
+        return res.status(400).json({
+
+        error: "El email no tiene un formato válido"
+
+             });
+ 
+    }
+
+
+       /*Comprobamos si ya existe un usuario con ese email*/
+       const usuarioExistente = await usuarioModel.getUserByEmail(email);
+
+       if (usuarioExistente) {
+
+
+       return res.status(409).json({
+
+        error: "Ya existe un usuario registrado con ese email"
+
+           });
+
+    }
+
+
+
+        //Los usuarios que se registren siempre tendran un rol de cliente
+        const rol = "cliente";
         
 
 
         //LLamamos  a la funcion createUser del modelo
-
-        const resultado = await usuarioModel.createUser(
+       const resultado = await usuarioModel.createUser(
 
             nombre,
             email,
@@ -140,8 +213,21 @@ const updateUser = async (req, res) => {
         //Cogemos el id de la URL
         const { id_usuario } = req.params;
 
+
         //Cogemos los nuevos datos
         const { nombre, email, contrasena, rol } = req.body;
+
+
+        //Si el usuario no es administrador no podrá cambiar su propio rol
+        if (req.usuario.rol !== "admin" && rol !== req.usuario.rol) {
+
+        return res.status(403).json({
+
+        error: "No tienes permiso para cambiar tu rol"
+
+    });
+
+}
 
         //Mandamos los datos al modelo para actualizar el usuario
         const resultado = await usuarioModel.updateUser(

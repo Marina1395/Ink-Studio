@@ -9,8 +9,14 @@ const express = require("express");
 const usuarioController = require("../controllers/user.controller");
 
 
-//Importamos el middelware que comprueba el Token
-const { verificarToken } =require("../middlewares/auth.middleware");
+//Importamos el middelware que comprueba el Token y si el usuario es admin
+const {
+
+  verificarToken,
+  verificarAdmin ,
+  verificarPropietarioOAdmin
+
+} =require("../middlewares/auth.middleware");
 
 
 
@@ -24,13 +30,26 @@ router.post("/login", usuarioController.loginUser);
 
 
 
-
 //Obtener todos los usuarios
-router.get("/", verificarToken, usuarioController.getUsers);
+router.get(
+
+    "/",
+     verificarToken,
+     verificarAdmin,
+      usuarioController.getUsers
+
+    );
 
 
 //"Dame el usuario cuyo ID sea el que aparece en la URL."
-router.get("/:id_usuario", usuarioController.getUserById);
+router.get(
+
+    "/:id_usuario", 
+    verificarToken,
+    verificarPropietarioOAdmin,
+    usuarioController.getUserById
+
+);
 
 
 //Crear un usuario
@@ -38,11 +57,23 @@ router.post("/", usuarioController.createUser);
 
 
 //Actualizar un usuario
-router.put("/:id_usuario", usuarioController.updateUser);
+router.put(
+
+    "/:id_usuario",
+    verificarToken,
+    verificarPropietarioOAdmin,
+    usuarioController.updateUser);
 
 
 //Eliminar un usuario
-router.delete("/:id_usuario", usuarioController.deleteUser);
+router.delete(
+
+    "/:id_usuario",
+    verificarToken,
+    verificarAdmin,
+    usuarioController.deleteUser
+
+);
 
 
 module.exports = router;
