@@ -34,18 +34,19 @@ const getTrabajoById = async(id_trabajo) => {
 
 
 //4.======Crear un trabajo======
-const createTrabajo = async(id_artista,titulo, descripcion) => {
+const createTrabajo = async(id_artista, titulo, descripcion, imagen) => {
 
     const result = await pool.query(
 
-        "INSERT INTO trabajo(id_artista,titulo,descripcion) VALUES ($1,$2,$3) RETURNING *",
+        "INSERT INTO trabajo(id_artista,titulo,descripcion,imagen) VALUES ($1,$2,$3,$4) RETURNING *",
     
     [
 
        
         id_artista,
         titulo,
-        descripcion
+        descripcion,
+        imagen
     ]
 
 );
@@ -58,17 +59,18 @@ const createTrabajo = async(id_artista,titulo, descripcion) => {
 
 
 //5.======Actualizar trabajo======
-const updateTrabajo = async (id_trabajo,id_artista,titulo,descripcion) => {
+const updateTrabajo = async (id_trabajo, id_artista, titulo, descripcion, imagen) => {
 
     const result = await pool.query(
 
-        "UPDATE trabajo SET id_artista=$1, titulo=$2, descripcion=$3 WHERE id_trabajo=$4 RETURNING *",
+        "UPDATE trabajo SET id_artista=$1, titulo=$2, descripcion=$3, imagen=$4 WHERE id_trabajo=$5 RETURNING *",
 
 
     [
             id_artista,
             titulo,
             descripcion,
+            imagen,
             id_trabajo
         ]
 

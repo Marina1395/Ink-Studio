@@ -46,7 +46,7 @@ const createTrabajo = async (req,res) =>{
 
     try{
 
-        const {id_artista,titulo,descripcion } = req.body;
+        const {id_artista, titulo, descripcion, imagen } = req.body;
 
         //Llamamos a la funcion createTrabajo del modelo
 
@@ -54,7 +54,8 @@ const createTrabajo = async (req,res) =>{
 
             id_artista,
             titulo,
-            descripcion
+            descripcion,
+            imagen
     );
 
     //Enviamos el trabajo creado como respuesta
@@ -136,7 +137,7 @@ const updateTrabajo= async(req,res) => {
         const {id_trabajo} = req.params;
 
         //Cogemos los nuevos datos
-        const {id_artista,titulo,descripcion} = req.body;
+        const {id_artista, titulo, descripcion, imagen} = req.body;
 
         //Mandamos los datos al modelo para actualizar trabajo
 
@@ -145,7 +146,8 @@ const updateTrabajo= async(req,res) => {
             id_trabajo,
             id_artista,
             titulo,
-            descripcion
+            descripcion,
+            imagen
        );
 
        if (!resultado) {
