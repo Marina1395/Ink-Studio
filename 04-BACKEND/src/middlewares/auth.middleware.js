@@ -91,6 +91,27 @@ const verificarPropietarioOAdmin = (req, res, next) => {
 
 
 
+//=====COMPROBAR SI EL USUARIO ES ARTISTA O ADMINISTRADOR=====//
+
+const verificarArtistaOAdmin = (req, res, next) => {
+
+    /*---Comprobamos el rol del usuario---*/
+
+    if(req.usuario.rol != "artista"  && req.usuario.rol != "admin"){
+
+        return res.status(403).json({
+
+            error: "Sólo los artistas y administradores pueden realizar esta acción"
+
+        });
+
+    }
+
+    next();
+}
+
+
+
 
 
 
@@ -99,6 +120,7 @@ module.exports = {
 
     verificarToken,
     verificarAdmin,
-    verificarPropietarioOAdmin
-
+    verificarPropietarioOAdmin,
+    verificarArtistaOAdmin
+    
 };

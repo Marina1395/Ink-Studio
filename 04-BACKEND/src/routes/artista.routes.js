@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Importamos las funciones del controller
 const artistaController = require("../controllers/artista.controller");
+const { verificarToken, verificarAdmin } = require("../middlewares/auth.middleware");
 
 
 // GET - Obtener todos los artistas
@@ -17,15 +18,16 @@ router.get("/:id_usuario", artistaController.getArtistaById);
 
 
 // POST - Crear un artista
-router.post("/", artistaController.createArtista);
+router.post("/", verificarToken, verificarAdmin, artistaController.createArtista);
+
 
 
 // PUT - Actualizar un artista
-router.put("/:id_usuario", artistaController.updateArtista);
+router.put("/:id_usuario", verificarToken, verificarAdmin, artistaController.updateArtista);
 
 
 // DELETE - Borrar un artista
-router.delete("/:id_usuario", artistaController.deleteArtista);
+router.delete("/:id_usuario", verificarToken,verificarAdmin,artistaController.deleteArtista);
 
 
 // Exportamos el router

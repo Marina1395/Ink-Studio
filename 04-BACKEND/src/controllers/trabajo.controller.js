@@ -48,8 +48,27 @@ const createTrabajo = async (req,res) =>{
 
         const {id_artista, titulo, descripcion, imagen } = req.body;
 
-        //Llamamos a la funcion createTrabajo del modelo
+        
+      //Comprobamos que un artista solo cree trabajos a su nombre
 
+    if (
+
+    req.usuario.rol !== "admin" &&
+    Number(id_artista) !== Number(req.usuario.id_usuario)
+
+
+   ) {
+
+    return res.status(403).json({
+
+        error: "No puedes crear trabajos a nombre de otro artista"
+
+    });
+
+}
+
+
+        //Llamamos a la funcion createTrabajo del modelo
         const resultado = await trabajoModel.createTrabajo(
 
             id_artista,
@@ -133,14 +152,69 @@ const updateTrabajo= async(req,res) => {
 
     try{
 
-        //Recogemos el id_trabajo que queremos modificar
+        //Recogemos el id_trabajo que queremos actualizar
         const {id_trabajo} = req.params;
+
+
+        //Buscamos el trabajo que queremos actualizar en postGreSQL
+        const trabajo = await trabajoModel.getTrabajoById(id_trabajo);
+
+
+       /*Comprobamos si ese trabajo existe*/
+        if(!trabajo){
+
+            return res.status(404).json({
+
+                error: "Trabajo no encontrado"
+
+            });
+
+        }
+
+        /*Comprobamos si el usario es el propietario o el administrador*/
+
+        if(
+
+            Number(trabajo.id_artista) !== Number(req.usuario.id_usuario) &&
+           req.usuario.rol !== "admin"
+
+        ){
+
+            return res.status(403).json({
+
+                error: "No tienes permiso para modificar este trabajo"
+
+            });
+
+        }
+
 
         //Cogemos los nuevos datos
         const {id_artista, titulo, descripcion, imagen} = req.body;
 
-        //Mandamos los datos al modelo para actualizar trabajo
 
+        //Impedimos que el artista cambie el propietario del trabajo
+        if(
+
+            req.usuario.rol !== "admin" &&
+
+            Number(id_artista) !== Number(trabajo.id_artista)
+
+      ){
+
+
+        return res.status(403).json({
+
+            error: "No puedes cambiar el propietario de este trabajo"
+
+        });
+
+
+      }
+
+
+
+        //Mandamos los datos al modelo para actualizar trabajo
         const resultado = await trabajoModel.updateTrabajo(
 
             id_trabajo,
@@ -189,6 +263,45 @@ const deleteTrabajo = async (req, res) => {
 
         //Recogemos el id_trabajo que queremos eliminar
         const { id_trabajo } = req.params;
+
+
+        //Buscamos el trabajo antes de eliminarlo
+        const trabajo = await trabajoModel.getTrabajoById(id_trabajo);
+
+
+        //Comprobamos si existe
+
+       if(!trabajo) {
+
+        return res.status(404).json({
+
+            error: "Trabajo no encontrado"
+
+         });
+
+
+       }
+
+       //Comprobamos si el usuario es dueño del trabajo o el administrador
+
+       if(
+
+        Number(trabajo.id_artista) !== Number(req.usuario.id_usuario) &&
+
+        req.usuario.rol !== "admin"
+
+       ){
+
+        return res.status(403).json({
+
+            error: "No tienes permiso para eliminar este trabajo"
+
+        });
+
+
+       }
+
+
 
         //Llamamos a la función deleteTrabajo del modelo
         const resultado = await trabajoModel.deleteTrabajo(id_trabajo);
