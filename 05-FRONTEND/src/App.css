@@ -16,13 +16,29 @@ header {
   border-bottom: 2px solid #ff1744;
 }
 
-/* ===== NOMBRE DEL ESTUDIO ===== */
+/* ===== NOMBRE DEL ESTUDIO: NEÓN ROJO ===== */
 
 header h1 {
-  font-size: 45px;
-  color: #ff1744;
+  font-size: 55px;
+  font-weight: 900;
+  letter-spacing: 5px;
   text-transform: uppercase;
-  letter-spacing: 4px;
+
+  color: #ffffff;
+
+  -webkit-text-stroke: 2px #ff1744;
+
+  text-shadow:
+    0 0 2px #ffffff,
+    0 0 5px #ffffff,
+    0 0 8px #ff1744,
+    0 0 15px #ff1744,
+    0 0 25px #ff0033,
+    0 0 45px #ff0033,
+    0 0 80px #ff0033,
+    0 0 120px #ff0033;
+
+  animation: parpadeoNeon 6s infinite;
 }
 
 /* ===== MENÚ DE NAVEGACIÓN ===== */
@@ -63,4 +79,73 @@ section {
   border: 1px solid #ff1744;
   padding: 30px;
   width: 220px;
+}
+
+/* ===== EFECTO NEÓN DEL LOGOTIPO ===== */
+
+header h1 {
+  color: #ff1744;
+
+  text-shadow:
+    0 0 5px #ff1744,
+    0 0 15px #ff1744,
+    0 0 30px #ff1744,
+    0 0 60px #ff0033;
+
+  animation: parpadeoNeon 6s infinite;
+}
+
+/* ===== ANIMACIÓN DE PARPADEO ===== */
+
+@keyframes parpadeoNeon {
+
+  0%, 15%, 18%, 22%, 100% {
+    opacity: 1;
+  }
+
+  16%, 20% {
+    opacity: 0.2;
+  }
+
+  17%, 21% {
+    opacity: 0.7;
+  }
+
+}
+
+/* ===== ACCESIBILIDAD ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  header h1 {
+    animation: none;
+  }
+}
+
+/* ===== SECCIÓN DE PROFESIONALES ===== */
+
+.equipo-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  max-width: 1100px;
+  margin: 40px auto 0;
+}
+
+/* ===== TARJETAS DE PROFESIONALES ===== */
+
+.profesional {
+  background-color: #181818;
+  border: 1px solid #555555;
+  padding: 30px;
+  text-align: center;
+}
+
+/* ===== BOTONES VER PERFIL ===== */
+
+.profesional button {
+  background-color: transparent;
+  color: white;
+  border: 1px solid #00e5ff;
+  padding: 12px 20px;
+  cursor: pointer;
 }

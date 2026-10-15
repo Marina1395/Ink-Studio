@@ -1,7 +1,37 @@
 
+import { useState } from 'react';
 import './App.css';
 
+
 function App() {
+
+
+  //=====DATOS DE PRUEBA DE LOS PROFESIONALES====//
+  const profesionales = [
+
+
+      { id: 1, nombre: "Profesional 1", especialidad: "Tatuajes" },
+      { id:2, nombre: "Profesional 2", especialidad: "Piercings"},
+      { id:3, nombre: "Profesional 3", especialidad: "Gemas dentales"},
+      { id:4, nombre: "Profesional 4", especialidad: "Tatuajes y piercings"},
+      { id:5, nombre: "Profesional 5", especialidad: "Piercings y gemas dentales"},
+      { id:6, nombre: "Profesioanl 6", especialidad: "Tatuajes"},
+
+  ];
+
+  /*Guardamos la especialidad seleccionada*/
+  const[filtro,setFiltro] = useState("Todos");
+
+  // Filtramos los profesionales según la especialidad//CONTINUAS EL VIERNES AQUI
+const profesionalesFiltrados = profesionales.filter((profesional) => {
+  return filtro === "Todos" ||
+    profesional.especialidad.includes(filtro);
+});
+
+
+
+
+
 
   return (
 
@@ -73,6 +103,36 @@ function App() {
           </div>
 
         </div>
+
+      </section>
+
+
+      {/*=====SECCIÓN DE PROFESIONALES=====*/}
+      <section id = "trabajos">
+
+        <h2>Conoce a nuestro equipo</h2>
+
+        <div className="equipo-container">
+
+          {profesionales.map((profesional) =>(
+
+
+             <div className="profesional" key={profesional.id}>
+
+              <h3>{profesional.nombre}</h3>
+
+              <p>{profesional.especialidad}</p>
+
+              <button>Ver perfil</button>
+
+              </div>
+             
+
+
+          ))}
+
+        </div>  
+
 
       </section>
 
