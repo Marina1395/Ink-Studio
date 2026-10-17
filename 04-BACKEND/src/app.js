@@ -1,9 +1,7 @@
 
 const express = require ("express"); //<--Quiero utilizar express en este archivo
 
-
-
-
+const cors =require("cors");//-->Importamos CORS para permitir que React pueda leer las respuestas de nuestro Backend
 
 
 
@@ -26,6 +24,12 @@ const mensajeRoutes = require("./routes/mensaje.routes");
 
 
 const app = express ();//<--Creamos nuestra aplicacion express
+
+app.use(cors({//-->Activamos CORS para que REACT pueda recibir datos desde nuestro Backend
+
+     origin: "http://localhost:5173"
+
+}));
 
 
 

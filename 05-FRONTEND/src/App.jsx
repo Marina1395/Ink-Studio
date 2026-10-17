@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 
@@ -10,23 +10,83 @@ function App() {
   const profesionales = [
 
 
-      { id: 1, nombre: "Profesional 1", especialidad: "Tatuajes" },
-      { id:2, nombre: "Profesional 2", especialidad: "Piercings"},
-      { id:3, nombre: "Profesional 3", especialidad: "Gemas dentales"},
-      { id:4, nombre: "Profesional 4", especialidad: "Tatuajes y piercings"},
-      { id:5, nombre: "Profesional 5", especialidad: "Piercings y gemas dentales"},
-      { id:6, nombre: "Profesioanl 6", especialidad: "Tatuajes"},
+    { id: 1, nombre: "Profesional 1", especialidad: "Tatuajes" },
+    { id: 2, nombre: "Profesional 2", especialidad: "Piercings" },
+    { id: 3, nombre: "Profesional 3", especialidad: "Gemas dentales" },
+    { id: 4, nombre: "Profesional 4", especialidad: "Tatuajes y piercings" },
+    { id: 5, nombre: "Profesional 5", especialidad: "Piercings y gemas dentales" },
+    { id: 6, nombre: "Profesional 6", especialidad: "Tatuajes" },
 
   ];
 
   /*Guardamos la especialidad seleccionada*/
-  const[filtro,setFiltro] = useState("Todos");
+  const [filtro, setFiltro] = useState("Todos");
+
+
+
+
+  /*Guardamos los artistas que recibiremos del backend*/
+  const [artistas, setArtistas] = useState([]);
+
+
+  /*Obtener artistas desde el backend*/
+  useEffect(() => {
+
+    const obtenerArtistas = async () => {
+
+      try{
+
+
+        /*Hacemos peticion al backend*/
+        const respuesta  = await fetch("http://localhost:3000/artistas");
+
+
+
+        /*Comprobaremos que la petición haya sido correcta */
+
+        if(!respuesta.ok){
+
+          throw new Error("Error al obtener los artistas");
+ 
+        }
+
+
+        /*Convertimos la respuesta JSON  a datos de JavaScript */
+        const datos = await respuesta.json();
+
+
+        /* Guardamos los artistas recibidos */
+        setArtistas(datos);
+
+
+        /*Comprobamos qué artistas hemos recibido */
+        console.log("Artistas recibidos del backend:",datos)
+
+
+      }catch(error){
+
+        console.error("Error al cargar los artistas: ", error);
+
+      }
+
+    };
+
+    obtenerArtistas();
+
+
+
+  },[]);
+
+
 
   // Filtramos los profesionales según la especialidad//CONTINUAS EL VIERNES AQUI
-const profesionalesFiltrados = profesionales.filter((profesional) => {
-  return filtro === "Todos" ||
-    profesional.especialidad.includes(filtro);
-});
+  const profesionalesFiltrados = profesionales.filter((profesional) => {
+
+    return filtro === "Todos" ||
+
+      profesional.especialidad.includes(filtro);
+
+  });
 
 
 
@@ -108,16 +168,55 @@ const profesionalesFiltrados = profesionales.filter((profesional) => {
 
 
       {/*=====SECCIÓN DE PROFESIONALES=====*/}
-      <section id = "trabajos">
+      <section id="equipo">
 
         <h2>Conoce a nuestro equipo</h2>
 
+
+
+        {/*=====BOTONES PARA FILTRAR PROFESIONALES====*/}
+        <div className="filtros-equipo">
+
+
+          <button onClick = {() => setFiltro("Todos")}>
+
+            Todos
+
+          </button>
+
+
+          <button onClick = {() => setFiltro("Tatuajes")}>
+
+            Tatuajes
+
+          </button>
+
+
+          <button onClick={()=> setFiltro("Piercings")}>
+
+            Piercings
+
+          </button>
+
+
+          <button onClick = {()=> setFiltro("Gemas dentales")}>
+
+            Gemas dentales
+
+          </button>
+
+
+        </div>
+
+
+
+
         <div className="equipo-container">
 
-          {profesionales.map((profesional) =>(
+          {profesionalesFiltrados.map((profesional) => (
 
 
-             <div className="profesional" key={profesional.id}>
+            <div className="profesional" key={profesional.id}>
 
               <h3>{profesional.nombre}</h3>
 
@@ -125,13 +224,13 @@ const profesionalesFiltrados = profesionales.filter((profesional) => {
 
               <button>Ver perfil</button>
 
-              </div>
-             
+            </div>
+
 
 
           ))}
 
-        </div>  
+        </div>
 
 
       </section>
