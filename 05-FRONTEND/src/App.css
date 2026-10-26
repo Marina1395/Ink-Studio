@@ -149,3 +149,17 @@ header h1 {
   padding: 12px 20px;
   cursor: pointer;
 }
+
+/* ===== FOTOGRAFÍAS DE LOS ARTISTAS ===== */
+
+.profesional img {
+
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    object-position: center 20%;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto 15px;
+    
+}
