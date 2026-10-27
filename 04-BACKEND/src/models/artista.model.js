@@ -7,7 +7,16 @@ const getArtistas = async () => {
 
     const result = await pool.query(
 
-        "SELECT * FROM artista"
+        `SELECT
+        artista.id_usuario,
+        usuario.nombre,
+        artista.especialidad,
+        artista.descripcion
+
+        FROM artista
+        INNER JOIN usuario
+        ON artista.id_usuario = usuario.id_usuario
+        `
 
     );
 

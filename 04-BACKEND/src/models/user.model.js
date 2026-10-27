@@ -102,7 +102,34 @@ const getUserByEmail = async (email) => {
 
 
 
-//EXPORTAMOS LAS FUNCIONES PARA PODER UTILIZARLAS DESDE EL CONTROLLER
+
+//=====CAMBIAR LA CONTRASEÑA DE UN USUARIO=====//
+const cambiarContrasena = async (id_usuario,nuevaContrasena) => {
+
+    //Convertimos la contraseña es un hash
+    const contrasenaHash = await bcrypt.hash(nuevaContrasena,10);
+
+    //Actualizamos únicamente la contraseña
+    const resultado = await pool.query(
+
+        `UPDATE usuario
+         SET contrasena = $1
+         WHERE id_usuario = $2
+         RETURNING id_usuario, nombre, email rol `
+        
+
+        [contrasenaHash, id_usuario]
+
+    );
+     
+    return resultado.rows[0];
+
+};
+
+
+
+
+//=====EXPORTAMOS LAS FUNCIONES PARA PODER UTILIZARLAS DESDE EL CONTROLLER=====//
 
 module.exports = {
 
@@ -111,7 +138,8 @@ module.exports = {
     getUserById,
     updateUser,
     deleteUser,
-    getUserByEmail
+    getUserByEmail,
+    cambiarContrasena
     
 };
 

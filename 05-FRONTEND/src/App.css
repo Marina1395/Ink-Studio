@@ -1,165 +1,684 @@
-/* ===== ESTILOS GENERALES DE HACHE STUDIO ===== */
+
+/* ==========================================
+   HACHE STUDIO - ESTILOS GENERALES
+========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+
+
+/* ===== VARIABLES DE COLOR ===== */
+
+:root {
+  --azul-neon: #00bfff;
+  --azul-claro: #00e5ff;
+  --azul-oscuro: #123a58;
+  --plateado: #d8e2ed;
+  --fondo: #080a0f;
+  --fondo-tarjeta: #131820;
+  --texto-secundario: #b9c5d1;
+}
+
+
+/* ===== CONFIGURACIÓN GENERAL ===== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
-  background-color: #0a0a0a;
+  background-color: var(--fondo);
   color: #ffffff;
   font-family: Arial, sans-serif;
 }
 
-/* ===== CABECERA ===== */
+
+/* ==========================================
+   CABECERA
+========================================== */
 
 header {
-  background-color: #111111;
-  padding: 25px;
+  background-color: #000000;
+  padding: 20px 25px 35px;
   text-align: center;
-  border-bottom: 2px solid #ff1744;
+  border-bottom: 1px solid var(--azul-oscuro);
 }
 
-/* ===== NOMBRE DEL ESTUDIO: NEÓN ROJO ===== */
 
-header h1 {
-  font-size: 55px;
-  font-weight: 900;
-  letter-spacing: 5px;
-  text-transform: uppercase;
+/* ===== LOGOTIPO HACHE STUDIO ===== */
 
+.logo-hache {
+  display: block;
+  width: 100%;
+  max-width: 650px;
+  height: auto;
+  margin: 0 auto 65px;
+  object-fit: contain;
+}
+
+
+/* ==========================================
+   MENÚ DE NAVEGACIÓN GÓTICO
+========================================== */
+
+.nav-gotico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+
+  gap: 0;
+  width: 100%;
+  max-width: 1450px;
+  margin: 0 auto;
+}
+
+
+/* ===== ENLACES DEL MENÚ ===== */
+
+.nav-gotico a {
+  position: relative;
+  display: inline-block;
+
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: none;
+
+  color: var(--plateado);
+  text-decoration: none;
+
+  padding: 12px 25px;
+  white-space: nowrap;
+
+  text-shadow: 0 0 5px rgba(160, 200, 230, 0.25);
+
+  transition:
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+
+/* ===== EFECTO AL PASAR EL RATÓN ===== */
+
+.nav-gotico a:hover {
   color: #ffffff;
 
-  -webkit-text-stroke: 2px #ff1744;
+  text-shadow:
+    0 0 6px #ffffff,
+    0 0 12px var(--azul-neon),
+    0 0 22px #008cff;
+}
+
+
+/* ===== ESTRELLAS AZULES ENTRE ENLACES ===== */
+
+.nav-gotico a:not(:last-of-type)::before {
+  content: "✧";
+
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  color: var(--azul-neon);
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: normal;
 
   text-shadow:
-    0 0 2px #ffffff,
-    0 0 5px #ffffff,
-    0 0 8px #ff1744,
-    0 0 15px #ff1744,
-    0 0 25px #ff0033,
-    0 0 45px #ff0033,
-    0 0 80px #ff0033,
-    0 0 120px #ff0033;
-
-  animation: parpadeoNeon 6s infinite;
+    0 0 8px var(--azul-neon),
+    0 0 18px rgba(0, 140, 255, 0.65);
 }
 
-/* ===== MENÚ DE NAVEGACIÓN ===== */
 
-nav {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 25px;
+/* ===== EVITAR SUBRAYADOS ANTIGUOS ===== */
+
+.nav-gotico a::after {
+  display: none;
 }
 
-nav a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
+
+/* ==========================================
+   FILIGRANAS GÓTICAS LATERALES
+========================================== */
+
+/*
+   Esta imagen debe estar guardada en:
+
+   05-FRONTEND/public/imagenes/filigrana-gotica.png
+
+   Debe ser una filigrana horizontal
+   con fondo transparente.
+*/
+
+.filigrana-lateral {
+  display: block;
+  flex: 0 0 150px;
+
+  width: 150px;
+  height: 65px;
+
+  background-image: url('/imagenes/filigrana-gotica.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  pointer-events: none;
 }
 
-/* ===== SECCIONES ===== */
+
+/* ===== FILIGRANA IZQUIERDA ===== */
+
+.filigrana-izquierda {
+  margin-right: 15px;
+}
+
+
+/* ===== FILIGRANA DERECHA ===== */
+
+.filigrana-derecha {
+  margin-left: 15px;
+  transform: scaleX(-1);
+}
+
+
+/* ==========================================
+   SECCIONES GENERALES
+========================================== */
 
 section {
-  padding: 60px 20px;
+  padding: 70px 20px;
   text-align: center;
 }
 
-/* ===== CONTENEDOR DE SERVICIOS ===== */
+section h2 {
+  font-size: clamp(26px, 4vw, 38px);
+  margin: 0 0 25px;
+  letter-spacing: 1px;
+}
+
+section p {
+  color: var(--texto-secundario);
+  line-height: 1.7;
+}
+
+
+/* ==========================================
+   SECCIÓN INICIO
+========================================== */
+
+#inicio {
+  padding: 100px 20px;
+
+  background: radial-gradient(
+    ellipse at center,
+    #10263b 0%,
+    #080a0f 70%
+  );
+}
+
+#inicio h2 {
+  font-size: clamp(30px, 5vw, 48px);
+  margin-bottom: 20px;
+}
+
+#inicio p {
+  font-size: 18px;
+  margin-bottom: 35px;
+}
+
+
+/* ===== BOTÓN DESCUBRIR SERVICIOS ===== */
+
+#inicio a {
+  display: inline-block;
+  padding: 14px 28px;
+
+  color: var(--azul-claro);
+  text-decoration: none;
+  font-weight: bold;
+
+  border: 1px solid var(--azul-neon);
+  border-radius: 8px;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+#inicio a:hover {
+  background-color: var(--azul-neon);
+  color: #000000;
+
+  box-shadow:
+    0 0 12px var(--azul-neon),
+    0 0 25px rgba(0, 191, 255, 0.4);
+}
+
+
+/* ==========================================
+   SECCIÓN SERVICIOS
+========================================== */
+
+#servicios {
+  background-color: #0b0e14;
+}
 
 .servicios-container {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 25px;
-}
 
-/* ===== TARJETAS DE SERVICIOS ===== */
-
-.servicio {
-  background-color: #181818;
-  border: 1px solid #ff1744;
-  padding: 30px;
-  width: 220px;
-}
-
-/* ===== EFECTO NEÓN DEL LOGOTIPO ===== */
-
-header h1 {
-  color: #ff1744;
-
-  text-shadow:
-    0 0 5px #ff1744,
-    0 0 15px #ff1744,
-    0 0 30px #ff1744,
-    0 0 60px #ff0033;
-
-  animation: parpadeoNeon 6s infinite;
-}
-
-/* ===== ANIMACIÓN DE PARPADEO ===== */
-
-@keyframes parpadeoNeon {
-
-  0%, 15%, 18%, 22%, 100% {
-    opacity: 1;
-  }
-
-  16%, 20% {
-    opacity: 0.2;
-  }
-
-  17%, 21% {
-    opacity: 0.7;
-  }
-
-}
-
-/* ===== ACCESIBILIDAD ===== */
-
-@media (prefers-reduced-motion: reduce) {
-  header h1 {
-    animation: none;
-  }
-}
-
-/* ===== SECCIÓN DE PROFESIONALES ===== */
-
-.equipo-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 25px;
   max-width: 1100px;
   margin: 40px auto 0;
 }
 
-/* ===== TARJETAS DE PROFESIONALES ===== */
+
+/* ===== TARJETAS DE SERVICIOS ===== */
+
+.servicio {
+  background-color: var(--fondo-tarjeta);
+
+  border: 1px solid var(--azul-oscuro);
+  border-radius: 14px;
+
+  padding: 35px 25px;
+  width: 260px;
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.servicio h3 {
+  color: #ffffff;
+  font-size: 22px;
+}
+
+.servicio:hover {
+  transform: translateY(-6px);
+  border-color: var(--azul-neon);
+
+  box-shadow:
+    0 0 15px rgba(0, 191, 255, 0.2),
+    0 0 30px rgba(0, 191, 255, 0.08);
+}
+
+
+/* ==========================================
+   SECCIÓN NUESTRO EQUIPO
+========================================== */
+
+#equipo {
+  background-color: var(--fondo);
+}
+
+
+/* ===== FILTROS DE ARTISTAS ===== */
+
+.filtros-equipo {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.filtros-equipo button {
+  background-color: transparent;
+
+  color: #ffffff;
+  border: 1px solid var(--azul-oscuro);
+
+  padding: 12px 20px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.filtros-equipo button:hover {
+  color: var(--azul-claro);
+  border-color: var(--azul-neon);
+
+  box-shadow: 0 0 12px rgba(0, 191, 255, 0.25);
+}
+
+
+/* ===== CONTENEDOR DE ARTISTAS ===== */
+
+.equipo-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 25px;
+  max-width: 1100px;
+  margin: 40px auto 0;
+}
+
+
+/* ===== TARJETAS DE ARTISTAS ===== */
 
 .profesional {
-  background-color: #181818;
-  border: 1px solid #555555;
-  padding: 30px;
+  background-color: var(--fondo-tarjeta);
+
+  border: 1px solid var(--azul-oscuro);
+  border-radius: 14px;
+
+  padding: 30px 25px;
+  text-align: center;
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.profesional:hover {
+  transform: translateY(-6px);
+  border-color: var(--azul-neon);
+
+  box-shadow: 0 0 18px rgba(0, 191, 255, 0.18);
+}
+
+.profesional h3 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.profesional p {
+  font-size: 15px;
+}
+
+
+/* ===== FOTOGRAFÍAS DE ARTISTAS ===== */
+
+.profesional img {
+  width: 180px;
+  height: 180px;
+
+  object-fit: cover;
+  object-position: center 20%;
+
+  border-radius: 12px;
+
+  display: block;
+  margin: 0 auto 20px;
+}
+
+
+/* ===== ENLACE VER PERFIL ===== */
+
+.profesional a {
+  display: inline-block;
+
+  margin-top: 15px;
+  padding: 12px 24px;
+
+  background-color: transparent;
+
+  color: var(--azul-claro);
+  text-decoration: none;
+  font-weight: bold;
+
+  border: 1px solid var(--azul-neon);
+  border-radius: 8px;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.profesional a:hover {
+  background-color: var(--azul-neon);
+  color: #000000;
+
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
+}
+
+
+/* ==========================================
+   PÁGINA INDIVIDUAL DEL ARTISTA
+========================================== */
+
+#perfil-artista {
+  min-height: 100vh;
+  padding: 90px 20px;
+
+  background: radial-gradient(
+    ellipse at top,
+    #10263b 0%,
+    #080a0f 65%
+  );
+
   text-align: center;
 }
 
-/* ===== BOTONES VER PERFIL ===== */
-
-.profesional button {
-  background-color: transparent;
-  color: white;
-  border: 1px solid #00e5ff;
-  padding: 12px 20px;
-  cursor: pointer;
+#perfil-artista h2 {
+  color: var(--azul-claro);
+  margin-bottom: 35px;
 }
 
-/* ===== FOTOGRAFÍAS DE LOS ARTISTAS ===== */
+#perfil-artista > h3 {
+  font-size: 34px;
+  margin-bottom: 15px;
+}
 
-.profesional img {
+#perfil-artista > p {
+  max-width: 650px;
+  margin: 15px auto;
+}
 
-    width: 180px;
-    height: 180px;
-    object-fit: cover;
-    object-position: center 20%;
-    border-radius: 10px;
-    display: block;
-    margin: 0 auto 15px;
-    
+
+/* ===== GALERÍA DEL ARTISTA ===== */
+
+.trabajos-artista {
+  max-width: 900px;
+
+  margin: 50px auto;
+  padding: 35px 25px;
+
+  background-color: var(--fondo-tarjeta);
+
+  border: 1px solid var(--azul-oscuro);
+  border-radius: 14px;
+}
+
+.trabajos-artista h3 {
+  color: #ffffff;
+  font-size: 25px;
+}
+
+
+/* ===== VOLVER AL EQUIPO ===== */
+
+#perfil-artista > a {
+  display: inline-block;
+  padding: 14px 25px;
+
+  color: var(--azul-claro);
+  text-decoration: none;
+
+  border: 1px solid var(--azul-neon);
+  border-radius: 8px;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+#perfil-artista > a:hover {
+  background-color: var(--azul-neon);
+  color: #000000;
+
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
+}
+
+
+/* ==========================================
+   SECCIÓN NUESTROS TRABAJOS
+========================================== */
+
+#trabajos {
+  background-color: #0b0e14;
+}
+
+
+/* ==========================================
+   RESPONSIVE - PANTALLAS MEDIANAS
+========================================== */
+
+@media (max-width: 1200px) {
+
+  .filigrana-lateral {
+    flex-basis: 90px;
+    width: 90px;
+  }
+
+  .nav-gotico a {
+    font-size: 15px;
+    padding: 12px 15px;
+  }
+
+}
+
+
+/* ==========================================
+   RESPONSIVE - TABLETS
+========================================== */
+
+@media (max-width: 900px) {
+
+  .logo-hache {
+    max-width: 500px;
+    margin-bottom: 45px;
+  }
+
+  .filigrana-lateral {
+    display: none;
+  }
+
+  .nav-gotico {
+    flex-wrap: wrap;
+    gap: 8px 12px;
+  }
+
+  .nav-gotico a {
+    font-size: 14px;
+    padding: 10px 8px;
+  }
+
+  .nav-gotico a:not(:last-of-type)::before {
+    display: none;
+  }
+
+  .equipo-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* ==========================================
+   RESPONSIVE - MÓVILES
+========================================== */
+
+@media (max-width: 600px) {
+
+  header {
+    padding: 15px 15px 25px;
+  }
+
+  .logo-hache {
+    max-width: 350px;
+    margin-bottom: 30px;
+  }
+
+  .nav-gotico {
+    gap: 8px 12px;
+  }
+
+  .nav-gotico a {
+    font-size: 12px;
+    padding: 8px 5px;
+  }
+
+  section {
+    padding: 50px 20px;
+  }
+
+  #inicio {
+    padding: 75px 20px;
+  }
+
+  #inicio p {
+    font-size: 16px;
+  }
+
+  .servicio {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .equipo-container {
+    grid-template-columns: 1fr;
+    max-width: 380px;
+  }
+
+  .filtros-equipo {
+    gap: 10px;
+  }
+
+  .filtros-equipo button {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  #perfil-artista {
+    padding: 60px 20px;
+  }
+
+  #perfil-artista > h3 {
+    font-size: 28px;
+  }
+
+}
+
+
+/* ==========================================
+   ACCESIBILIDAD
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .nav-gotico a,
+  .servicio,
+  .profesional,
+  .profesional a,
+  #inicio a,
+  #perfil-artista > a {
+    transition: none;
+  }
+
 }

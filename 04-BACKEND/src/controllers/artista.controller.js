@@ -1,9 +1,7 @@
 
 
-//Importamos artista model
-const artistaModel =require("../models/artista.model");
-
-
+const artistaModel = require("../models/artista.model");
+const usuarioModel= require("../models/user.model");
 
 
 
@@ -73,43 +71,95 @@ const getArtistaById = async(req,res) => {
 
 const createArtista = async(req,res) => {
 
+    try {
 
-    try{
+        /*Recibimos los datos del nuevo artista*/
+        const {nombre, email, contrasena, especialidad, descripcion} = req.body;
 
-        //Cogemos los datos que nos envian
-        const { id_usuario, especialidad, descripcion} = req.body;
 
-        //LLamamos a la funcion createArtista del modelo.
-        const resultado = await artistaModel.createArtista(
+        /*Comprobaremos que estén los datos obligatorios*/
+        if(!nombre || !email || !contrasena || !especialidad || !descripcion){
 
-            
-            id_usuario,
-            especialidad,
-            descripcion
-    
+            return res.status(400).json({
+
+                error: "Faltan los campos obligatorios"
+
+            });
+        }
+
+
+        /*Comprobamos la longitud de la contraseña*/
+        if(contrasena.length < 8 || contrasena.length > 72) {
+
+            return res.status(400).json({
+
+                error: "La contraseña debe tener entre 8 y 72 caracteres"
+            })
+        }
+
+
+        /*Comprobamos que el email no este registrado*/
+        const usuarioExistente = await usuarioModel.getUserByEmail(email);
+
+        if(usuarioExistente){
+
+            return res.status(409).json({
+
+                error: "Ya existe un usuario con ese email"
+
+            });
+        }
+
+
+        /*Creamos su cuenta con el rol artista*/
+        /*createUser protege la contraseá con bcryp*/
+
+        const nuevoUsuario = await usuarioModel.createUser(
+
+            nombre,
+            email,
+            contrasena,
+            "artista"
+
         );
 
-        //Enviamos el artista creado como respuesta
-        res.status(201).json(resultado);
+
+        /*Obtenemos el ID generado por PostgreSQL*/
+         const id_usuario = nuevoUsuario.rows[0].id_usuario;
 
 
-        
-    }catch(error){
+        /*Creamos su perfil profesional*/ 
+        const nuevoArtista = await artistaModel.createArtista(
 
-        //Si ocurre algún error lo mostramos por consola
-        console.error(error);
+            id_usuario,
+            especialidad,
+            descripcion || ""
 
-        //Enviamos al cliente codigo http 500
-        res.status(500).json({
+        );
 
-            error: "Error al crear un artista"
+
+        /*Respondemos sin devolver la contraseña*/
+        return res.status(201).json({
+
+            mensaje:"Artista registrado correctamente",
+            usuario: nuevoUsuario.rows[0],
+            artista: nuevoArtista
 
         });
+
+    } catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+
+            error: "Error al registrar el artista"
+
+         });
+
     }
 
-
-    };
-
+};
 
 
 
