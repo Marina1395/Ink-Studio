@@ -1,6 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { Routes, Route, Link, useParams, useLocation } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Link,
+  useParams,
+  useLocation
+} from "react-router-dom";
+
 import "./App.css";
 
 
@@ -15,31 +22,112 @@ function PerfilArtista({ artistas }) {
     (profesional) => profesional.id_usuario === Number(id)
   );
 
-  // Si todavía no tenemos sus datos
+
+  // ===== ESTADOS PARA LA DISPONIBILIDAD =====
+
+  // Fecha seleccionada por el cliente
+  const [fecha, setFecha] = useState("");
+
+  // Horarios disponibles recibidos del backend
+  const [horarios, setHorarios] = useState([]);
+
+  // Hora seleccionada por el cliente
+  const [horaSeleccionada, setHoraSeleccionada] = useState("");
+
+  // Controlamos si estamos consultando los horarios
+  const [cargandoHorarios, setCargandoHorarios] = useState(false);
+
+  // Guardamos posibles errores
+  const [errorHorarios, setErrorHorarios] = useState("");
+
+  // Controlamos si ya hemos consultado una fecha
+  const [fechaConsultada, setFechaConsultada] = useState(false);
+
+
+  // ===== CONSULTAR DISPONIBILIDAD =====
+  const consultarDisponibilidad = async () => {
+
+    if (!fecha || !artista) {
+      return;
+    }
+
+    setCargandoHorarios(true);
+    setErrorHorarios("");
+    setHorarios([]);
+    setHoraSeleccionada("");
+    setFechaConsultada(false);
+
+    try {
+
+      // Hacemos la petición al backend
+      const respuesta = await fetch(
+        `http://localhost:3000/citas/disponibilidad?id_artista=${artista.id_usuario}&fecha=${fecha}`
+      );
+
+      // Comprobamos que la respuesta sea correcta
+      if (!respuesta.ok) {
+        throw new Error("Error al consultar disponibilidad");
+      }
+
+      // Convertimos la respuesta a JSON
+      const datos = await respuesta.json();
+
+      // Guardamos las horas disponibles
+      setHorarios(datos.horarios_disponibles);
+
+      // Indicamos que la consulta terminó correctamente
+      setFechaConsultada(true);
+
+    } catch (error) {
+
+      console.error(
+        "Error al consultar disponibilidad:",
+        error
+      );
+
+      setErrorHorarios(
+        "Ha ocurrido un error al consultar los horarios."
+      );
+
+    } finally {
+
+      setCargandoHorarios(false);
+
+    }
+
+  };
+
+
+  // ===== COMPROBAR SI EXISTE EL ARTISTA =====
   if (!artista) {
+
     return (
       <section id="perfil-artista">
 
         <h2>Artista no encontrado</h2>
 
-        <Link to="/">Volver al inicio</Link>
+        <Link to="/">
+          Volver al inicio
+        </Link>
 
       </section>
     );
+
   }
 
+
   return (
+
     <section id="perfil-artista">
 
       <h2>Perfil del artista</h2>
 
-      {/* Nombre */}
+      {/* ===== DATOS DEL ARTISTA ===== */}
+
       <h3>{artista.nombre}</h3>
 
-      {/* Especialidad */}
       <p>{artista.especialidad}</p>
 
-      {/* Descripción */}
       <p>{artista.descripcion}</p>
 
 
@@ -54,15 +142,143 @@ function PerfilArtista({ artistas }) {
 
       </div>
 
+
+      {/* ===== RESERVAR CITA ===== */}
+      <div className="reserva-artista">
+
+        <h3>Solicitar una cita</h3>
+
+        <p>
+          Selecciona una fecha para consultar los horarios disponibles.
+        </p>
+
+
+        {/* ===== SELECCIONAR FECHA ===== */}
+        <label htmlFor="fecha-cita">
+          Fecha de la cita:
+        </label>
+
+        <input
+          type="date"
+          id="fecha-cita"
+          value={fecha}
+          min={new Date().toLocaleDateString("sv-SE")}
+          onChange={(evento) => {
+
+            setFecha(evento.target.value);
+
+            // Limpiamos los datos de la fecha anterior
+            setHorarios([]);
+            setHoraSeleccionada("");
+            setFechaConsultada(false);
+            setErrorHorarios("");
+
+          }}
+        />
+
+
+        {/* ===== BOTÓN CONSULTAR ===== */}
+        <button
+          type="button"
+          onClick={consultarDisponibilidad}
+          disabled={!fecha || cargandoHorarios}
+        >
+
+          {cargandoHorarios
+            ? "Consultando..."
+            : "Consultar disponibilidad"}
+
+        </button>
+
+
+        {/* ===== MENSAJE DE ERROR ===== */}
+        {errorHorarios && (
+
+          <p role="alert">
+            {errorHorarios}
+          </p>
+
+        )}
+
+
+        {/* ===== MOSTRAR HORARIOS DISPONIBLES ===== */}
+        {fechaConsultada && (
+
+          <div className="horarios-disponibles">
+
+            <h4>Horarios disponibles</h4>
+
+            {horarios.length > 0 ? (
+
+              <div className="lista-horarios">
+
+                {horarios.map((hora) => (
+
+                  <button
+                    type="button"
+                    key={hora}
+                    className={
+                      horaSeleccionada === hora
+                        ? "hora-seleccionada"
+                        : ""
+                    }
+                    aria-pressed={horaSeleccionada === hora}
+                    onClick={() => setHoraSeleccionada(hora)}
+                  >
+                    {hora}
+                  </button>
+
+                ))}
+
+              </div>
+
+            ) : (
+
+              <p>
+                No hay horarios disponibles para esta fecha.
+              </p>
+
+            )}
+
+
+            {/* ===== HORA SELECCIONADA ===== */}
+            {horaSeleccionada && (
+
+              <p className="resumen-hora">
+                Has seleccionado las <strong>{horaSeleccionada}</strong>.
+              </p>
+
+            )}
+
+
+            {/* ===== INFORMACIÓN DE LA RESERVA ===== */}
+            <p>
+              Los horarios permiten solicitar una cita.
+              La reserva quedará pendiente hasta que
+              el artista confirme su duración y disponibilidad.
+            </p>
+
+          </div>
+
+        )}
+
+      </div>
+
+
+      {/* ===== VOLVER A LA PÁGINA PRINCIPAL ===== */}
       <Link to="/" state={{ volverAEquipo: true }}>
         Volver a nuestro equipo
       </Link>
 
     </section>
+
   );
+
 }
 
 
+
+// ===== COMPONENTE PRINCIPAL =====
 function App() {
 
   // Guardamos la especialidad seleccionada
@@ -77,10 +293,14 @@ function App() {
   // Obtenemos la información de navegación de React Router
   const location = useLocation();
 
-  // Cuando volvemos desde un perfil, bajamos a "Nuestro equipo"
+
+  // ===== VOLVER A LA SECCIÓN DEL EQUIPO =====
   useEffect(() => {
 
-    if (location.pathname === "/" && location.state?.volverAEquipo) {
+    if (
+      location.pathname === "/" &&
+      location.state?.volverAEquipo
+    ) {
 
       document.getElementById("equipo")?.scrollIntoView({
         behavior: "smooth"
@@ -108,7 +328,7 @@ function App() {
           throw new Error("Error al obtener los artistas");
         }
 
-        // Convertimos la respuesta JSON a datos de JavaScript
+        // Convertimos la respuesta JSON
         const datos = await respuesta.json();
 
         // Guardamos los artistas recibidos
@@ -144,15 +364,15 @@ function App() {
   // ===== FILTRAR ARTISTAS POR ESPECIALIDAD =====
   const profesionalesFiltrados = artistas.filter((profesional) => {
 
-    // Si seleccionamos "Todos", mostramos todos los artistas
+    // Si seleccionamos "Todos", mostramos todos
     if (filtro === "Todos") {
       return true;
     }
 
     // Convertimos la especialidad a minúsculas
-    const especialidad = profesional.especialidad.toLowerCase();
+    const especialidad = (profesional.especialidad || "").toLowerCase();
 
-    // Comprobamos qué categoría hemos seleccionado
+    // Filtramos según la categoría
     if (filtro === "Tatuajes") {
       return especialidad.includes("tatuaje");
     }
@@ -184,18 +404,15 @@ function App() {
             {/* ===== CABECERA DE LA WEB ===== */}
             <header>
 
-              {/*====LOGOTIPO HACHE STUDIO====*/}
+              {/* ===== LOGOTIPO HACHE STUDIO ===== */}
               <img
-
                 src="/artistas/logo_hache.png"
                 alt="Hache Studio"
                 className="logo-hache"
-
               />
 
 
               {/* ===== MENÚ GÓTICO HACHE STUDIO ===== */}
-
               <nav className="nav-gotico">
 
                 {/* Filigrana izquierda */}
@@ -205,9 +422,13 @@ function App() {
                 ></span>
 
                 <a href="#inicio">Inicio</a>
+
                 <a href="#servicios">Servicios</a>
+
                 <a href="#equipo">Nuestro equipo</a>
+
                 <a href="#trabajos">Trabajos</a>
+
                 <a href="#contacto">Contacto</a>
 
                 {/* Filigrana derecha */}
@@ -320,13 +541,13 @@ function App() {
                     {/* Nombre del artista */}
                     <h3>{profesional.nombre}</h3>
 
-                    {/* Especialidad del artista */}
+                    {/* Especialidad */}
                     <p>{profesional.especialidad}</p>
 
-                    {/* Descripción profesional */}
+                    {/* Descripción */}
                     <p>{profesional.descripcion}</p>
 
-                    {/* Navegación a la página del artista */}
+                    {/* Navegación al perfil */}
                     <Link
                       to={`/artistas/${profesional.id_usuario}`}
                     >
@@ -348,7 +569,7 @@ function App() {
               <h2>Nuestros trabajos</h2>
 
               <p>
-                Descubre los trabajos realizados por nuestros artistas
+                Descubre los trabajos realizados por nuestros artistas.
               </p>
 
             </section>
@@ -364,9 +585,13 @@ function App() {
         path="/artistas/:id"
         element={
           cargando ? (
+
             <p>Cargando perfil del artista...</p>
+
           ) : (
+
             <PerfilArtista artistas={artistas} />
+
           )
         }
       />

@@ -1,10 +1,9 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
+
 /* ==========================================
    HACHE STUDIO - ESTILOS GENERALES
 ========================================== */
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
-
 
 /* ===== VARIABLES DE COLOR ===== */
 
@@ -70,7 +69,6 @@ header {
   align-items: center;
   justify-content: center;
   flex-wrap: nowrap;
-
   gap: 0;
   width: 100%;
   max-width: 1450px;
@@ -83,19 +81,15 @@ header {
 .nav-gotico a {
   position: relative;
   display: inline-block;
-
   font-family: 'Cinzel Decorative', serif;
   font-size: 19px;
   font-weight: 400;
   letter-spacing: 0.5px;
   text-transform: none;
-
   color: var(--plateado);
   text-decoration: none;
-
   padding: 12px 25px;
   white-space: nowrap;
-
   text-shadow: 0 0 5px rgba(160, 200, 230, 0.25);
 
   transition:
@@ -120,12 +114,10 @@ header {
 
 .nav-gotico a:not(:last-of-type)::before {
   content: "✧";
-
   position: absolute;
   right: -9px;
   top: 50%;
   transform: translateY(-50%);
-
   color: var(--azul-neon);
   font-family: Georgia, serif;
   font-size: 27px;
@@ -148,27 +140,15 @@ header {
    FILIGRANAS GÓTICAS LATERALES
 ========================================== */
 
-/*
-   Esta imagen debe estar guardada en:
-
-   05-FRONTEND/public/imagenes/filigrana-gotica.png
-
-   Debe ser una filigrana horizontal
-   con fondo transparente.
-*/
-
 .filigrana-lateral {
   display: block;
   flex: 0 0 150px;
-
   width: 150px;
   height: 65px;
-
   background-image: url('/imagenes/filigrana-gotica.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
-
   pointer-events: none;
 }
 
@@ -239,11 +219,9 @@ section p {
 #inicio a {
   display: inline-block;
   padding: 14px 28px;
-
   color: var(--azul-claro);
   text-decoration: none;
   font-weight: bold;
-
   border: 1px solid var(--azul-neon);
   border-radius: 8px;
 
@@ -275,7 +253,6 @@ section p {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-
   gap: 25px;
   max-width: 1100px;
   margin: 40px auto 0;
@@ -286,10 +263,8 @@ section p {
 
 .servicio {
   background-color: var(--fondo-tarjeta);
-
   border: 1px solid var(--azul-oscuro);
   border-radius: 14px;
-
   padding: 35px 25px;
   width: 260px;
 
@@ -329,20 +304,16 @@ section p {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-
   gap: 15px;
   margin-top: 30px;
 }
 
 .filtros-equipo button {
   background-color: transparent;
-
   color: #ffffff;
   border: 1px solid var(--azul-oscuro);
-
   padding: 12px 20px;
   border-radius: 8px;
-
   font-size: 14px;
   cursor: pointer;
 
@@ -355,7 +326,6 @@ section p {
 .filtros-equipo button:hover {
   color: var(--azul-claro);
   border-color: var(--azul-neon);
-
   box-shadow: 0 0 12px rgba(0, 191, 255, 0.25);
 }
 
@@ -365,7 +335,6 @@ section p {
 .equipo-container {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-
   gap: 25px;
   max-width: 1100px;
   margin: 40px auto 0;
@@ -376,10 +345,8 @@ section p {
 
 .profesional {
   background-color: var(--fondo-tarjeta);
-
   border: 1px solid var(--azul-oscuro);
   border-radius: 14px;
-
   padding: 30px 25px;
   text-align: center;
 
@@ -392,7 +359,6 @@ section p {
 .profesional:hover {
   transform: translateY(-6px);
   border-color: var(--azul-neon);
-
   box-shadow: 0 0 18px rgba(0, 191, 255, 0.18);
 }
 
@@ -411,12 +377,9 @@ section p {
 .profesional img {
   width: 180px;
   height: 180px;
-
   object-fit: cover;
   object-position: center 20%;
-
   border-radius: 12px;
-
   display: block;
   margin: 0 auto 20px;
 }
@@ -426,16 +389,12 @@ section p {
 
 .profesional a {
   display: inline-block;
-
   margin-top: 15px;
   padding: 12px 24px;
-
   background-color: transparent;
-
   color: var(--azul-claro);
   text-decoration: none;
   font-weight: bold;
-
   border: 1px solid var(--azul-neon);
   border-radius: 8px;
 
@@ -448,7 +407,6 @@ section p {
 .profesional a:hover {
   background-color: var(--azul-neon);
   color: #000000;
-
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
 }
 
@@ -490,12 +448,9 @@ section p {
 
 .trabajos-artista {
   max-width: 900px;
-
   margin: 50px auto;
   padding: 35px 25px;
-
   background-color: var(--fondo-tarjeta);
-
   border: 1px solid var(--azul-oscuro);
   border-radius: 14px;
 }
@@ -506,15 +461,192 @@ section p {
 }
 
 
-/* ===== VOLVER AL EQUIPO ===== */
+/* ==========================================
+   SECCIÓN DE RESERVAS
+========================================== */
+
+.reserva-artista {
+  width: 100%;
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 35px;
+  background-color: var(--fondo-tarjeta);
+  border: 1px solid var(--azul-oscuro);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.reserva-artista h3 {
+  color: #ffffff;
+  font-size: 26px;
+  margin: 0 0 20px;
+}
+
+.reserva-artista p {
+  color: var(--texto-secundario);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+
+/* ===== ETIQUETA DE FECHA ===== */
+
+.reserva-artista label {
+  display: block;
+  margin-top: 25px;
+  color: var(--plateado);
+  font-weight: bold;
+}
+
+
+/* ===== CALENDARIO ===== */
+
+.reserva-artista input[type="date"] {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  margin: 15px auto 25px;
+  padding: 12px 16px;
+  background-color: #0b1420;
+  color: #ffffff;
+  border: 1px solid #28618b;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 16px;
+  color-scheme: dark;
+}
+
+.reserva-artista input[type="date"]:focus-visible {
+  outline: 2px solid var(--azul-neon);
+  outline-offset: 3px;
+}
+
+
+/* ===== BOTÓN CONSULTAR DISPONIBILIDAD ===== */
+
+.reserva-artista > button {
+  display: inline-block;
+  padding: 13px 25px;
+  background-color: #124b72;
+  color: #ffffff;
+  border: 1px solid #3385ba;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.reserva-artista > button:hover:not(:disabled) {
+  background-color: #1976ae;
+  box-shadow: 0 0 14px rgba(0, 191, 255, 0.3);
+}
+
+.reserva-artista > button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* ===== CONTENEDOR DE HORARIOS ===== */
+
+.horarios-disponibles {
+  margin-top: 35px;
+  padding-top: 25px;
+  border-top: 1px solid var(--azul-oscuro);
+}
+
+.horarios-disponibles h4 {
+  color: var(--azul-claro);
+  font-size: 21px;
+  margin: 0 0 25px;
+}
+
+
+/* ===== CUADRÍCULA DE HORARIOS ===== */
+
+.lista-horarios {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 520px;
+  margin: 0 auto 25px;
+}
+
+
+/* ===== BOTONES DE HORAS ===== */
+
+.lista-horarios button {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 8px;
+  background-color: #0b1420;
+  color: #e5f3ff;
+  border: 1px solid #28618b;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.lista-horarios button:hover {
+  background-color: #16486b;
+  border-color: #51a9df;
+  transform: translateY(-2px);
+}
+
+
+/* ===== HORA SELECCIONADA ===== */
+
+.lista-horarios button.hora-seleccionada {
+  background-color: #2384c2;
+  color: #ffffff;
+  border-color: #72c8ff;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(35, 132, 194, 0.4);
+}
+
+
+/* ===== ACCESIBILIDAD DE BOTONES ===== */
+
+.lista-horarios button:focus-visible,
+.reserva-artista > button:focus-visible {
+  outline: 2px solid var(--azul-claro);
+  outline-offset: 3px;
+}
+
+
+/* ===== RESUMEN DE LA HORA ===== */
+
+.reserva-artista .resumen-hora {
+  margin: 25px auto;
+  color: #8dd6ff;
+  font-size: 18px;
+}
+
+.resumen-hora strong {
+  color: #ffffff;
+}
+
+
+/* ==========================================
+   VOLVER AL EQUIPO
+========================================== */
 
 #perfil-artista > a {
   display: inline-block;
   padding: 14px 25px;
-
   color: var(--azul-claro);
   text-decoration: none;
-
   border: 1px solid var(--azul-neon);
   border-radius: 8px;
 
@@ -527,7 +659,6 @@ section p {
 #perfil-artista > a:hover {
   background-color: var(--azul-neon);
   color: #000000;
-
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
 }
 
@@ -659,6 +790,31 @@ section p {
     font-size: 28px;
   }
 
+  /* ===== RESERVAS EN MÓVILES ===== */
+
+  .reserva-artista {
+    padding: 25px 15px;
+    margin: 35px auto;
+  }
+
+  .reserva-artista h3 {
+    font-size: 23px;
+  }
+
+  .lista-horarios {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .lista-horarios button {
+    min-height: 46px;
+    padding: 12px 8px;
+  }
+
+  .reserva-artista > button {
+    max-width: 100%;
+  }
+
 }
 
 
@@ -677,8 +833,14 @@ section p {
   .profesional,
   .profesional a,
   #inicio a,
-  #perfil-artista > a {
+  #perfil-artista > a,
+  .reserva-artista > button,
+  .lista-horarios button {
     transition: none;
+  }
+
+  .lista-horarios button:hover {
+    transform: none;
   }
 
 }

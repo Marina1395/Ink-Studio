@@ -13,6 +13,7 @@ const router = express.Router();
 
 //4.======CREAMOS LAS RUTAS======//
 router.get("/", citaController.getCitas);
+router.get("/disponibilidad", citaController.getDisponibilidad);
 router.get("/:id_cita", citaController.getCitaById);
 router.post("/", citaController.createCita);
 router.put("/:id_cita", citaController.updateCita);
