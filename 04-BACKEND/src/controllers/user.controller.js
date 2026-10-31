@@ -117,7 +117,7 @@ const createUser = async (req, res) => {
 
 
 
-        /*Comprobamos que el email tenga un formato válido*/
+        /*----Comprobamos que el email tenga un formato válido----*/
         const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!formatoEmail.test(email)) {

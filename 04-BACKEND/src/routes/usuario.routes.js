@@ -1,15 +1,15 @@
 
 
-//Importamos express para poder crear las rutas
+
 const express = require("express");
 
 
 
-//Importamos el controller de usuarios
+/*----Importamos el controlador de usuarios----*/
 const usuarioController = require("../controllers/user.controller");
 
 
-//Importamos el middelware que comprueba el Token y si el usuario es admin
+/*----Importamos los middlewares para comprobar el token y los permisos----*/
 const {
 
   verificarToken,
@@ -20,17 +20,17 @@ const {
 
 
 
-//Creamos un router de express
+/*----Creamos un router de Express----*/
 const router = express.Router();
 
 
 
-//Iniciar sesión
+/*----Ruta para iniciar sesión----*/
 router.post("/login", usuarioController.loginUser);
 
 
 
-//Obtener todos los usuarios
+/*----Ruta para obtener todos los usuarios (solo administradores)----*/
 router.get(
 
     "/",
@@ -41,7 +41,7 @@ router.get(
     );
 
 
-//"Dame el usuario cuyo ID sea el que aparece en la URL."
+/*----Ruta para obtener un usuario por su ID----*/
 router.get(
 
     "/:id_usuario", 
@@ -52,11 +52,11 @@ router.get(
 );
 
 
-//Crear un usuario
+/*----Registrar un nuevo usuario----*/
 router.post("/", usuarioController.createUser); 
 
 
-//Actualizar un usuario
+/*----Actualizar los datos de un usuario----*/
 router.put(
 
     "/:id_usuario",
@@ -65,7 +65,7 @@ router.put(
     usuarioController.updateUser);
 
 
-//Eliminar un usuario
+/*----Eliminar a un usuario(solo administradores)---*/
 router.delete(
 
     "/:id_usuario",
@@ -75,12 +75,7 @@ router.delete(
 
 );
 
-
+/*----Exportamos el router para utilizarlo en app.js----*/
 module.exports = router;
-
-
-//=====IMPORTANTE======//
-/* Las operaciones CRUD sobre las bases de datos se programan principalmente en el MODEL,pero
-para que funcionen desde una petición necesitamos necesitamos tambien Controllers+routes*/
 
 
