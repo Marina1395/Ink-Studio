@@ -1,17 +1,22 @@
 
 const citaModel = require("../models/cita.model");
+const clienteModel = require("../models/cliente.model");
 
 
-//1.=====FUNCIONES AUXILIARES PARA VALIDAR FECHAS Y HORAS=====
+//=======COMPROBACIONES Y VALIDACIONES========//
 
-// Comprobamos que la fecha tenga un formato correcto y exista
+/*----Comprobaremos que la fecha tiene el formato correcto y exista en nuestro calendario----*/
 const validarFecha = (fecha) => {
 
     if (
+
         typeof fecha !== "string" ||
         !/^\d{4}-\d{2}-\d{2}$/.test(fecha)
+
     ) {
+
         return false;
+        
     }
 
     const [anio, mes, dia] = fecha.split("-").map(Number);
@@ -29,7 +34,7 @@ const validarFecha = (fecha) => {
 };
 
 
-// Comprobamos el formato y horario de inicio
+// Validar el horario de inicio de las citas.
 const validarHora = (hora) => {
 
     if (
@@ -55,7 +60,7 @@ const validarHora = (hora) => {
 };
 
 
-// Convertimos una hora a minutos
+// Convertir una hora a minutos.
 const convertirHoraAMinutos = (hora) => {
 
     const [horas, minutos] = hora.split(":").map(Number);
@@ -65,21 +70,102 @@ const convertirHoraAMinutos = (hora) => {
 };
 
 
-//2.=====OBTENER TODAS LAS CITAS=====
+// Validar identificadores positivos.
+const validarId = (id) => {
+
+    return (
+        /^[1-9]\d*$/.test(String(id)) &&
+        Number.isSafeInteger(Number(id))
+    );
+
+};
+
+
+// Comprobar si un usuario puede consultar una cita.
+const puedeConsultarCita = async (usuario, cita) => {
+
+    const { id_usuario, rol } = usuario;
+
+    // El administrador puede consultar cualquier cita.
+    if (rol === "admin") {
+        return true;
+    }
+
+    // El artista solo puede consultar las citas asignadas.
+    if (rol === "artista") {
+
+        return (
+            Number(id_usuario) === Number(cita.id_artista)
+        );
+
+    }
+
+    // El cliente solo puede consultar sus propias citas.
+    if (rol === "cliente") {
+
+        const cliente = await clienteModel.getClienteByUsuarioId(
+            id_usuario
+        );
+
+        if (!cliente) {
+            return false;
+        }
+
+        return (
+            Number(cliente.id_cliente) ===
+            Number(cita.id_cliente)
+        );
+
+    }
+
+    return false;
+
+};
+
+
+// =====================================================
+// 2. OBTENER CITAS SEGÚN EL ROL
+// =====================================================
 
 const getCitas = async (req, res) => {
 
     try {
 
-        const resultado = await citaModel.getCitas();
+        const { id_usuario, rol } = req.usuario;
 
-        res.status(200).json(resultado);
+        let resultado;
+
+        if (rol === "admin") {
+
+            resultado = await citaModel.getCitas();
+
+        } else if (rol === "cliente") {
+
+            resultado = await citaModel.getCitasByCliente(
+                id_usuario
+            );
+
+        } else if (rol === "artista") {
+
+            resultado = await citaModel.getCitasByArtista(
+                id_usuario
+            );
+
+        } else {
+
+            return res.status(403).json({
+                error: "No tienes permiso para consultar las citas"
+            });
+
+        }
+
+        return res.status(200).json(resultado);
 
     } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al obtener las citas"
         });
 
@@ -88,13 +174,23 @@ const getCitas = async (req, res) => {
 };
 
 
-//3.=====OBTENER CITA POR SU ID=====
+// =====================================================
+// 3. OBTENER UNA CITA POR SU ID
+// =====================================================
 
 const getCitaById = async (req, res) => {
 
     try {
 
         const { id_cita } = req.params;
+
+        if (!validarId(id_cita)) {
+
+            return res.status(400).json({
+                error: "El identificador de la cita no es válido"
+            });
+
+        }
 
         const resultado = await citaModel.getCitaById(id_cita);
 
@@ -106,13 +202,27 @@ const getCitaById = async (req, res) => {
 
         }
 
-        res.status(200).json(resultado);
+        // Comprobamos que el usuario tenga permiso.
+        const tienePermiso = await puedeConsultarCita(
+            req.usuario,
+            resultado
+        );
+
+        if (!tienePermiso) {
+
+            return res.status(403).json({
+                error: "No tienes permiso para consultar esta cita"
+            });
+
+        }
+
+        return res.status(200).json(resultado);
 
     } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al obtener la cita"
         });
 
@@ -121,25 +231,46 @@ const getCitaById = async (req, res) => {
 };
 
 
-//4.=====CREAR UNA CITA=====
+// =====================================================
+// 4. CREAR UNA CITA
+// =====================================================
 
 const createCita = async (req, res) => {
 
     try {
 
-        // Obtenemos los datos del cliente
+        // Solo los clientes pueden solicitar citas.
+        if (req.usuario.rol !== "cliente") {
+
+            return res.status(403).json({
+                error: "Solo los clientes pueden solicitar citas"
+            });
+
+        }
+
         const {
-            id_cliente,
             id_artista,
             id_servicio,
             fecha,
             hora
         } = req.body;
 
+        // Obtenemos la ficha del cliente autenticado.
+        const cliente = await clienteModel.getClienteByUsuarioId(
+            req.usuario.id_usuario
+        );
 
-        // Comprobamos los campos obligatorios
+        if (!cliente) {
+
+            return res.status(404).json({
+                error: "No existe una ficha de cliente asociada a este usuario"
+            });
+
+        }
+
+        const id_cliente = cliente.id_cliente;
+
         if (
-            id_cliente == null ||
             id_artista == null ||
             id_servicio == null ||
             !fecha ||
@@ -152,8 +283,17 @@ const createCita = async (req, res) => {
 
         }
 
+        if (
+            !validarId(id_artista) ||
+            !validarId(id_servicio)
+        ) {
 
-        // Validamos la fecha
+            return res.status(400).json({
+                error: "El artista o el servicio no son válidos"
+            });
+
+        }
+
         if (!validarFecha(fecha)) {
 
             return res.status(400).json({
@@ -162,8 +302,6 @@ const createCita = async (req, res) => {
 
         }
 
-
-        // Validamos la hora y el horario del estudio
         if (!validarHora(hora)) {
 
             return res.status(400).json({
@@ -172,8 +310,7 @@ const createCita = async (req, res) => {
 
         }
 
-
-        // Creamos la cita inicialmente como pendiente
+        // Todas las nuevas citas comienzan pendientes.
         const resultado = await citaModel.createCita(
             id_cliente,
             id_artista,
@@ -183,14 +320,13 @@ const createCita = async (req, res) => {
             "pendiente"
         );
 
-
-        res.status(201).json(resultado);
+        return res.status(201).json(resultado);
 
     } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al crear la nueva cita"
         });
 
@@ -199,13 +335,60 @@ const createCita = async (req, res) => {
 };
 
 
-//5.=====ACTUALIZAR UNA CITA=====
+// =====================================================
+// 5. ACTUALIZAR UNA CITA
+// =====================================================
 
 const updateCita = async (req, res) => {
 
     try {
 
         const { id_cita } = req.params;
+
+        // Solo artistas y administradores.
+        if (
+            req.usuario.rol !== "artista" &&
+            req.usuario.rol !== "admin"
+        ) {
+
+            return res.status(403).json({
+                error: "Solo los artistas y administradores pueden actualizar citas"
+            });
+
+        }
+
+        if (!validarId(id_cita)) {
+
+            return res.status(400).json({
+                error: "El identificador de la cita no es válido"
+            });
+
+        }
+
+        const citaExistente = await citaModel.getCitaById(
+            id_cita
+        );
+
+        if (!citaExistente) {
+
+            return res.status(404).json({
+                error: "Cita no encontrada"
+            });
+
+        }
+
+        // Un artista solo modifica sus citas.
+        if (
+            req.usuario.rol === "artista" &&
+            Number(req.usuario.id_usuario) !==
+            Number(citaExistente.id_artista)
+        ) {
+
+            return res.status(403).json({
+                error: "No tienes permiso para modificar esta cita"
+            });
+
+        }
 
         const {
             id_cliente,
@@ -217,20 +400,6 @@ const updateCita = async (req, res) => {
             duracion_minutos
         } = req.body;
 
-
-        // Comprobamos que la cita exista
-        const citaExistente = await citaModel.getCitaById(id_cita);
-
-        if (!citaExistente) {
-
-            return res.status(404).json({
-                error: "Cita no encontrada"
-            });
-
-        }
-
-
-        // Validamos los datos obligatorios
         if (
             id_cliente == null ||
             id_artista == null ||
@@ -246,8 +415,72 @@ const updateCita = async (req, res) => {
 
         }
 
+        if (
+            !validarId(id_cliente) ||
+            !validarId(id_artista) ||
+            !validarId(id_servicio)
+        ) {
 
-        // Validamos la fecha
+            return res.status(400).json({
+                error: "Alguno de los identificadores no es válido"
+            });
+
+        }
+
+        // Solo permitimos estados conocidos.
+        const estadosPermitidos = [
+            "pendiente",
+            "confirmada",
+            "cancelada"
+        ];
+
+        if (!estadosPermitidos.includes(estado)) {
+
+            return res.status(400).json({
+                error: "El estado de la cita no es válido"
+            });
+
+        }
+
+        // Un artista no puede cambiar el cliente,
+        // el artista asignado ni el servicio.
+        if (req.usuario.rol === "artista") {
+
+            if (
+                Number(id_artista) !==
+                Number(citaExistente.id_artista)
+            ) {
+
+                return res.status(403).json({
+                    error: "No puedes asignar esta cita a otro artista"
+                });
+
+            }
+
+            if (
+                Number(id_cliente) !==
+                Number(citaExistente.id_cliente)
+            ) {
+
+                return res.status(403).json({
+                    error: "No puedes cambiar el cliente de esta cita"
+                });
+
+            }
+
+            if (
+                Number(id_servicio) !==
+                Number(citaExistente.id_servicio)
+            ) {
+
+                return res.status(403).json({
+                    error: "No puedes cambiar el servicio de esta cita"
+                });
+
+            }
+
+        }
+
         if (!validarFecha(fecha)) {
 
             return res.status(400).json({
@@ -256,8 +489,6 @@ const updateCita = async (req, res) => {
 
         }
 
-
-        // Validamos el horario de inicio
         if (!validarHora(hora)) {
 
             return res.status(400).json({
@@ -266,8 +497,6 @@ const updateCita = async (req, res) => {
 
         }
 
-
-        // Validamos la duración si se proporciona
         if (
             duracion_minutos != null &&
             (
@@ -282,11 +511,10 @@ const updateCita = async (req, res) => {
 
         }
 
+        // ===== CONFIRMAR LA CITA =====
 
-        // Si confirmamos una cita, comprobamos su disponibilidad
         if (estado === "confirmada") {
 
-            // No podemos confirmar sin conocer la duración
             if (duracion_minutos == null) {
 
                 return res.status(400).json({
@@ -295,11 +523,10 @@ const updateCita = async (req, res) => {
 
             }
 
-
-            // Comprobamos que termine antes del cierre
             const inicioMinutos = convertirHoraAMinutos(hora);
 
-            const finMinutos = inicioMinutos + duracion_minutos;
+            const finMinutos =
+                inicioMinutos + duracion_minutos;
 
             const cierre = 21 * 60 + 30;
 
@@ -311,16 +538,15 @@ const updateCita = async (req, res) => {
 
             }
 
-
-            // Comprobamos si se solapa con otra cita confirmada
-            const haySolapamiento = await citaModel.comprobarSolapamiento(
-                id_artista,
-                fecha,
-                hora,
-                duracion_minutos,
-                id_cita
-            );
-
+            // Evitamos que coincidan dos citas confirmadas.
+            const haySolapamiento =
+                await citaModel.comprobarSolapamiento(
+                    id_artista,
+                    fecha,
+                    hora,
+                    duracion_minutos,
+                    id_cita
+                );
 
             if (haySolapamiento) {
 
@@ -332,8 +558,6 @@ const updateCita = async (req, res) => {
 
         }
 
-
-        // Actualizamos la cita en PostgreSQL
         const resultado = await citaModel.updateCita(
             id_cita,
             id_cliente,
@@ -345,14 +569,13 @@ const updateCita = async (req, res) => {
             duracion_minutos ?? null
         );
 
-
-        res.status(200).json(resultado);
+        return res.status(200).json(resultado);
 
     } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al actualizar la cita"
         });
 
@@ -361,13 +584,32 @@ const updateCita = async (req, res) => {
 };
 
 
-//6.=====ELIMINAR UNA CITA=====
+// =====================================================
+// 6. ELIMINAR UNA CITA
+// =====================================================
 
 const deleteCita = async (req, res) => {
 
     try {
 
+        // Solo el administrador puede eliminar citas.
+        if (req.usuario.rol !== "admin") {
+
+            return res.status(403).json({
+                error: "Solo los administradores pueden eliminar citas"
+            });
+
+        }
+
         const { id_cita } = req.params;
+
+        if (!validarId(id_cita)) {
+
+            return res.status(400).json({
+                error: "El identificador de la cita no es válido"
+            });
+
+        }
 
         const resultado = await citaModel.deleteCita(id_cita);
 
@@ -379,13 +621,13 @@ const deleteCita = async (req, res) => {
 
         }
 
-        res.status(200).json(resultado);
+        return res.status(200).json(resultado);
 
     } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al eliminar la cita"
         });
 
@@ -394,19 +636,16 @@ const deleteCita = async (req, res) => {
 };
 
 
-
-
-//7.=====OBTENER HORARIOS DISPONIBLES DE UN ARTISTA=====
+// =====================================================
+// 7. CONSULTAR HORARIOS DISPONIBLES
+// =====================================================
 
 const getDisponibilidad = async (req, res) => {
 
     try {
 
-        //1.=====RECIBIMOS EL ARTISTA Y LA FECHA=====
         const { id_artista, fecha } = req.query;
 
-
-        //2.=====VALIDAMOS LOS DATOS=====
         if (!id_artista || !fecha) {
 
             return res.status(400).json({
@@ -415,10 +654,7 @@ const getDisponibilidad = async (req, res) => {
 
         }
 
-        if (
-            !/^[1-9]\d*$/.test(String(id_artista)) ||
-            !Number.isSafeInteger(Number(id_artista))
-        ) {
+        if (!validarId(id_artista)) {
 
             return res.status(400).json({
                 error: "El identificador del artista no es válido"
@@ -434,37 +670,40 @@ const getDisponibilidad = async (req, res) => {
 
         }
 
+        const citasOcupadas =
+            await citaModel.getCitasOcupadas(
+                id_artista,
+                fecha
+            );
 
-        //3.=====CONSULTAMOS LAS CITAS CONFIRMADAS=====
-        const citasOcupadas = await citaModel.getCitasOcupadas(
-            id_artista,
-            fecha
-        );
-
-
-        //4.=====GENERAMOS HORAS EN PUNTO Y A Y MEDIA=====
         const apertura = 13 * 60 + 30;
         const cierre = 21 * 60 + 30;
 
         const horariosDisponibles = [];
 
-        for (let minuto = apertura; minuto < cierre; minuto += 30) {
+        // Generamos horas de inicio cada 30 minutos.
+        for (
+            let minuto = apertura;
+            minuto < cierre;
+            minuto += 30
+        ) {
 
-            // Comprobamos si esta hora está ocupada
             const estaOcupado = citasOcupadas.some((cita) => {
 
                 const inicioCita = convertirHoraAMinutos(
                     cita.hora.slice(0, 5)
                 );
 
-                const finCita = inicioCita + cita.duracion_minutos;
+                const finCita =
+                    inicioCita + cita.duracion_minutos;
 
-                return minuto >= inicioCita && minuto < finCita;
+                return (
+                    minuto >= inicioCita &&
+                    minuto < finCita
+                );
 
             });
 
-
-            // Si no está ocupada, la añadimos a la lista
             if (!estaOcupado) {
 
                 const horas = Math.floor(minuto / 60);
@@ -480,9 +719,7 @@ const getDisponibilidad = async (req, res) => {
 
         }
 
-
-        //5.=====DEVOLVEMOS LOS HORARIOS DISPONIBLES=====
-        res.status(200).json({
+        return res.status(200).json({
             id_artista: Number(id_artista),
             fecha,
             horarios_disponibles: horariosDisponibles
@@ -492,7 +729,7 @@ const getDisponibilidad = async (req, res) => {
 
         console.error(error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al consultar la disponibilidad"
         });
 
@@ -501,8 +738,9 @@ const getDisponibilidad = async (req, res) => {
 };
 
 
-
-//7.=====EXPORTAR FUNCIONES=====
+// =====================================================
+// 8. EXPORTAR FUNCIONES
+// =====================================================
 
 module.exports = {
     getCitas,

@@ -1,25 +1,61 @@
 
-//1.======IMPORTAMOS EXPRESS======//
 const express = require("express");
 
-
-//2.======IMPORTAMOS CONTROLLER======//
 const citaController = require("../controllers/cita.controllers");
 
+const { verificarToken } = require("../middlewares/auth.middleware");
 
-//3.======CREAMOS EL ROUTER======//
 const router = express.Router();
 
 
-//4.======CREAMOS LAS RUTAS======//
-router.get("/", citaController.getCitas);
-router.get("/disponibilidad", citaController.getDisponibilidad);
-router.get("/:id_cita", citaController.getCitaById);
-router.post("/", citaController.createCita);
-router.put("/:id_cita", citaController.updateCita);
-router.delete("/:id_cita", citaController.deleteCita);
+// ===== CONSULTAR DISPONIBILIDAD =====
+// Esta ruta es pública porque cualquier visitante
+// puede consultar los horarios disponibles.
+router.get(
+    "/disponibilidad",
+    citaController.getDisponibilidad
+);
 
 
-//5.======EXPORTAMOS ROUTER=======//
+// ===== OBTENER TODAS LAS CITAS =====
+router.get(
+    "/",
+    verificarToken,
+    citaController.getCitas
+);
+
+
+// ===== OBTENER UNA CITA POR ID =====
+router.get(
+    "/:id_cita",
+    verificarToken,
+    citaController.getCitaById
+);
+
+
+// ===== CREAR UNA CITA =====
+router.post(
+    "/",
+    verificarToken,
+    citaController.createCita
+);
+
+
+// ===== ACTUALIZAR UNA CITA =====
+router.put(
+    "/:id_cita",
+    verificarToken,
+    citaController.updateCita
+);
+
+
+// ===== ELIMINAR UNA CITA =====
+router.delete(
+    "/:id_cita",
+    verificarToken,
+    citaController.deleteCita
+);
+
+
+// ===== EXPORTAR RUTAS =====
 module.exports = router;
-

@@ -5,7 +5,7 @@ const pool = require("../db/connection");
 
 
 
-//Obtener todos los clientes
+//====OBTENER TODOS LOS CLIENTES====//
 const getClientes = async () => {
 
     const result = await pool.query("SELECT * FROM cliente");
@@ -23,6 +23,22 @@ const getClienteById = async(id) => {
     );
 
   return result.rows[0];
+};
+
+
+
+//====OBTENER UN CLIENTE A PARTIR DE SI ID_USUARIO====//
+const getClienteByUsuarioId = async (id_usuario) => {
+
+    const result = await pool.query(
+
+         "SELECT * FROM cliente WHERE id_usuario= $1",
+         [id_usuario]
+
+    );
+
+    return result.rows[0];
+
 };
 
 
@@ -101,7 +117,8 @@ module.exports = {
     getClienteById,
     createCliente,
     updateCliente,
-    deleteCliente
+    deleteCliente,
+    getClienteByUsuarioId
     
 };
 

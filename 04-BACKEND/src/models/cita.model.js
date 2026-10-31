@@ -15,6 +15,52 @@ const getCitas = async () => {
 };
 
 
+
+// ===== OBTENER LAS CITAS DE UN CLIENTE =====
+
+const getCitasByCliente = async (id_usuario) => {
+
+    const resultado = await pool.query(
+
+        `SELECT cita.*
+         FROM cita
+         JOIN cliente
+         ON cita.id_cliente = cliente.id_cliente
+         WHERE cliente.id_usuario = $1
+         ORDER BY cita.fecha ASC, cita.hora ASC`,
+
+        [id_usuario]
+
+    );
+
+    return resultado.rows;
+
+};
+
+
+
+// ===== OBTENER LAS CITAS DE UN ARTISTA =====
+
+const getCitasByArtista = async (id_usuario) => {
+
+    const resultado = await pool.query(
+
+        `SELECT *
+         FROM cita
+         WHERE id_artista = $1
+         ORDER BY fecha ASC, hora ASC`,
+
+        [id_usuario]
+
+    );
+
+    return resultado.rows;
+
+};
+
+
+
+
 //3.======OBTENER UNA CITA POR SU ID======//
 const getCitaById = async (id_cita) => {
 
@@ -189,9 +235,13 @@ const getCitasOcupadas = async (id_artista, fecha) => {
 };
 
 
+
+
 //9.======EXPORTAMOS TODAS LAS FUNCIONES======//
 module.exports = {
     getCitas,
+    getCitasByCliente,
+    getCitasByArtista,
     getCitaById,
     createCita,
     updateCita,
