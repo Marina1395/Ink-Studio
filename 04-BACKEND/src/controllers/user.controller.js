@@ -4,40 +4,40 @@
 const usuarioModel = require("../models/user.model");
 
 
-
+/*----Importamos bcrypt para comprobar las contraseñas durante el login----*/
 const bcrypt = require("bcrypt");
 
 
 
-//3-=====USAMOS LIBRERIA JSONWEBTOKEN EN CONTROLLER=====//
+/*----Importamos jsonwebtoken para generar los tokens de autenticación----*/
 const jwt = require("jsonwebtoken");
 
 
+
+//=======OBTENER TODOS LOS USUARIOS=======//
 
 
 const getUsers = async (req, res) => {
 
     try {
 
-        // Llamamos a la función getUsers() del modelo.
-        // await espera a que PostgreSQL nos devuelva los datos.
 
+        /*----Obtenemos todos los usuarios registrados desde el modelo----*/
         const resultado = await usuarioModel.getUsers();
 
-        // resultado.rows contiene las filas que ha devuelto PostgreSQL.
-        // res.json() envía esas filas al cliente en formato JSON.
+        /*----Devolvemos los usuarios encontrados en formato JSON----*/
         res.json(resultado.rows);
 
     } catch (error) {
 
-        // Si ocurre algún error, lo mostramos en la consola.
+
         console.error(error);
 
-        // Enviamos al cliente el código HTTP 500,
-        // que significa que ha ocurrido un error en el servidor.
+
+        /*----Devolvemos un error si no podemos obtener los usuarios----*/
         res.status(500).json({
 
-            // Mensaje que recibirá el cliente.
+
             error: "Error al obtener los usuarios"
 
         });
@@ -49,16 +49,18 @@ const getUsers = async (req, res) => {
 
 
 
-//=====CREAR FUNCIÓN PARA CREAR USUARIO=====//
+//======= CREAR USUARIO=======//
+
+
 const createUser = async (req, res) => {
 
     try {
 
-        //Recogemos los datos que nos envia el usuario
+        /*----Recogemos los datos que nos envía el usuario----*/
         const { nombre, email, contrasena } = req.body;
 
 
-        //Comprobamos que todos los campos obligatorios tengan datos
+        /*----Comprobamos que no falte ningún campo obligatorio----*/
         if (!nombre || !email || !contrasena) {
 
             return res.status(400).json({
@@ -71,28 +73,43 @@ const createUser = async (req, res) => {
         }
 
 
-        /* Comprobamos las condiciones del nombre*/
-        if (nombre.trim().length < 2 || nombre.trim().length > 100) {
+
+        /*----Comprobamos que los datos recibidos sean textos----*/
+        if (
+
+            typeof nombre !== "string" ||
+            typeof email !== "string" ||
+            typeof contrasena !== "string"
+
+        ) {
+            return res.status(400).json({
+
+                error: "Nombre, email y contraseña deben ser textos"
+
+            });
+        }
+
+        /*----Comprobamos que el nombre tenga entre 2 y 100 caracteres----*/
+        const nombreLimpio = nombre.trim();
+
+        if (nombreLimpio.length < 2 || nombreLimpio.length > 100) {
 
             return res.status(400).json({
 
-
                 error: "El nombre debe tener entre 2 y 100 caracteres"
-
             });
-
         }
 
 
 
 
-        /*Comprobamos que la CONTRASEÑA tenga al menos 8 caracteres*/
+        /*----Comprobamos que la contraseña tenga entre 8 y 72 caracteres----*/
         if (contrasena.length < 8 || contrasena.length > 72) {
 
             return res.status(400).json({
 
 
-                error: "La contraseña debe tener al menos 8 caracteres"
+                error: "La contraseña debe tener entre 8 y 72 caracteres"
 
             });
 
@@ -114,7 +131,7 @@ const createUser = async (req, res) => {
         }
 
 
-        /*Comprobamos si ya existe un usuario con ese email*/
+        /*----Comprobamos si ya existe un usuario registrado con ese correo electrónico----*/
         const usuarioExistente = await usuarioModel.getUserByEmail(email);
 
         if (usuarioExistente) {
@@ -130,32 +147,33 @@ const createUser = async (req, res) => {
 
 
 
-        //Los usuarios que se registren siempre tendran un rol de cliente
+        /*----Asignamos el rol de cliente a todos los usuarios que se registren----*/
         const rol = "cliente";
 
 
 
-        //LLamamos  a la funcion createUser del modelo
+        /*----Enviamos los datos al modelo para guardar el nuevo usuario en la base de datos----*/
         const resultado = await usuarioModel.createUser(
 
             nombre,
             email,
             contrasena,
             rol
+
         );
 
-        //Enviamos el usuario creado como respuesta
 
-        res.status(201).json(resultado.rows[0]);
+        /*----Devolvemos los datos del usuario que acabamos de registrar----*/
+        return res.status(201).json(resultado.rows[0]);
+
+
 
 
     } catch (error) {
 
-        //Si ocurre algun error, lo mostramos en la consola
 
         console.error(error);
 
-        //Enviamos un error al cliente
 
         res.status(500).json({
 
@@ -166,31 +184,40 @@ const createUser = async (req, res) => {
 };
 
 
+
+
 //======OBTENER UN USUARIO POR ID ======
-//Esta función nos sirve para obtener un usuario concreto...
-//...de la tabla usuario mediante id_usuario.
 
 const getUserById = async (req, res) => {
 
     try {
 
-        //Recogemos el id_usuario que viene en la URL.
+        /*----Recogemos el ID del usuario que viene en la URL----*/
         const { id_usuario } = req.params;
 
-        //LLamamos a la función getUserById del modelo.
+        /*----Buscamos el usuario correspondiente a ese ID desde el modelo----*/
         const resultado = await usuarioModel.getUserById(id_usuario);
 
-        //Enviamos el usuario encontrado como respuesta
-        res.json(resultado.rows[0]);
+        /*----Comprobamos si el usuario existe en la base de datos----*/
+        if (!resultado.rows[0]) {
 
+            return res.status(404).json({
+
+                error: "Usuario no encontrado"
+
+            });
+        }
+
+        /*----Devolvemos los datos del usuario encontrado----*/
+        return res.status(200).json(resultado.rows[0]);
 
 
     } catch (error) {
 
-        //Si ocurre algún error lo mostramos en la consola
+
         console.error(error);
 
-        //Enviamos un error al cliente
+        /*----Devolvemos un error si no podemos obtener el usuario----*/
         res.status(500).json({
 
             error: "Error al obtener el usuario"
@@ -202,34 +229,87 @@ const getUserById = async (req, res) => {
 
 
 
-//=====ACTUALIZAR USUARIO======//
-//Esta funcion sirve para actualizar los datos de un usuario...
-//...recibe la peticion (req) y prepara la respuesta (res )
+
+//=======ACTUALIZAR USUARIO=======//
 
 const updateUser = async (req, res) => {
 
     try {
 
-        //Cogemos el id de la URL
+        /*----Recogemos el ID del usuario que queremos actualizar----*/
         const { id_usuario } = req.params;
 
-
-        //Cogemos los nuevos datos
+        /*----Recogemos los nuevos datos del usuario----*/
         const { nombre, email, contrasena, rol } = req.body;
 
+        /*----Comprobamos que el usuario haya iniciado sesión----*/
+        if (!req.usuario) {
 
-        //Si el usuario no es administrador no podrá cambiar su propio rol
-        if (req.usuario.rol !== "admin" && rol !== req.usuario.rol) {
+            return res.status(401).json({
 
+                error: "Debes iniciar sesión"
+
+            });
+        }
+
+        /*----Comprobamos que sea administrador o que esté modificando su propia cuenta----*/
+        if (
+            req.usuario.rol !== "admin" &&
+            String(req.usuario.id_usuario) !== String(id_usuario)
+        ) {
+            return res.status(403).json({
+
+                error: "No tienes permiso para modificar este usuario"
+            });
+
+        }
+
+        /*----Comprobamos que los datos obligatorios sean válidos----*/
+        if (
+
+            typeof nombre !== "string" ||
+            typeof email !== "string" ||
+            typeof contrasena !== "string" ||
+            typeof rol !== "string" ||
+            !nombre.trim() ||
+            !email.trim() ||
+            contrasena.length < 8 ||
+            contrasena.length > 72
+
+        ) {
+            return res.status(400).json({
+                error: "Los datos del usuario no son válidos"
+            });
+        }
+
+        /*----Buscamos el usuario para comprobar que existe y conocer su rol actual----*/
+        const usuarioActual = await usuarioModel.getUserById(id_usuario);
+
+        if (!usuarioActual.rows[0]) {
+
+            return res.status(404).json({
+
+                error: "Usuario no encontrado"
+
+            });
+        }
+
+
+        /*----Impedimos que un usuario que no sea administrador cambie su rol----*/
+        if (
+
+            req.usuario.rol !== "admin" &&
+            rol !== usuarioActual.rows[0].rol
+
+        ) {
             return res.status(403).json({
 
                 error: "No tienes permiso para cambiar tu rol"
 
             });
-
         }
 
-        //Mandamos los datos al modelo para actualizar el usuario
+        /*----Enviamos los nuevos datos al modelo para actualizar el usuario----*/
         const resultado = await usuarioModel.updateUser(
 
             id_usuario,
@@ -240,53 +320,91 @@ const updateUser = async (req, res) => {
 
         );
 
-        //Mostramos el usuario actualizado
-        res.json(resultado.rows[0]);
+        /*----Devolvemos los datos del usuario actualizado----*/
+        return res.status(200).json(resultado.rows[0]);
 
     } catch (error) {
 
-        //Si hay un error lo mostramos
         console.error(error);
 
-        //Avisamos de que ha habido un error
-        res.status(500).json({
+        /*----Devolvemos un error si no podemos actualizar el usuario----*/
+        return res.status(500).json({
 
             error: "Error al actualizar el usuario"
 
         });
+
     }
+
 };
 
 
-//======ELIMINAR USUARIO======//
-//Esta función sirve para eliminar un usuario recibiendo su id desde la URL
+
+
+//=======ELIMINAR USUARIO=======//
 
 const deleteUser = async (req, res) => {
 
     try {
 
-        //Cogemos el id de la URL
+        /*----Recogemos el ID del usuario que queremos eliminar----*/
         const { id_usuario } = req.params;
 
-        //Llamamos a la funcion deleteUser del modelo
+        /*----Comprobamos que el usuario haya iniciado sesión----*/
+        if (!req.usuario) {
+
+            return res.status(401).json({
+
+                error: "Debes iniciar sesión"
+            });
+        }
+
+        /*----Comprobamos que sea administrador o que quiera eliminar su propia cuenta----*/
+        if (
+
+            req.usuario.rol !== "admin" &&
+            String(req.usuario.id_usuario) !== String(id_usuario)
+
+        ) {
+            return res.status(403).json({
+
+                error: "No tienes permiso para eliminar este usuario"
+
+            });
+        }
+
+        /*----Enviamos el ID al modelo para eliminar el usuario----*/
         const resultado = await usuarioModel.deleteUser(id_usuario);
 
-        //Mostramos el resultado que hemos eliminado.
-        res.json(resultado.rows[0]);
+        /*----Comprobamos si se ha eliminado algún usuario----*/
+        if (resultado.rowCount === 0) {
+
+            return res.status(404).json({
+
+                error: "Usuario no encontrado"
+
+            });
+        }
+
+        /*----Confirmamos que el usuario se ha eliminado correctamente----*/
+        return res.status(200).json({
+
+            mensaje: "Usuario eliminado correctamente"
+
+        });
 
     } catch (error) {
 
-        //Si ocurre algún error, lo mostramos en la consola
         console.error(error);
 
-        //Avisamos al cliente de que ha habido un error
-        res.status(500).json({
+        /*----Devolvemos un error si no podemos eliminar el usuario----*/
 
-            error: "Error al eliminar al usuario"
+        return res.status(500).json({
 
+            error: "Error al eliminar el usuario"
         });
-    }
 
+    }
 
 };
 
@@ -294,16 +412,16 @@ const deleteUser = async (req, res) => {
 
 
 
-//======LOGIN DE USUARIO======//
+//=======LOGIN DE USUARIO=======//
 
 const loginUser = async (req, res) => {
 
     try {
 
-        // Recogemos el email y la contraseña
+        /*----Recogemos el email y la contraseña enviados por el usuario----*/
         const { email, contrasena } = req.body;
 
-        // Comprobamos que se hayan enviado
+        /*----Comprobamos que no falte ningún campo obligatorio----*/
         if (!email || !contrasena) {
 
             return res.status(400).json({
@@ -312,10 +430,19 @@ const loginUser = async (req, res) => {
 
         }
 
-        // Buscamos al usuario por su email
+        /*----Comprobamos que el email y la contraseña sean textos----*/
+        if (typeof email !== "string" || typeof contrasena !== "string") {
+
+            return res.status(400).json({
+                error: "Email y contraseña deben ser textos"
+            });
+
+        }
+
+        /*----Buscamos al usuario en la base de datos mediante su email----*/
         const usuario = await usuarioModel.getUserByEmail(email);
 
-        // Si no existe el usuario
+        /*----Comprobamos si existe un usuario con ese correo----*/
         if (!usuario) {
 
             return res.status(401).json({
@@ -324,13 +451,13 @@ const loginUser = async (req, res) => {
 
         }
 
-        // Comparamos la contraseña con el hash guardado
+        /*----Comparamos la contraseña recibida con el hash guardado----*/
         const contrasenaCorrecta = await bcrypt.compare(
             contrasena,
             usuario.contrasena
         );
 
-        // Si la contraseña es incorrecta
+        /*----Comprobamos si la contraseña es incorrecta----*/
         if (!contrasenaCorrecta) {
 
             return res.status(401).json({
@@ -339,7 +466,7 @@ const loginUser = async (req, res) => {
 
         }
 
-        // Creamos el token SOLO si la contraseña es correcta
+        /*----Creamos un token JWT si el usuario se ha autenticado correctamente----*/
         const token = jwt.sign(
 
             {
@@ -355,30 +482,32 @@ const loginUser = async (req, res) => {
 
         );
 
-        // Devolvemos los datos del usuario autenticado
-        res.status(200).json({
+        /*----Devolvemos el token y los datos del usuario sin incluir su contraseña----*/
+        return res.status(200).json({
 
             mensaje: "Login correcto",
 
             token: token,
 
             usuario: {
-
                 id_usuario: usuario.id_usuario,
                 nombre: usuario.nombre,
                 email: usuario.email,
                 rol: usuario.rol
-
             }
 
         });
+
 
     } catch (error) {
 
         console.error(error);
 
-        res.status(500).json({
+        /*----Devolvemos un error si no podemos iniciar sesión----*/
+        return res.status(500).json({
+
             error: "Error al iniciar sesión"
+
         });
 
     }
@@ -390,8 +519,8 @@ const loginUser = async (req, res) => {
 
 
 
-//EXPORTAMOS LAS FUNCIONES PARA PODER UTILIZARLAS
-//DESDE NUESTRO ARCHIVO DE RUTAS (usuario.routes.js).
+//======EXPORTAMOS FUNCIONES=======//
+
 module.exports = {
 
     getUsers,
@@ -403,16 +532,3 @@ module.exports = {
 
 };
 
-// STATUS 500 → significa que ha ocurrido un error en el servidor.
-
-// STATUS 201 → significa que hemos creado algo correctamente.
-// Lo usamos al crear un nuevo usuario.
-
-// resultado.rows[0] → [0] significa que queremos coger
-// el primer elemento que nos devuelve la base de datos.
-
-// MÓDULOS → permiten organizar el código en diferentes archivos
-// y utilizar funciones de un archivo desde otro.
-
-// module.exports → indica qué funciones queremos permitir
-// que otros archivos puedan utilizar.
