@@ -16,31 +16,40 @@ const validarFecha = (fecha) => {
     ) {
 
         return false;
-        
+
     }
 
     const [anio, mes, dia] = fecha.split("-").map(Number);
 
     const fechaComprobacion = new Date(
+
         Date.UTC(anio, mes - 1, dia)
+
     );
 
     return (
+
         fechaComprobacion.getUTCFullYear() === anio &&
         fechaComprobacion.getUTCMonth() === mes - 1 &&
         fechaComprobacion.getUTCDate() === dia
+
     );
 
 };
 
 
-// Validar el horario de inicio de las citas.
+
+/*----Comprueba que la hora esté dentro del horario que tenemos permitido (13:30-21:30)----*/
 const validarHora = (hora) => {
 
     if (
+
         typeof hora !== "string" ||
+
         !/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)
+
     ) {
+
         return false;
     }
 
@@ -48,19 +57,23 @@ const validarHora = (hora) => {
 
     const minutosTotales = horas * 60 + minutos;
 
+    //Convertimos las horas de apertura y cierre a minutos para poder compararlas
     const apertura = 13 * 60 + 30;
     const cierre = 21 * 60 + 30;
 
+
     return (
+
         minutosTotales >= apertura &&
         minutosTotales < cierre &&
         (minutos === 0 || minutos === 30)
+
     );
 
 };
 
 
-// Convertir una hora a minutos.
+// Convertimos una hora a minutos.
 const convertirHoraAMinutos = (hora) => {
 
     const [horas, minutos] = hora.split(":").map(Number);
@@ -70,32 +83,39 @@ const convertirHoraAMinutos = (hora) => {
 };
 
 
-// Validar identificadores positivos.
+/*----Comprueba que el id sea un numero entero positivo y también valido----*/
 const validarId = (id) => {
 
     return (
+
         /^[1-9]\d*$/.test(String(id)) &&
         Number.isSafeInteger(Number(id))
+
     );
 
 };
 
 
-// Comprobar si un usuario puede consultar una cita.
+
+/*----Sacamos el ID y el rol del usuario para comprobar qué citas puede ver----*/
 const puedeConsultarCita = async (usuario, cita) => {
 
     const { id_usuario, rol } = usuario;
 
     // El administrador puede consultar cualquier cita.
     if (rol === "admin") {
+
         return true;
+
     }
 
     // El artista solo puede consultar las citas asignadas.
     if (rol === "artista") {
 
         return (
+
             Number(id_usuario) === Number(cita.id_artista)
+
         );
 
     }
@@ -103,11 +123,17 @@ const puedeConsultarCita = async (usuario, cita) => {
     // El cliente solo puede consultar sus propias citas.
     if (rol === "cliente") {
 
+
+        /*----Buscaremos la ficha del cliente asociada al usuario que ha iniciado sesiÓN---*/
         const cliente = await clienteModel.getClienteByUsuarioId(
             id_usuario
         );
 
+
+
+        /*----Si el usuario no tiene ficha cliente, no le permitimos consultar la cita----*/
         if (!cliente) {
+
             return false;
         }
 
@@ -123,9 +149,7 @@ const puedeConsultarCita = async (usuario, cita) => {
 };
 
 
-// =====================================================
-// 2. OBTENER CITAS SEGÚN EL ROL
-// =====================================================
+//==========OBTENER CITAS SEGUN EL ROL=========//
 
 const getCitas = async (req, res) => {
 
@@ -135,21 +159,19 @@ const getCitas = async (req, res) => {
 
         let resultado;
 
+        /*----Dependiendo del rol, mostramos todas las citas o solo las que correspondan al usuario----*/
         if (rol === "admin") {
 
             resultado = await citaModel.getCitas();
 
         } else if (rol === "cliente") {
 
-            resultado = await citaModel.getCitasByCliente(
-                id_usuario
-            );
+           resultado = await citaModel.getCitasByCliente(id_usuario);
+            
 
         } else if (rol === "artista") {
 
-            resultado = await citaModel.getCitasByArtista(
-                id_usuario
-            );
+            resultado = await citaModel.getCitasByArtista(id_usuario);
 
         } else {
 
@@ -174,24 +196,29 @@ const getCitas = async (req, res) => {
 };
 
 
-// =====================================================
-// 3. OBTENER UNA CITA POR SU ID
-// =====================================================
+//========OBTENER CITAS POR SU ID========//
 
 const getCitaById = async (req, res) => {
 
     try {
 
+        /*----Cogemos el ID de la cita que nos llega por la URL----*/
         const { id_cita } = req.params;
 
+
+        /*----Comprobamos que el ID sea válido antes de buscar la cita----*/
         if (!validarId(id_cita)) {
 
             return res.status(400).json({
+
                 error: "El identificador de la cita no es válido"
+
             });
 
         }
 
+
+        
         const resultado = await citaModel.getCitaById(id_cita);
 
         if (!resultado) {
@@ -202,11 +229,9 @@ const getCitaById = async (req, res) => {
 
         }
 
-        // Comprobamos que el usuario tenga permiso.
-        const tienePermiso = await puedeConsultarCita(
-            req.usuario,
-            resultado
-        );
+        /*----Antes de mostrar la cita,comprobamos que esta tiene pertenencia al usuario o que tiene permiso para verla---*/
+        const tienePermiso = await puedeConsultarCita(req.usuario, resultado);
+        
 
         if (!tienePermiso) {
 
