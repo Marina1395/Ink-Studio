@@ -1,13 +1,19 @@
-// Aquí trabajaremos con los datos de los usuarios.
+
 const pool = require("../db/connection");
 
 
 
-//IMPORTAMOS BCRYPT PARA TRABAJAR DE FORMA SEGURA CON LAS CONTRASEÑAS
+/*----Importamos bcrypt para proteger las contraseñas de los usuarios----*/
 const bcrypt = require("bcrypt");
 
+
+
+
+
+//========OBTENEMOS TODOS LOS USUARIOS=======//
 const getUsers = () =>  {
 
+     /*----Consultamos los usuarios sin devolver sus contraseñas----*/
     return pool.query('SELECT id_usuario,nombre,email, rol FROM usuario');
 
 
@@ -16,17 +22,20 @@ const getUsers = () =>  {
 
 
 
-//=====CREAR UN USUARIO=======//
+//========CREAR UN USUARIO=======//
+
+
 const createUser = async (nombre,email,contrasena,rol) =>{
 
-    /*Crearemos el hash*/
+    /*----Convertimos la contraseña en un hash antes de guardarla en la base de datos----*/
     const contrasenaHash = await bcrypt.hash(contrasena,10);
 
-
-
+    /*----Guardamos el nuevo usuario y devolvemos sus datos sin incluir la contraseña----*/
     return pool.query(
 
-        'INSERT INTO usuario (nombre,email,contrasena, rol) VALUES ($1, $2, $3, $4) RETURNING id_usuario, nombre, email, rol',
+        `INSERT INTO usuario (nombre,email,contrasena, rol)
+         VALUES ($1, $2, $3, $4)
+         RETURNING id_usuario, nombre, email, rol`,
 
         [nombre, email, contrasenaHash, rol]
 
@@ -35,11 +44,12 @@ const createUser = async (nombre,email,contrasena,rol) =>{
 };
 
 
-//======OBTENER UN USUARIO POR ID ======
+//======OBTENER UN USUARIO POR ID========//
 
-//Esta función sirve para obtener un usuario concreto mediante su id_usuario
+
 const getUserById = (id_usuario) => {
 
+    /*----Buscamos un usuario concreto utilizando su ID----*/
     return pool.query(
 
         'SELECT * FROM usuario WHERE id_usuario,nombre, email, rol FROM usuario WHERE id_usuario = $1',
@@ -53,13 +63,18 @@ const getUserById = (id_usuario) => {
 
 const updateUser = async (id_usuario,nombre,email,contrasena,rol) =>{
 
-    //Hasheamos la contraseña antes de guardarla
+    /*----Protegemos la nueva contraseña antes de actualizar los datos del usuario----*/
     const contrasenaHash = await bcrypt.hash(contrasena,10);
 
+     /*----Actualizamos los datos del usuario que corresponda al ID recibido----*/
     const result = await pool.query(
 
 
-        `UPDATE usuario SET nombre=$1, email=$2, contrasena=$3, rol=$4
+        `UPDATE usuario
+         SET nombre=$1, 
+             email=$2,
+             contrasena=$3,
+             rol=$4
          WHERE id_usuario = $5
          RETURNING id_usuario, nombre, email, rol`,
 
@@ -71,10 +86,14 @@ const updateUser = async (id_usuario,nombre,email,contrasena,rol) =>{
 
 };
 
+
+
+
 //======ELIMINAR USUARIO======//
 
 const deleteUser = async (id) => {
-
+    
+    /*----Eliminamos de la base de datos el usuario que tenga el ID indicado----*/
     const resultado = await pool.query(
 
         'DELETE  FROM usuario WHERE id_usuario = $1',
@@ -87,13 +106,19 @@ const deleteUser = async (id) => {
 };
 
 
-//======BUSCAR USUARIO POR EMAIL PARA LOGIN======//
+
+
+//======BUSCAR USUARIO POR EMAIL PARA ======//
 
 const getUserByEmail = async (email) => {
 
+    /*----Buscamos el usuario por su correo para comprobar sus datos durante el inicio de sesión----*/
     const result = await pool.query(
+
         'SELECT * FROM usuario WHERE email = $1',
+
         [email]
+
     );
 
     return result.rows[0];
@@ -106,10 +131,10 @@ const getUserByEmail = async (email) => {
 //=====CAMBIAR LA CONTRASEÑA DE UN USUARIO=====//
 const cambiarContrasena = async (id_usuario,nuevaContrasena) => {
 
-    //Convertimos la contraseña es un hash
+     /*----Convertimos la nueva contraseña en un hash para guardarla de forma segura----*/
     const contrasenaHash = await bcrypt.hash(nuevaContrasena,10);
 
-    //Actualizamos únicamente la contraseña
+     /*----Actualizamos únicamente la contraseña del usuario indicado----*/
     const resultado = await pool.query(
 
         `UPDATE usuario
@@ -129,7 +154,7 @@ const cambiarContrasena = async (id_usuario,nuevaContrasena) => {
 
 
 
-//=====EXPORTAMOS LAS FUNCIONES PARA PODER UTILIZARLAS DESDE EL CONTROLLER=====//
+//=======EXPORTAMOS LAS FUNCIONES======//
 
 module.exports = {
 
