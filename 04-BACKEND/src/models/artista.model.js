@@ -1,10 +1,13 @@
 
-//Importamos la conexion con la base de datos de Postgre SQL
+/*----Importamos la conexión con nuestra base de datos PostgreSQL----*/
 const pool = require("../db/connection");
 
-//Ahora vamos a obtener todos los artistas
+
+//========OBTENER TODOS LOS ARTISTAS========//
 const getArtistas = async () => {
 
+
+    /*----Consultamos los artistas y sus datos de usuario para mostrar también su nombre----*/
     const result = await pool.query(
 
         `SELECT
@@ -27,24 +30,30 @@ const getArtistas = async () => {
 
 
 
-//Obtener un artista por su id de usuario
+//=======OBTENER ARTISTA POR ID=======//
 const getArtistaById = async(id_usuario) => {
 
+    
+    /*----Buscamos el artista que tenga el ID de usuario recibido----*/
     const result = await pool.query(
 
         "SELECT * FROM artista WHERE id_usuario = $1",
         [id_usuario]
-);
 
-return result.rows[0];
+    );
 
-};
+     return result.rows[0];
+
+   };
 
 
 
-//Crear un artista
+//=======CREAR ARTISTA=======//
+
+
 const createArtista = async(id_usuario, especialidad, descripcion) => {
 
+    /*----Guardamos el perfil profesional del artista asociado a su cuenta de usuario----*/
     const result = await pool.query(
 
         "INSERT INTO artista (id_usuario,especialidad,descripcion) VALUES ($1,$2,$3) RETURNING * ",
@@ -63,9 +72,13 @@ const createArtista = async(id_usuario, especialidad, descripcion) => {
 
 
 
-//Actualizar artista
+//=======ACTUALIZAR ARTISTA=======//
+
+
 const updateArtista = async(id_usuario,artista) => {
 
+
+    /*----Actualizamos la especialidad y la descripción del artista indicado----*/
     const result = await pool.query(
 
     "UPDATE artista SET especialidad =$1,descripcion = $2 WHERE id_usuario= $3 RETURNING *",
@@ -86,16 +99,19 @@ return result.rows[0];
 
 
 
-//Borrar artista
+//=======ELIMINAR ARTISTA=======//
+
 const deleteArtista = async(id_usuario) => {
 
 
+    /*----Eliminamos el perfil del artista que corresponda al ID recibido----*/
      const result = await pool.query(
     "DELETE FROM artista WHERE id_usuario = $1  RETURNING *",
     [
         id_usuario
         
     ]
+
 );
 
 return result.rows[0];
@@ -103,9 +119,9 @@ return result.rows[0];
 };
 
 
-//EXPORTAMOS LAS FUNCIONES PARA PODER USARALAS DESDE CONTROLLER
-module.exports = {
+//=======EXPORTAR FUNCIONES=======//
 
+module.exports = {
     getArtistas,
     getArtistaById,
     createArtista,
