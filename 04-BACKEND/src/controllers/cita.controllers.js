@@ -248,7 +248,9 @@ const getCitaById = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
+
             error: "Ha ocurrido un error al obtener la cita"
+
         });
 
     }
@@ -256,54 +258,65 @@ const getCitaById = async (req, res) => {
 };
 
 
-// =====================================================
-// 4. CREAR UNA CITA
-// =====================================================
+
+//========CREAR UNA CITA========//
 
 const createCita = async (req, res) => {
 
     try {
 
-        // Solo los clientes pueden solicitar citas.
+        /*----Comprobamos que quien solicita cita es un cliente----*/
         if (req.usuario.rol !== "cliente") {
 
             return res.status(403).json({
+
                 error: "Solo los clientes pueden solicitar citas"
             });
 
         }
 
         const {
+
             id_artista,
             id_servicio,
             fecha,
             hora
+
         } = req.body;
 
-        // Obtenemos la ficha del cliente autenticado.
-        const cliente = await clienteModel.getClienteByUsuarioId(
-            req.usuario.id_usuario
-        );
+
+        /*----Buscamos los datos del cliente que ha iniciado sesióm----*/
+        const cliente = await clienteModel.getClienteByUsuarioId(req.usuario.id_usuario);
 
         if (!cliente) {
 
             return res.status(404).json({
+
                 error: "No existe una ficha de cliente asociada a este usuario"
+
             });
 
         }
 
+
+        /*----Usamos el ID de la ficha del cliente que ha iniciado sesión----*/
         const id_cliente = cliente.id_cliente;
 
+
+        /*----Comprobamos que no falte ningún dato necesario para reservar la cita----*/
         if (
+
             id_artista == null ||
             id_servicio == null ||
             !fecha ||
             !hora
+
         ) {
 
             return res.status(400).json({
+
                 error: "Faltan datos obligatorios para crear la cita"
+
             });
 
         }
@@ -319,30 +332,40 @@ const createCita = async (req, res) => {
 
         }
 
-        if (!validarFecha(fecha)) {
+     
+           /*----Comprobamos que la fecha tenga el formato correcto y exista realmente----*/
+           if (!validarFecha(fecha)) {
 
             return res.status(400).json({
+
                 error: "La fecha debe ser válida y tener formato AAAA-MM-DD"
+
             });
 
         }
 
+
+        /*----Comprobamos que la hora sea dentro del horario del estudio----*/
         if (!validarHora(hora)) {
 
             return res.status(400).json({
+
                 error: "Las citas deben comenzar entre las 13:30 y las 21:00, en punto o a y media"
+
             });
 
         }
 
-        // Todas las nuevas citas comienzan pendientes.
+        /*--- Guardamos la cita como pendiente hasta que el artista la confirme ---*/
         const resultado = await citaModel.createCita(
+
             id_cliente,
             id_artista,
             id_servicio,
             fecha,
             hora,
             "pendiente"
+
         );
 
         return res.status(201).json(resultado);
@@ -352,7 +375,9 @@ const createCita = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
+
             error: "Ha ocurrido un error al crear la nueva cita"
+
         });
 
     }
@@ -360,9 +385,8 @@ const createCita = async (req, res) => {
 };
 
 
-// =====================================================
-// 5. ACTUALIZAR UNA CITA
-// =====================================================
+
+//=======ACTUALIZAR CITA=======//
 
 const updateCita = async (req, res) => {
 
@@ -370,52 +394,69 @@ const updateCita = async (req, res) => {
 
         const { id_cita } = req.params;
 
-        // Solo artistas y administradores.
+
+        /*--- Comprobamos que sea un artista o administrador quien modifica la cita ---*/
         if (
+
             req.usuario.rol !== "artista" &&
             req.usuario.rol !== "admin"
+
         ) {
 
             return res.status(403).json({
+
                 error: "Solo los artistas y administradores pueden actualizar citas"
+
             });
 
         }
 
+
+        /*----Comprobamos que el ID de la cita sea válido antes de modificarla----*/
         if (!validarId(id_cita)) {
 
             return res.status(400).json({
+
                 error: "El identificador de la cita no es válido"
             });
 
         }
 
-        const citaExistente = await citaModel.getCitaById(
-            id_cita
-        );
+        /*----Buscamos la cita que queremos modificar----*/
+        const citaExistente = await citaModel.getCitaById(id_cita);
+
 
         if (!citaExistente) {
 
             return res.status(404).json({
+
                 error: "Cita no encontrada"
+
             });
 
         }
 
-        // Un artista solo modifica sus citas.
+        /*--- Comprobamos que el artista tenga asignada la cita que quiere modificar ---*/
         if (
+
             req.usuario.rol === "artista" &&
             Number(req.usuario.id_usuario) !==
             Number(citaExistente.id_artista)
+
         ) {
 
             return res.status(403).json({
+
                 error: "No tienes permiso para modificar esta cita"
+
             });
 
         }
 
+
+        /*---- Recogemos los datos de la cita que se quieren actualizar----*/
         const {
+
             id_cliente,
             id_artista,
             id_servicio,
@@ -423,15 +464,20 @@ const updateCita = async (req, res) => {
             hora,
             estado,
             duracion_minutos
+
         } = req.body;
 
+
+        /*----Comprobamos que estén todos los datos necesarios para actualizar la cita----*/
         if (
+
             id_cliente == null ||
             id_artista == null ||
             id_servicio == null ||
             !fecha ||
             !hora ||
             !estado
+
         ) {
 
             return res.status(400).json({
@@ -440,19 +486,26 @@ const updateCita = async (req, res) => {
 
         }
 
+
+        /*----Comprobamos que los ID del cliente, artista y servicio sean válidos----*/
         if (
+
             !validarId(id_cliente) ||
             !validarId(id_artista) ||
             !validarId(id_servicio)
+
         ) {
 
             return res.status(400).json({
+
                 error: "Alguno de los identificadores no es válido"
+
             });
 
         }
 
-        // Solo permitimos estados conocidos.
+
+        /*----Definimos los estados que puede tener una cita----*/
         const estadosPermitidos = [
             "pendiente",
             "confirmada",
@@ -462,29 +515,36 @@ const updateCita = async (req, res) => {
         if (!estadosPermitidos.includes(estado)) {
 
             return res.status(400).json({
+
                 error: "El estado de la cita no es válido"
             });
 
         }
 
-        // Un artista no puede cambiar el cliente,
-        // el artista asignado ni el servicio.
+        /*--- El artista puede actualizar su cita, pero no cambiar el cliente,
+         el artista asignado ni el servicio ---*/
         if (req.usuario.rol === "artista") {
 
             if (
+
                 Number(id_artista) !==
                 Number(citaExistente.id_artista)
+
             ) {
 
                 return res.status(403).json({
+
                     error: "No puedes asignar esta cita a otro artista"
+
                 });
 
             }
 
             if (
+
                 Number(id_cliente) !==
                 Number(citaExistente.id_cliente)
+
             ) {
 
                 return res.status(403).json({
@@ -505,19 +565,27 @@ const updateCita = async (req, res) => {
             }
 
         }
+    
 
+        /*----Comprobamos que la nueva fecha sea válida antes de guardar los cambios----*/
         if (!validarFecha(fecha)) {
 
             return res.status(400).json({
+
                 error: "La fecha debe ser válida y tener formato AAAA-MM-DD"
+
             });
 
         }
 
+
+        /*----La hora también tiene que respetar el horario del estudio----*/
         if (!validarHora(hora)) {
 
             return res.status(400).json({
+
                 error: "La hora debe estar entre las 13:30 y las 21:00, en punto o a y media"
+
             });
 
         }
@@ -536,14 +604,19 @@ const updateCita = async (req, res) => {
 
         }
 
-        // ===== CONFIRMAR LA CITA =====
 
+
+
+
+       /*--- Si indicamos una duración, comprobamos que sea un número entero mayor que cero ---*/
         if (estado === "confirmada") {
 
             if (duracion_minutos == null) {
 
                 return res.status(400).json({
+
                     error: "Para confirmar una cita debes indicar su duración"
+                    
                 });
 
             }
