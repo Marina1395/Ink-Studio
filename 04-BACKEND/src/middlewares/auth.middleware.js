@@ -1,126 +1,167 @@
 
-
-//1.=====IMPORTAMOS LALIBRERIA JSONWEBTOKEN DENTRO DE MIDDELWARE=====//
+/*----Importamos la librería jsonwebtoken para verificar los tokens----*/
 const jwt = require("jsonwebtoken");
 
 
+//=======VERIFICAR TOKEN=======//
 
-//2.=====FUNCIÓN QUE COMPROBARÁ EL TOKEN=====//
-const verificarToken = (req ,res, next) => {
-
+/*----Comprobamos que el usuario haya enviado un token válido----*/
+const verificarToken = (req, res, next) => {
 
     const authHeader = req.headers.authorization;
 
-
+    /*----Comprobamos que se haya enviado la cabecera de autorización----*/
     if (!authHeader) {
 
         return res.status(401).json({
-
             error: "Token no proporcionado"
-
         });
 
-  }
+    }
 
-  //Separamos "Bearer" del token y guardamos solamente el token
-  const token = authHeader.split(" ")[1];
+    /*----Comprobamos que el token tenga el formato Bearer correcto----*/
+    const partes = authHeader.split(" ");
 
-  try{
+    if (partes.length !== 2 || partes[0] !== "Bearer" || !partes[1]) {
 
-    const usuario = jwt.verify(token, process.env.JWT_SECRET);
+        return res.status(401).json({
+            error: "Formato del token incorrecto"
+        });
 
-    req.usuario = usuario;
+    }
 
-    next();
+    /*----Guardamos únicamente el token----*/
+    const token = partes[1];
 
-    }catch(error){
+    try {
 
-    return res.status(401).json({
+        /*----Verificamos el token utilizando nuestra clave secreta----*/
+        const usuario = jwt.verify(token, process.env.JWT_SECRET);
 
-        error:"Token no válido"
+        /*----Comprobamos que el token contenga los datos necesarios----*/
+        if (
+            !usuario ||
+            !Number.isInteger(usuario.id_usuario) ||
+            usuario.id_usuario <= 0 ||
+            typeof usuario.rol !== "string"
+        ) {
 
-    });
+            return res.status(401).json({
+                error: "Token no válido"
+            });
 
-  }
+        }
+
+        /*----Guardamos los datos del usuario para utilizarlos en otras funciones----*/
+        req.usuario = usuario;
+
+        /*----Permitimos que la petición continúe----*/
+        next();
+
+    } catch (error) {
+
+        return res.status(401).json({
+            error: "Token no válido o caducado"
+        });
+
+    }
 
 };
 
 
-//3.======FUNCIÓN QUE COMPROBARÁ SI EL USUARIO ES ADMINISTRADOR=====//
+//=======VERIFICAR ADMINISTRADOR=======//
+
+/*----Comprobamos que el usuario tenga el rol de administrador----*/
 const verificarAdmin = (req, res, next) => {
 
-    if( req.usuario.rol !== "admin") {
+    if (!req.usuario || req.usuario.rol !== "admin") {
 
         return res.status(403).json({
-
-            error: "No tienes permiso para realizar está acción"
-
+            error: "No tienes permiso para realizar esta acción"
         });
 
     }
 
-    next()
+    next();
 
 };
 
 
+//=======VERIFICAR PROPIETARIO O ADMINISTRADOR=======//
 
-//.4=====FUNCIÓN QUE COMPRUEBA SI ES EL PROPIO USUARIO O ADMIN=====//
+/*----Comprobamos que el usuario acceda a su propia cuenta o sea administrador----*/
 const verificarPropietarioOAdmin = (req, res, next) => {
 
-    const idUsuarioToken =req.usuario.id_usuario;
+    if (!req.usuario) {
 
+        return res.status(401).json({
+            error: "Usuario no autenticado"
+        });
+
+    }
+
+    /*----Obtenemos el ID del usuario que ha iniciado sesión----*/
+    const idUsuarioToken = req.usuario.id_usuario;
+
+    /*----Obtenemos el ID del usuario indicado en la URL----*/
     const idUsuarioParams = Number(req.params.id_usuario);
 
+    /*----Comprobamos que el ID de la URL sea válido----*/
+    if (!Number.isInteger(idUsuarioParams) || idUsuarioParams <= 0) {
 
-    if(idUsuarioToken !== idUsuarioParams && req.usuario.rol !== "admin"){
+        return res.status(400).json({
+            error: "ID de usuario no válido"
+        });
+
+    }
+
+    /*----Permitimos el acceso al propietario de la cuenta o al administrador----*/
+    if (
+        idUsuarioToken !== idUsuarioParams &&
+        req.usuario.rol !== "admin"
+    ) {
 
         return res.status(403).json({
-
             error: "No tienes permiso para acceder a este usuario"
-
         });
 
     }
 
     next();
 
+};
 
 
-}
+//=======VERIFICAR ARTISTA O ADMINISTRADOR=======//
 
-
-
-//=====COMPROBAR SI EL USUARIO ES ARTISTA O ADMINISTRADOR=====//
-
+/*----Comprobamos que el usuario sea artista o administrador----*/
 const verificarArtistaOAdmin = (req, res, next) => {
 
-    /*---Comprobamos el rol del usuario---*/
-
-    if(req.usuario.rol != "artista"  && req.usuario.rol != "admin"){
+    if (
+        !req.usuario ||
+        (
+            req.usuario.rol !== "artista" &&
+            req.usuario.rol !== "admin"
+        )
+    ) {
 
         return res.status(403).json({
-
-            error: "Sólo los artistas y administradores pueden realizar esta acción"
-
+            error: "Solo los artistas y administradores pueden realizar esta acción"
         });
 
     }
 
     next();
-}
+
+};
 
 
+//=======EXPORTAR MIDDLEWARES=======//
 
-
-
-
-//5.=====EXPORTAMOS MODULOS======//
+/*----Exportamos las funciones para utilizarlas en las rutas----*/
 module.exports = {
-
     verificarToken,
     verificarAdmin,
     verificarPropietarioOAdmin,
     verificarArtistaOAdmin
-    
 };
