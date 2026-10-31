@@ -166,8 +166,8 @@ const getCitas = async (req, res) => {
 
         } else if (rol === "cliente") {
 
-           resultado = await citaModel.getCitasByCliente(id_usuario);
-            
+            resultado = await citaModel.getCitasByCliente(id_usuario);
+
 
         } else if (rol === "artista") {
 
@@ -218,7 +218,7 @@ const getCitaById = async (req, res) => {
         }
 
 
-        
+
         const resultado = await citaModel.getCitaById(id_cita);
 
         if (!resultado) {
@@ -231,7 +231,7 @@ const getCitaById = async (req, res) => {
 
         /*----Antes de mostrar la cita,comprobamos que esta tiene pertenencia al usuario o que tiene permiso para verla---*/
         const tienePermiso = await puedeConsultarCita(req.usuario, resultado);
-        
+
 
         if (!tienePermiso) {
 
@@ -332,9 +332,9 @@ const createCita = async (req, res) => {
 
         }
 
-     
-           /*----Comprobamos que la fecha tenga el formato correcto y exista realmente----*/
-           if (!validarFecha(fecha)) {
+
+        /*----Comprobamos que la fecha tenga el formato correcto y exista realmente----*/
+        if (!validarFecha(fecha)) {
 
             return res.status(400).json({
 
@@ -565,7 +565,7 @@ const updateCita = async (req, res) => {
             }
 
         }
-    
+
 
         /*----Comprobamos que la nueva fecha sea válida antes de guardar los cambios----*/
         if (!validarFecha(fecha)) {
@@ -608,7 +608,7 @@ const updateCita = async (req, res) => {
 
 
 
-       /*--- Si indicamos una duración, comprobamos que sea un número entero mayor que cero ---*/
+        /*--- Para confirmar una cita, comprobamos su duración y que no coincida con otra cita ---*/
         if (estado === "confirmada") {
 
             if (duracion_minutos == null) {
@@ -616,47 +616,59 @@ const updateCita = async (req, res) => {
                 return res.status(400).json({
 
                     error: "Para confirmar una cita debes indicar su duración"
-                    
+
                 });
 
             }
 
+
+            /*---Calculamos a qué hora terminará la cita sumando su duración a la hora de inicio----*/
             const inicioMinutos = convertirHoraAMinutos(hora);
 
-            const finMinutos =
-                inicioMinutos + duracion_minutos;
+            const finMinutos = inicioMinutos + duracion_minutos;
+
+
 
             const cierre = 21 * 60 + 30;
 
             if (finMinutos > cierre) {
 
                 return res.status(400).json({
+
                     error: "La cita no puede terminar después de las 21:30"
+
                 });
 
             }
 
-            // Evitamos que coincidan dos citas confirmadas.
+            /*----Comprobamos que el artista no tenga otra cita confirmada que coincida con este horario----*/
             const haySolapamiento =
+
                 await citaModel.comprobarSolapamiento(
+
                     id_artista,
                     fecha,
                     hora,
                     duracion_minutos,
                     id_cita
+
                 );
 
             if (haySolapamiento) {
 
                 return res.status(409).json({
+
                     error: "El artista ya tiene una cita en ese horario"
+
                 });
 
             }
 
         }
 
+        /*--- Si todas las comprobaciones son correctas, actualizamos la cita en la base de datos ---*/
         const resultado = await citaModel.updateCita(
+
             id_cita,
             id_cliente,
             id_artista,
@@ -665,6 +677,7 @@ const updateCita = async (req, res) => {
             hora,
             estado,
             duracion_minutos ?? null
+
         );
 
         return res.status(200).json(resultado);
@@ -674,7 +687,9 @@ const updateCita = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
+
             error: "Ha ocurrido un error al actualizar la cita"
+
         });
 
     }
@@ -682,39 +697,46 @@ const updateCita = async (req, res) => {
 };
 
 
-// =====================================================
-// 6. ELIMINAR UNA CITA
-// =====================================================
-
+//=======ELIMINAR CITA=======//
 const deleteCita = async (req, res) => {
 
     try {
 
-        // Solo el administrador puede eliminar citas.
+        /*--- Comprobamos que sea un administrador quien solicita eliminar la cita ---*/
         if (req.usuario.rol !== "admin") {
 
             return res.status(403).json({
+
                 error: "Solo los administradores pueden eliminar citas"
+
             });
 
         }
 
         const { id_cita } = req.params;
 
+
+        /*----Comprobamos que el ID recibido sea válido antes de intentar eliminar la cita----*/
         if (!validarId(id_cita)) {
 
             return res.status(400).json({
+
                 error: "El identificador de la cita no es válido"
+
             });
 
         }
 
+
+        /*--- Eliminamos la cita de la base de datos utilizando su ID ---*/
         const resultado = await citaModel.deleteCita(id_cita);
 
         if (!resultado) {
 
             return res.status(404).json({
+
                 error: "Cita no encontrada"
+
             });
 
         }
@@ -726,7 +748,9 @@ const deleteCita = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
+
             error: "Ha ocurrido un error al eliminar la cita"
+
         });
 
     }
@@ -734,20 +758,26 @@ const deleteCita = async (req, res) => {
 };
 
 
-// =====================================================
-// 7. CONSULTAR HORARIOS DISPONIBLES
-// =====================================================
+
+
+//=======CONSULTA HORARIOS DISPONIBLES=======//
 
 const getDisponibilidad = async (req, res) => {
 
     try {
 
+
+        /*----Recogemos el artista y la fecha para consultar su disponibilidad----*/
         const { id_artista, fecha } = req.query;
 
+
+        /*----Comprobamos que los datos recibidos estén completos y sean válidos----*/
         if (!id_artista || !fecha) {
 
             return res.status(400).json({
+
                 error: "Debes indicar el artista y la fecha"
+
             });
 
         }
@@ -768,48 +798,42 @@ const getDisponibilidad = async (req, res) => {
 
         }
 
-        const citasOcupadas =
-            await citaModel.getCitasOcupadas(
-                id_artista,
-                fecha
-            );
+        /*----Buscamos las citas confirmadas que ya tiene el artista ese día----*/
+        const citasOcupadas = await citaModel.getCitasOcupadas(id_artista, fecha);
 
+        /*----Convertimos el horario del estudio a minutos para trabajar con las horas disponibles----*/
         const apertura = 13 * 60 + 30;
         const cierre = 21 * 60 + 30;
 
         const horariosDisponibles = [];
 
-        // Generamos horas de inicio cada 30 minutos.
-        for (
-            let minuto = apertura;
-            minuto < cierre;
-            minuto += 30
-        ) {
+        /*----Recorremos el horario del estudio de media hora en media hora----*/
+        for (let minuto = apertura; minuto < cierre; minuto += 30) {
 
+
+            /*----Comprobamos si ese horario está ocupado por alguna cita confirmada----*/
             const estaOcupado = citasOcupadas.some((cita) => {
 
-                const inicioCita = convertirHoraAMinutos(
-                    cita.hora.slice(0, 5)
-                );
 
-                const finCita =
-                    inicioCita + cita.duracion_minutos;
+                const inicioCita = convertirHoraAMinutos(cita.hora.slice(0, 5));
+                const finCita = inicioCita + cita.duracion_minutos;
 
                 return (
+
                     minuto >= inicioCita &&
                     minuto < finCita
+
                 );
+
 
             });
 
             if (!estaOcupado) {
 
+                /*----Volvemos a convertir los minutos en horas y minutos para mostrarlos al cliente----*/
                 const horas = Math.floor(minuto / 60);
                 const minutos = minuto % 60;
-
-                const horaFormateada =
-                    String(horas).padStart(2, "0") + ":" +
-                    String(minutos).padStart(2, "0");
+                const horaFormateada = String(horas).padStart(2, "0") + ":" + String(minutos).padStart(2, "0");
 
                 horariosDisponibles.push(horaFormateada);
 
@@ -818,9 +842,11 @@ const getDisponibilidad = async (req, res) => {
         }
 
         return res.status(200).json({
+
             id_artista: Number(id_artista),
             fecha,
             horarios_disponibles: horariosDisponibles
+
         });
 
     } catch (error) {
@@ -836,15 +862,14 @@ const getDisponibilidad = async (req, res) => {
 };
 
 
-// =====================================================
-// 8. EXPORTAR FUNCIONES
-// =====================================================
-
+//=======EXPORTAR FUNCIONES=======//
 module.exports = {
+
     getCitas,
     getCitaById,
     createCita,
     updateCita,
     deleteCita,
     getDisponibilidad
+
 };
