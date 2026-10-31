@@ -10,30 +10,30 @@ const bcrypt = require("bcrypt");
 
 
 //3-=====USAMOS LIBRERIA JSONWEBTOKEN EN CONTROLLER=====//
-const jwt = require ("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 
 
 
-const getUsers = async (req,res) => {
+const getUsers = async (req, res) => {
 
-    try{
+    try {
 
-    // Llamamos a la función getUsers() del modelo.
-    // await espera a que PostgreSQL nos devuelva los datos.
+        // Llamamos a la función getUsers() del modelo.
+        // await espera a que PostgreSQL nos devuelva los datos.
 
-    const resultado = await usuarioModel.getUsers();
+        const resultado = await usuarioModel.getUsers();
 
-    // resultado.rows contiene las filas que ha devuelto PostgreSQL.
+        // resultado.rows contiene las filas que ha devuelto PostgreSQL.
         // res.json() envía esas filas al cliente en formato JSON.
         res.json(resultado.rows);
 
-    } catch (error){
+    } catch (error) {
 
         // Si ocurre algún error, lo mostramos en la consola.
         console.error(error);
 
-         // Enviamos al cliente el código HTTP 500,
+        // Enviamos al cliente el código HTTP 500,
         // que significa que ha ocurrido un error en el servidor.
         res.status(500).json({
 
@@ -44,18 +44,18 @@ const getUsers = async (req,res) => {
 
     }
 
-    };   
+};
 
 
 
 
 //=====CREAR FUNCIÓN PARA CREAR USUARIO=====//
-const createUser = async (req, res)=> {
+const createUser = async (req, res) => {
 
-    try{
+    try {
 
         //Recogemos los datos que nos envia el usuario
-        const{ nombre, email, contrasena} = req.body;
+        const { nombre, email, contrasena } = req.body;
 
 
         //Comprobamos que todos los campos obligatorios tengan datos
@@ -63,16 +63,16 @@ const createUser = async (req, res)=> {
 
             return res.status(400).json({
 
-                error:"Nombre, email y contraseña son obligatorios"
+                error: "Nombre, email y contraseña son obligatorios"
 
 
             });
 
-        }    
+        }
 
 
         /* Comprobamos las condiciones del nombre*/
-        if(nombre.trim().length < 2 || nombre.trim().length > 100){
+        if (nombre.trim().length < 2 || nombre.trim().length > 100) {
 
             return res.status(400).json({
 
@@ -87,7 +87,7 @@ const createUser = async (req, res)=> {
 
 
         /*Comprobamos que la CONTRASEÑA tenga al menos 8 caracteres*/
-         if(contrasena.length <8 || contrasena.length > 72){
+        if (contrasena.length < 8 || contrasena.length > 72) {
 
             return res.status(400).json({
 
@@ -100,43 +100,43 @@ const createUser = async (req, res)=> {
 
 
 
-       /*Comprobamos que el email tenga un formato válido*/
-       const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        /*Comprobamos que el email tenga un formato válido*/
+        const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-       if (!formatoEmail.test(email)) {
+        if (!formatoEmail.test(email)) {
 
-        return res.status(400).json({
+            return res.status(400).json({
 
-        error: "El email no tiene un formato válido"
+                error: "El email no tiene un formato válido"
 
-             });
- 
-    }
+            });
 
-
-       /*Comprobamos si ya existe un usuario con ese email*/
-       const usuarioExistente = await usuarioModel.getUserByEmail(email);
-
-       if (usuarioExistente) {
+        }
 
 
-       return res.status(409).json({
+        /*Comprobamos si ya existe un usuario con ese email*/
+        const usuarioExistente = await usuarioModel.getUserByEmail(email);
 
-        error: "Ya existe un usuario registrado con ese email"
+        if (usuarioExistente) {
 
-           });
 
-    }
+            return res.status(409).json({
+
+                error: "Ya existe un usuario registrado con ese email"
+
+            });
+
+        }
 
 
 
         //Los usuarios que se registren siempre tendran un rol de cliente
         const rol = "cliente";
-        
+
 
 
         //LLamamos  a la funcion createUser del modelo
-       const resultado = await usuarioModel.createUser(
+        const resultado = await usuarioModel.createUser(
 
             nombre,
             email,
@@ -149,7 +149,7 @@ const createUser = async (req, res)=> {
         res.status(201).json(resultado.rows[0]);
 
 
-    }catch (error){
+    } catch (error) {
 
         //Si ocurre algun error, lo mostramos en la consola
 
@@ -164,7 +164,7 @@ const createUser = async (req, res)=> {
         });
     }
 };
- 
+
 
 //======OBTENER UN USUARIO POR ID ======
 //Esta función nos sirve para obtener un usuario concreto...
@@ -185,7 +185,7 @@ const getUserById = async (req, res) => {
 
 
 
-    } catch(error){
+    } catch (error) {
 
         //Si ocurre algún error lo mostramos en la consola
         console.error(error);
@@ -196,7 +196,7 @@ const getUserById = async (req, res) => {
             error: "Error al obtener el usuario"
 
         });
-    } 
+    }
 };
 
 
@@ -208,7 +208,7 @@ const getUserById = async (req, res) => {
 
 const updateUser = async (req, res) => {
 
-   try{
+    try {
 
         //Cogemos el id de la URL
         const { id_usuario } = req.params;
@@ -221,13 +221,13 @@ const updateUser = async (req, res) => {
         //Si el usuario no es administrador no podrá cambiar su propio rol
         if (req.usuario.rol !== "admin" && rol !== req.usuario.rol) {
 
-        return res.status(403).json({
+            return res.status(403).json({
 
-        error: "No tienes permiso para cambiar tu rol"
+                error: "No tienes permiso para cambiar tu rol"
 
-    });
+            });
 
-}
+        }
 
         //Mandamos los datos al modelo para actualizar el usuario
         const resultado = await usuarioModel.updateUser(
@@ -243,27 +243,27 @@ const updateUser = async (req, res) => {
         //Mostramos el usuario actualizado
         res.json(resultado.rows[0]);
 
-    } catch(error){
+    } catch (error) {
 
         //Si hay un error lo mostramos
         console.error(error);
 
         //Avisamos de que ha habido un error
         res.status(500).json({
-           
+
             error: "Error al actualizar el usuario"
 
-        });   
-    }  
+        });
+    }
 };
 
 
 //======ELIMINAR USUARIO======//
 //Esta función sirve para eliminar un usuario recibiendo su id desde la URL
 
-const deleteUser = async(req,res) => {
+const deleteUser = async (req, res) => {
 
-    try{
+    try {
 
         //Cogemos el id de la URL
         const { id_usuario } = req.params;
@@ -274,7 +274,7 @@ const deleteUser = async(req,res) => {
         //Mostramos el resultado que hemos eliminado.
         res.json(resultado.rows[0]);
 
-    }catch(error){
+    } catch (error) {
 
         //Si ocurre algún error, lo mostramos en la consola
         console.error(error);
@@ -285,8 +285,8 @@ const deleteUser = async(req,res) => {
             error: "Error al eliminar al usuario"
 
         });
- }
-    
+    }
+
 
 };
 
@@ -300,13 +300,22 @@ const loginUser = async (req, res) => {
 
     try {
 
-        //Recogemos el email y la contraseña enviados por el usuario
+        // Recogemos el email y la contraseña
         const { email, contrasena } = req.body;
 
-        //Buscamos al usuario por su email
+        // Comprobamos que se hayan enviado
+        if (!email || !contrasena) {
+
+            return res.status(400).json({
+                error: "Email y contraseña son obligatorios"
+            });
+
+        }
+
+        // Buscamos al usuario por su email
         const usuario = await usuarioModel.getUserByEmail(email);
 
-        //Si no existe ningún usuario con ese email
+        // Si no existe el usuario
         if (!usuario) {
 
             return res.status(401).json({
@@ -315,36 +324,13 @@ const loginUser = async (req, res) => {
 
         }
 
-
-        //Creamos un token para el usuario que ha iniciado sesión
-        const token = jwt.sign(
-
-
-            {
-
-                id_usuario: usuario.id_usuario,
-                rol: usuario.rol
-
-            },
-
-            process.env.JWT_SECRET,
-            {
-
-                expiresIn: "1h"
-
-            }
-
-        );
-
-
-
-        // Comparamos la contraseña escrita con el hash guardado
+        // Comparamos la contraseña con el hash guardado
         const contrasenaCorrecta = await bcrypt.compare(
             contrasena,
             usuario.contrasena
         );
 
-        // Si la contraseña no coincide
+        // Si la contraseña es incorrecta
         if (!contrasenaCorrecta) {
 
             return res.status(401).json({
@@ -353,7 +339,23 @@ const loginUser = async (req, res) => {
 
         }
 
-        // Si todo es correcto
+        // Creamos el token SOLO si la contraseña es correcta
+        const token = jwt.sign(
+
+            {
+                id_usuario: usuario.id_usuario,
+                rol: usuario.rol
+            },
+
+            process.env.JWT_SECRET,
+
+            {
+                expiresIn: "1h"
+            }
+
+        );
+
+        // Devolvemos los datos del usuario autenticado
         res.status(200).json({
 
             mensaje: "Login correcto",
@@ -369,7 +371,6 @@ const loginUser = async (req, res) => {
 
             }
 
-        
         });
 
     } catch (error) {
@@ -383,7 +384,6 @@ const loginUser = async (req, res) => {
     }
 
 };
-
 
 
 
