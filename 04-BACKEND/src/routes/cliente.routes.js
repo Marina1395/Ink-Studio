@@ -1,51 +1,75 @@
 
-
-//IMPORTAMOS EXPRESS
+/*----Importamos Express para crear las rutas de clientes----*/
 const express = require("express");
 
 
-
-
-//CREAMOS EL ROUTER
-const router = express.Router();
-
-
-
-
-//EXPORTAMOS EL ROUTER
-module.exports = router;
-
-
-
-
-//IMPORTAMOS EL CONTROLLERS DE CLIENTES
+/*----Importamos el controlador de clientes----*/
 const clienteController = require("../controllers/cliente.controllers");
 
 
-
-//OBTENER TODOS LOS CLIENTES
-router.get("/" , clienteController.getClientes);
-
-
-
-//OBTENER LOS CLIENTES POR SU ID
-router.get("/:id", clienteController.getClienteById);
+/*----Importamos los middlewares para comprobar el token y los permisos----*/
+const {
+    verificarToken,
+    verificarAdmin
+} = require("../middlewares/auth.middleware");
 
 
+//=======CREAR ROUTER=======//
 
-//RUTA PARA OBTENER UN CLIENTE
-router.post("/", clienteController.createCliente);
-
-
-
-//RUTA PARA ACTUALIZAR UN CLIENTE
-router.put("/:id",clienteController.updateCliente);
+/*----Creamos el router de Express----*/
+const router = express.Router();
 
 
-//RUTA PARA ELIMINAR UN CLIENTE
-router.delete("/:id",clienteController.deleteCliente);
+//=======RUTAS DE CLIENTES=======//
+
+/*----Obtener todos los clientes (solo administradores)----*/
+router.get(
+    "/",
+    verificarToken,
+    verificarAdmin,
+    clienteController.getClientes
+);
 
 
+/*----Obtener un cliente por su ID (solo administradores)----*/
+router.get(
+    "/:id",
+    verificarToken,
+    verificarAdmin,
+    clienteController.getClienteById
+);
 
+
+/*----Crear un nuevo cliente (solo administradores)----*/
+router.post(
+    "/",
+    verificarToken,
+    verificarAdmin,
+    clienteController.createCliente
+);
+
+
+/*----Actualizar los datos de un cliente (solo administradores)----*/
+router.put(
+    "/:id",
+    verificarToken,
+    verificarAdmin,
+    clienteController.updateCliente
+);
+
+
+/*----Eliminar un cliente (solo administradores)----*/
+router.delete(
+    "/:id",
+    verificarToken,
+    verificarAdmin,
+    clienteController.deleteCliente
+);
+
+
+//=======EXPORTAR ROUTER=======//
+
+/*----Exportamos el router para utilizarlo en app.js----*/
+module.exports = router;
 
 

@@ -7,7 +7,7 @@ const pool = require("../db/connection");
 const getArtistas = async () => {
 
 
-    /*----Consultamos los artistas y sus datos de usuario para mostrar también su nombre----*/
+    /*----Obtenemos los artistas junto con sus nombres de usuario----*/
     const result = await pool.query(
 
         `SELECT
@@ -34,7 +34,7 @@ const getArtistas = async () => {
 const getArtistaById = async(id_usuario) => {
 
     
-    /*----Buscamos el artista que tenga el ID de usuario recibido----*/
+    /*----Buscamos un artista utilizando su ID de usuario----*/
     const result = await pool.query(
 
         "SELECT * FROM artista WHERE id_usuario = $1",
@@ -50,7 +50,7 @@ const getArtistaById = async(id_usuario) => {
 
 //=======CREAR ARTISTA=======//
 
-
+/*----Guardamos el perfil profesional de un artista asociado a su usuario----*/
 const createArtista = async(id_usuario, especialidad, descripcion) => {
 
     /*----Guardamos el perfil profesional del artista asociado a su cuenta de usuario----*/
@@ -74,11 +74,11 @@ const createArtista = async(id_usuario, especialidad, descripcion) => {
 
 //=======ACTUALIZAR ARTISTA=======//
 
+/*----Actualizamos la especialidad y la descripción de un artista----*/
+    const updateArtista = async(id_usuario,artista) => {
 
-const updateArtista = async(id_usuario,artista) => {
 
-
-    /*----Actualizamos la especialidad y la descripción del artista indicado----*/
+/*----Actualizamos la especialidad y la descripción del artista indicado----*/
     const result = await pool.query(
 
     "UPDATE artista SET especialidad =$1,descripcion = $2 WHERE id_usuario= $3 RETURNING *",
@@ -106,6 +106,7 @@ const deleteArtista = async(id_usuario) => {
 
     /*----Eliminamos el perfil del artista que corresponda al ID recibido----*/
      const result = await pool.query(
+        
     "DELETE FROM artista WHERE id_usuario = $1  RETURNING *",
     [
         id_usuario

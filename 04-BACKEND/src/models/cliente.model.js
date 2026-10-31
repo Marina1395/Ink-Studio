@@ -1,25 +1,29 @@
 
 
-//IMPORTAMOS LA CONEXION CON POSTGRE SQL
+/*----Importamos la conexión con nuestra base de datos PostgreSQL----*/
 const pool = require("../db/connection");
 
 
 
 //====OBTENER TODOS LOS CLIENTES====//
+
+/*----Obtenemos todos los registros de la tabla cliente----*/
 const getClientes = async () => {
 
     const result = await pool.query("SELECT * FROM cliente");
+
     return result.rows;
 };
 
 
-//Obtener los clientes por su id
+/*----Buscamos un cliente utilizando su ID----*/
 const getClienteById = async(id) => {
 
     const result = await pool.query(
 
         "SELECT * FROM cliente WHERE id_cliente = $1",
         [id]
+
     );
 
   return result.rows[0];
@@ -27,7 +31,10 @@ const getClienteById = async(id) => {
 
 
 
-//====OBTENER UN CLIENTE A PARTIR DE SI ID_USUARIO====//
+
+//=======OBTENER CLIENTE POR ID DE USUARIO=======//
+
+/*----Buscamos el cliente relacionado con un usuario----*/
 const getClienteByUsuarioId = async (id_usuario) => {
 
     const result = await pool.query(
@@ -42,14 +49,15 @@ const getClienteByUsuarioId = async (id_usuario) => {
 };
 
 
-//Crear un cliente
+
+
+//=======CREAR CLIENTE=======//
+
+/*----Insertamos un nuevo cliente en la base de datos----*/
 
 const createCliente = async (cliente) => {
 
-    //1.INSERT INTO CLIENTE-->Quiero insertar un nuevo registro en la tabla cliente
-    //2.DESPUÉS INDICAMOS QUE COLUMNAS VAMOS A RELLENAR(nombre, apellidos.....);
-    //3.$1,$2,$3,$4...ES EL NUMERO TOTAL DE VALORES.
-    //4.RETURNING-->DESPUES DE CREAR EL CLIENTE, DEVUÉLVEME EL REGISTRO QUE ACABAS DE CREAR.
+    
 
     const result = await pool.query(
 
@@ -72,7 +80,9 @@ const createCliente = async (cliente) => {
 
 
 
-//Actualizar cliente
+//=======ACTUALIZAR CLIENTE=======//
+
+/*----Actualizamos los datos de un cliente utilizando su ID----*/
 const updateCliente = async(id,cliente) => {
 
     const result = await pool.query(
@@ -86,30 +96,37 @@ const updateCliente = async(id,cliente) => {
             cliente.direccion,
             cliente.id_usuario,
             id
+
         ]
    );
 
    return result.rows[0];
 
-    /*<====IMPORTANTE=====>
-    id_usuario = $5--->Quiero cambiar el usuario relacionado con este cliente.*/
-}
+};
+
+    
 
 
+//=======ELIMINAR CLIENTE=======//
 
+/*----Eliminamos un cliente de la base de datos utilizando su ID----*/
 
-// Eliminar un cliente
 const deleteCliente = async (id) => {
+
     const result = await pool.query(
+
         "DELETE FROM cliente WHERE id_cliente = $1 RETURNING *",
         [id]
+
     );
 
     return result.rows[0];
 }
 
 
-//Estas son las funciones de este archivo que quiero que otros puedan utilizar
+//=======EXPORTAR FUNCIONES=======//
+
+/*----Exportamos las funciones para utilizarlas en el controlador de clientes----*/
 
 module.exports = {
 
