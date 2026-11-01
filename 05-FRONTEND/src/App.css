@@ -17,7 +17,6 @@
   --texto-secundario: #b9c5d1;
 }
 
-
 /* ===== CONFIGURACIÓN GENERAL ===== */
 
 * {
@@ -35,7 +34,6 @@ body {
   font-family: Arial, sans-serif;
 }
 
-
 /* ==========================================
    CABECERA
 ========================================== */
@@ -47,7 +45,6 @@ header {
   border-bottom: 1px solid var(--azul-oscuro);
 }
 
-
 /* ===== LOGOTIPO HACHE STUDIO ===== */
 
 .logo-hache {
@@ -58,7 +55,6 @@ header {
   margin: 0 auto 65px;
   object-fit: contain;
 }
-
 
 /* ==========================================
    MENÚ DE NAVEGACIÓN GÓTICO
@@ -74,7 +70,6 @@ header {
   max-width: 1450px;
   margin: 0 auto;
 }
-
 
 /* ===== ENLACES DEL MENÚ ===== */
 
@@ -97,7 +92,6 @@ header {
     text-shadow 0.3s ease;
 }
 
-
 /* ===== EFECTO AL PASAR EL RATÓN ===== */
 
 .nav-gotico a:hover {
@@ -108,7 +102,6 @@ header {
     0 0 12px var(--azul-neon),
     0 0 22px #008cff;
 }
-
 
 /* ===== ESTRELLAS AZULES ENTRE ENLACES ===== */
 
@@ -128,30 +121,42 @@ header {
     0 0 18px rgba(0, 140, 255, 0.65);
 }
 
-
 /* ===== EVITAR SUBRAYADOS ANTIGUOS ===== */
 
 .nav-gotico a::after {
   display: none;
 }
 
-
 /* ==========================================
    FILIGRANAS GÓTICAS LATERALES
 ========================================== */
 
+/* ===== DECORACIÓN GÓTICA SIN IMÁGENES ===== */
+
 .filigrana-lateral {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 150px;
   width: 150px;
   height: 65px;
-  background-image: url('/imagenes/filigrana-gotica.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
   pointer-events: none;
 }
 
+/* ===== DIBUJO DECORATIVO ===== */
+
+.filigrana-lateral::before {
+  content: "❧ ✧ ❧";
+  display: block;
+  color: var(--azul-neon);
+  font-family: Georgia, serif;
+  font-size: 30px;
+  white-space: nowrap;
+
+  text-shadow:
+    0 0 8px rgba(0, 191, 255, 0.6),
+    0 0 18px rgba(0, 140, 255, 0.3);
+}
 
 /* ===== FILIGRANA IZQUIERDA ===== */
 
@@ -159,14 +164,12 @@ header {
   margin-right: 15px;
 }
 
-
 /* ===== FILIGRANA DERECHA ===== */
 
 .filigrana-derecha {
   margin-left: 15px;
   transform: scaleX(-1);
 }
-
 
 /* ==========================================
    SECCIONES GENERALES
@@ -187,7 +190,6 @@ section p {
   color: var(--texto-secundario);
   line-height: 1.7;
 }
-
 
 /* ==========================================
    SECCIÓN INICIO
@@ -212,7 +214,6 @@ section p {
   font-size: 18px;
   margin-bottom: 35px;
 }
-
 
 /* ===== BOTÓN DESCUBRIR SERVICIOS ===== */
 
@@ -240,7 +241,6 @@ section p {
     0 0 25px rgba(0, 191, 255, 0.4);
 }
 
-
 /* ==========================================
    SECCIÓN SERVICIOS
 ========================================== */
@@ -257,7 +257,6 @@ section p {
   max-width: 1100px;
   margin: 40px auto 0;
 }
-
 
 /* ===== TARJETAS DE SERVICIOS ===== */
 
@@ -288,7 +287,6 @@ section p {
     0 0 30px rgba(0, 191, 255, 0.08);
 }
 
-
 /* ==========================================
    SECCIÓN NUESTRO EQUIPO
 ========================================== */
@@ -296,7 +294,6 @@ section p {
 #equipo {
   background-color: var(--fondo);
 }
-
 
 /* ===== FILTROS DE ARTISTAS ===== */
 
@@ -329,7 +326,6 @@ section p {
   box-shadow: 0 0 12px rgba(0, 191, 255, 0.25);
 }
 
-
 /* ===== CONTENEDOR DE ARTISTAS ===== */
 
 .equipo-container {
@@ -339,7 +335,6 @@ section p {
   max-width: 1100px;
   margin: 40px auto 0;
 }
-
 
 /* ===== TARJETAS DE ARTISTAS ===== */
 
@@ -371,7 +366,6 @@ section p {
   font-size: 15px;
 }
 
-
 /* ===== FOTOGRAFÍAS DE ARTISTAS ===== */
 
 .profesional img {
@@ -383,7 +377,6 @@ section p {
   display: block;
   margin: 0 auto 20px;
 }
-
 
 /* ===== ENLACE VER PERFIL ===== */
 
@@ -409,7 +402,6 @@ section p {
   color: #000000;
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
 }
-
 
 /* ==========================================
    PÁGINA INDIVIDUAL DEL ARTISTA
@@ -443,7 +435,6 @@ section p {
   margin: 15px auto;
 }
 
-
 /* ===== GALERÍA DEL ARTISTA ===== */
 
 .trabajos-artista {
@@ -459,7 +450,6 @@ section p {
   color: #ffffff;
   font-size: 25px;
 }
-
 
 /* ==========================================
    SECCIÓN DE RESERVAS
@@ -488,7 +478,6 @@ section p {
   margin-bottom: 20px;
 }
 
-
 /* ===== ETIQUETA DE FECHA ===== */
 
 .reserva-artista label {
@@ -497,7 +486,6 @@ section p {
   color: var(--plateado);
   font-weight: bold;
 }
-
 
 /* ===== CALENDARIO ===== */
 
@@ -520,7 +508,6 @@ section p {
   outline: 2px solid var(--azul-neon);
   outline-offset: 3px;
 }
-
 
 /* ===== BOTÓN CONSULTAR DISPONIBILIDAD ===== */
 
@@ -550,7 +537,6 @@ section p {
   cursor: not-allowed;
 }
 
-
 /* ===== CONTENEDOR DE HORARIOS ===== */
 
 .horarios-disponibles {
@@ -565,7 +551,6 @@ section p {
   margin: 0 0 25px;
 }
 
-
 /* ===== CUADRÍCULA DE HORARIOS ===== */
 
 .lista-horarios {
@@ -575,7 +560,6 @@ section p {
   max-width: 520px;
   margin: 0 auto 25px;
 }
-
 
 /* ===== BOTONES DE HORAS ===== */
 
@@ -604,7 +588,6 @@ section p {
   transform: translateY(-2px);
 }
 
-
 /* ===== HORA SELECCIONADA ===== */
 
 .lista-horarios button.hora-seleccionada {
@@ -615,7 +598,6 @@ section p {
   box-shadow: 0 0 12px rgba(35, 132, 194, 0.4);
 }
 
-
 /* ===== ACCESIBILIDAD DE BOTONES ===== */
 
 .lista-horarios button:focus-visible,
@@ -623,7 +605,6 @@ section p {
   outline: 2px solid var(--azul-claro);
   outline-offset: 3px;
 }
-
 
 /* ===== RESUMEN DE LA HORA ===== */
 
@@ -636,7 +617,6 @@ section p {
 .resumen-hora strong {
   color: #ffffff;
 }
-
 
 /* ==========================================
    VOLVER AL EQUIPO
@@ -662,7 +642,6 @@ section p {
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
 }
 
-
 /* ==========================================
    SECCIÓN NUESTROS TRABAJOS
 ========================================== */
@@ -670,7 +649,6 @@ section p {
 #trabajos {
   background-color: #0b0e14;
 }
-
 
 /* ==========================================
    RESPONSIVE - PANTALLAS MEDIANAS
@@ -689,7 +667,6 @@ section p {
   }
 
 }
-
 
 /* ==========================================
    RESPONSIVE - TABLETS
@@ -725,7 +702,6 @@ section p {
   }
 
 }
-
 
 /* ==========================================
    RESPONSIVE - MÓVILES
@@ -816,7 +792,6 @@ section p {
   }
 
 }
-
 
 /* ==========================================
    ACCESIBILIDAD
