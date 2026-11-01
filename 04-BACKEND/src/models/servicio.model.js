@@ -1,10 +1,11 @@
 
-//1.====IMPORTAMOS LA CONEXION CON POSTGRESQL====
+/*----Importamos la conexión con la base de datos PostgreSQL----*/
 const pool = require("../db/connection");
 
 
-//2.=====OBTENER TODOS LOS SERVICIOS=====//
-/*Con esto creamos una funcion que el diga a postgre que obtenga todos los servcios y devuelva el resultado*/
+//=======OBTENER TODOS LOS SERVICIOS=======//
+
+/*----Obtenemos todos los servicios registrados en la base de datos----*/
 const getServicios = async() =>{
 
    const result = await pool.query(
@@ -13,6 +14,7 @@ const getServicios = async() =>{
    );
 
    return result.rows;
+
  };
 
 
@@ -20,12 +22,15 @@ const getServicios = async() =>{
 
 
 
-//3.=====OBTENER TODOS LOS SERVICIOS POR SU ID=====
+//=======OBTENER SERVICIO POR ID=======//
+
+/*----Buscamos un servicio utilizando su identificador----*/
 const getServicioById = async(id_servicio) => {
 
     const result = await pool.query(
 
         "SELECT * FROM servicio WHERE id_servicio = $1",
+
         [id_servicio]
     );
 
@@ -35,7 +40,9 @@ const getServicioById = async(id_servicio) => {
 
 
 
-//4.=====AHORA VAMOS A CREAR UN SERVICIO=====
+//=======CREAR SERVICIO=======//
+
+/*----Registramos un nuevo servicio en la base de datos----*/
 const createServicio = async (nombre,descripcion,precio) => {
 
     const result  = await pool.query(
@@ -57,7 +64,10 @@ const createServicio = async (nombre,descripcion,precio) => {
 
 
 
-//5.=====AHORA VAMOS A ACTUALIZAR SERVICIO=====//
+//=======ACTUALIZAR SERVICIO=======//
+
+/*----Modificamos los datos de un servicio existente----*/
+
 const updateServicio = async (id_servicio, nombre, descripcion, precio)=>{
 
     const result = await pool.query(
@@ -82,7 +92,9 @@ const updateServicio = async (id_servicio, nombre, descripcion, precio)=>{
 
 
 
-//6.=====DELETE SERVICIO======//
+//=======ELIMINAR SERVICIO=======//
+
+/*----Eliminamos un servicio utilizando su identificador----*/
 
 const deleteServicio = async(id_servicio)=>{
 
@@ -98,7 +110,8 @@ const deleteServicio = async(id_servicio)=>{
 }
 
 
-//7.EXPORTACIÓN DE MÓDULOS
+
+//=======EXPORTAR FUNCIONES======//
 
 module.exports = {
 

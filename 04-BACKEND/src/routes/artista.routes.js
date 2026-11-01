@@ -1,34 +1,81 @@
-// Importamos Express
+
+/*----Importamos Express para crear las rutas de artistas----*/
 const express = require("express");
 
-// Creamos el router
+
+/*----Importamos el controlador de artistas----*/
+const artistaController = require("../controllers/artista.controller");
+
+
+/*----Importamos los middlewares para comprobar el token y los permisos----*/
+const {
+
+    verificarToken,
+    verificarAdmin
+    
+} = require("../middlewares/auth.middleware");
+
+
+//=======CREAR ROUTER=======//
+
+/*----Creamos el router de Express----*/
 const router = express.Router();
 
-// Importamos las funciones del controller
-const artistaController = require("../controllers/artista.controller");
-const { verificarToken, verificarAdmin } = require("../middlewares/auth.middleware");
+
+//=======RUTAS DE ARTISTAS=======//
+
+/*----Obtener todos los artistas registrados----*/
+router.get(
+
+    "/",
+    artistaController.getArtistas
+
+);
 
 
-// GET - Obtener todos los artistas
-router.get("/", artistaController.getArtistas);
+/*----Obtener un artista utilizando su ID de usuario----*/
+router.get(
+
+    "/:id_usuario",
+    artistaController.getArtistaById
+
+);
 
 
-// GET - Obtener un artista por su id_usuario
-router.get("/:id_usuario", artistaController.getArtistaById);
+/*----Registrar un nuevo artista (solo administradores)----*/
+router.post(
+
+    "/",
+    verificarToken,
+    verificarAdmin,
+    artistaController.createArtista
+
+);
 
 
-// POST - Crear un artista
-router.post("/", verificarToken, verificarAdmin, artistaController.createArtista);
+/*----Actualizar los datos de un artista (solo administradores)----*/
+router.put(
+
+    "/:id_usuario",
+    verificarToken,
+    verificarAdmin,
+    artistaController.updateArtista
+
+);
 
 
+/*----Eliminar el perfil de un artista (solo administradores)----*/
+router.delete(
 
-// PUT - Actualizar un artista
-router.put("/:id_usuario", verificarToken, verificarAdmin, artistaController.updateArtista);
+    "/:id_usuario",
+    verificarToken,
+    verificarAdmin,
+    artistaController.deleteArtista
+
+);
 
 
-// DELETE - Borrar un artista
-router.delete("/:id_usuario", verificarToken,verificarAdmin,artistaController.deleteArtista);
+//=======EXPORTAR ROUTER=======//
 
-
-// Exportamos el router
+/*----Exportamos el router para utilizarlo en app.js----*/
 module.exports = router;

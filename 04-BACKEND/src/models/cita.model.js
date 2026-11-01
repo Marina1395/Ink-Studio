@@ -1,30 +1,37 @@
 
- //1.======IMPORTAMOS LA CONEXIÓN CON POSTGRESQL======//
+/*----Importamos la conexión con la base de datos PostgreSQL----*/
 const pool = require("../db/connection");
 
 
-//2.======OBTENER TODAS LAS CITAS======//
+//=======OBTENER TODAS LAS CITAS=======//
+
+/*----Obtenemos todas las citas ordenadas por fecha y hora----*/
 const getCitas = async () => {
 
     const resultado = await pool.query(
-        "SELECT * FROM cita ORDER BY fecha ASC, hora ASC"
+
+        `SELECT *
+         FROM cita
+         ORDER BY fecha ASC, hora ASC`
+
     );
 
+    /*----Devolvemos todas las citas encontradas----*/
     return resultado.rows;
 
 };
 
 
+//=======OBTENER LAS CITAS DE UN CLIENTE=======//
 
-// ===== OBTENER LAS CITAS DE UN CLIENTE =====
-
+/*----Buscamos las citas asociadas a un usuario que tiene perfil de cliente----*/
 const getCitasByCliente = async (id_usuario) => {
 
     const resultado = await pool.query(
 
         `SELECT cita.*
          FROM cita
-         JOIN cliente
+         INNER JOIN cliente
          ON cita.id_cliente = cliente.id_cliente
          WHERE cliente.id_usuario = $1
          ORDER BY cita.fecha ASC, cita.hora ASC`,
@@ -33,14 +40,15 @@ const getCitasByCliente = async (id_usuario) => {
 
     );
 
+    /*----Devolvemos las citas del cliente----*/
     return resultado.rows;
 
 };
 
 
+//=======OBTENER LAS CITAS DE UN ARTISTA=======//
 
-// ===== OBTENER LAS CITAS DE UN ARTISTA =====
-
+/*----Buscamos las citas asignadas a un artista mediante su ID de usuario----*/
 const getCitasByArtista = async (id_usuario) => {
 
     const resultado = await pool.query(
@@ -54,14 +62,15 @@ const getCitasByArtista = async (id_usuario) => {
 
     );
 
+    /*----Devolvemos las citas del artista----*/
     return resultado.rows;
 
 };
 
 
+//=======OBTENER CITA POR ID=======//
 
-
-//3.======OBTENER UNA CITA POR SU ID======//
+/*----Buscamos una cita utilizando su identificador----*/
 const getCitaById = async (id_cita) => {
 
     const resultado = await pool.query(
@@ -72,26 +81,38 @@ const getCitaById = async (id_cita) => {
 
     );
 
+    /*----Devolvemos la cita encontrada o undefined si no existe----*/
     return resultado.rows[0];
 
 };
 
 
-//4.======CREAR UNA CITA======//
+//=======CREAR CITA=======//
+
+/*----Registramos una nueva cita con su duración en minutos----*/
 const createCita = async (
     id_cliente,
     id_artista,
     id_servicio,
     fecha,
     hora,
-    estado
+    estado,
+    duracion_minutos
 ) => {
 
     const resultado = await pool.query(
 
         `INSERT INTO cita
-        (id_cliente, id_artista, id_servicio, fecha, hora, estado)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        (
+            id_cliente,
+            id_artista,
+            id_servicio,
+            fecha,
+            hora,
+            estado,
+            duracion_minutos
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *`,
 
         [
@@ -100,17 +121,21 @@ const createCita = async (
             id_servicio,
             fecha,
             hora,
-            estado
+            estado,
+            duracion_minutos
         ]
 
     );
 
+    /*----Devolvemos la cita que acabamos de crear----*/
     return resultado.rows[0];
 
 };
 
 
-//5.======ACTUALIZAR UNA CITA======//
+//=======ACTUALIZAR CITA=======//
+
+/*----Modificamos los datos de una cita existente----*/
 const updateCita = async (
     id_cita,
     id_cliente,
@@ -149,12 +174,15 @@ const updateCita = async (
 
     );
 
+    /*----Devolvemos la cita actualizada o undefined si no existe----*/
     return resultado.rows[0];
 
 };
 
 
-//6.======ELIMINAR UNA CITA======//
+//=======ELIMINAR CITA=======//
+
+/*----Eliminamos una cita utilizando su identificador----*/
 const deleteCita = async (id_cita) => {
 
     const resultado = await pool.query(
@@ -165,18 +193,21 @@ const deleteCita = async (id_cita) => {
 
     );
 
+    /*----Devolvemos la cita eliminada o undefined si no existe----*/
     return resultado.rows[0];
 
 };
 
 
-//7.======COMPROBAR SI DOS CITAS SE SOLAPAN======//
+//=======COMPROBAR SOLAPAMIENTO DE CITAS=======//
+
+/*----Comprobamos si un artista tiene otra cita confirmada en el mismo horario----*/
 const comprobarSolapamiento = async (
     id_artista,
     fecha,
     hora,
     duracion_minutos,
-    id_cita
+    id_cita = null
 ) => {
 
     const resultado = await pool.query(
@@ -187,13 +218,14 @@ const comprobarSolapamiento = async (
          AND fecha = $2
          AND estado = 'confirmada'
          AND duracion_minutos IS NOT NULL
-         AND id_cita <> $5
+         AND ($5::integer IS NULL OR id_cita <> $5)
          AND hora < (
              $3::time + $4::integer * INTERVAL '1 minute'
          )
          AND (
              hora + duracion_minutos * INTERVAL '1 minute'
-         ) > $3::time`,
+         ) > $3::time
+         LIMIT 1`,
 
         [
             id_artista,
@@ -205,12 +237,15 @@ const comprobarSolapamiento = async (
 
     );
 
+    /*----Devolvemos true si existe un solapamiento y false si el horario está libre----*/
     return resultado.rows.length > 0;
 
 };
 
 
-//8.======OBTENER CITAS OCUPADAS DE UN ARTISTA======//
+//=======OBTENER CITAS OCUPADAS DE UN ARTISTA=======//
+
+/*----Consultamos los horarios confirmados de un artista en una fecha concreta----*/
 const getCitasOcupadas = async (id_artista, fecha) => {
 
     const resultado = await pool.query(
@@ -226,18 +261,22 @@ const getCitasOcupadas = async (id_artista, fecha) => {
          AND duracion_minutos IS NOT NULL
          ORDER BY hora ASC`,
 
-        [id_artista, fecha]
+        [
+            id_artista,
+            fecha
+        ]
 
     );
 
+    /*----Devolvemos los horarios ocupados del artista----*/
     return resultado.rows;
 
 };
 
 
+//=======EXPORTAR FUNCIONES=======//
 
-
-//9.======EXPORTAMOS TODAS LAS FUNCIONES======//
+/*----Exportamos las funciones para utilizarlas en el controlador de citas----*/
 module.exports = {
     getCitas,
     getCitasByCliente,

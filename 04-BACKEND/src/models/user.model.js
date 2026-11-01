@@ -11,9 +11,9 @@ const bcrypt = require("bcrypt");
 
 
 //========OBTENEMOS TODOS LOS USUARIOS=======//
-const getUsers = () =>  {
+const getUsers = () => {
 
-     /*----Consultamos los usuarios sin devolver sus contraseñas----*/
+    /*----Consultamos los usuarios sin devolver sus contraseñas----*/
     return pool.query('SELECT id_usuario,nombre,email, rol FROM usuario');
 
 
@@ -25,10 +25,10 @@ const getUsers = () =>  {
 //========CREAR UN USUARIO=======//
 
 
-const createUser = async (nombre,email,contrasena,rol) =>{
+const createUser = async (nombre, email, contrasena, rol) => {
 
     /*----Convertimos la contraseña en un hash antes de guardarla en la base de datos----*/
-    const contrasenaHash = await bcrypt.hash(contrasena,10);
+    const contrasenaHash = await bcrypt.hash(contrasena, 10);
 
     /*----Guardamos el nuevo usuario y devolvemos sus datos sin incluir la contraseña----*/
     return pool.query(
@@ -61,12 +61,12 @@ const getUserById = (id_usuario) => {
 
 //======ACTUALIZAR UN USUARIO======//
 
-const updateUser = async (id_usuario,nombre,email,contrasena,rol) =>{
+const updateUser = async (id_usuario, nombre, email, contrasena, rol) => {
 
     /*----Protegemos la nueva contraseña antes de actualizar los datos del usuario----*/
-    const contrasenaHash = await bcrypt.hash(contrasena,10);
+    const contrasenaHash = await bcrypt.hash(contrasena, 10);
 
-     /*----Actualizamos los datos del usuario que corresponda al ID recibido----*/
+    /*----Actualizamos los datos del usuario que corresponda al ID recibido----*/
     const result = await pool.query(
 
 
@@ -78,7 +78,7 @@ const updateUser = async (id_usuario,nombre,email,contrasena,rol) =>{
          WHERE id_usuario = $5
          RETURNING id_usuario, nombre, email, rol`,
 
-        [nombre, email, contrasenaHash, rol ,id_usuario]
+        [nombre, email, contrasenaHash, rol, id_usuario]
 
     );
 
@@ -92,16 +92,16 @@ const updateUser = async (id_usuario,nombre,email,contrasena,rol) =>{
 //======ELIMINAR USUARIO======//
 
 const deleteUser = async (id) => {
-    
+
     /*----Eliminamos de la base de datos el usuario que tenga el ID indicado----*/
     const resultado = await pool.query(
 
         'DELETE  FROM usuario WHERE id_usuario = $1',
         [id]
 
- );
+    );
 
- return resultado;
+    return resultado;
 
 };
 
@@ -127,30 +127,28 @@ const getUserByEmail = async (email) => {
 
 
 
-
 //=====CAMBIAR LA CONTRASEÑA DE UN USUARIO=====//
-const cambiarContrasena = async (id_usuario,nuevaContrasena) => {
 
-     /*----Convertimos la nueva contraseña en un hash para guardarla de forma segura----*/
-    const contrasenaHash = await bcrypt.hash(nuevaContrasena,10);
+const cambiarContrasena = async (id_usuario, nuevaContrasena) => {
 
-     /*----Actualizamos únicamente la contraseña del usuario indicado----*/
+    /*----Convertimos la nueva contraseña en un hash para guardarla de forma segura----*/
+    const contrasenaHash = await bcrypt.hash(nuevaContrasena, 10);
+
+    /*----Actualizamos únicamente la contraseña del usuario indicado----*/
     const resultado = await pool.query(
 
         `UPDATE usuario
          SET contrasena = $1
          WHERE id_usuario = $2
-         RETURNING id_usuario, nombre, email rol `
-        
+         RETURNING id_usuario, nombre, email, rol`,
 
         [contrasenaHash, id_usuario]
 
     );
-     
+
     return resultado.rows[0];
 
 };
-
 
 
 
@@ -165,7 +163,7 @@ module.exports = {
     deleteUser,
     getUserByEmail,
     cambiarContrasena
-    
+
 };
 
 

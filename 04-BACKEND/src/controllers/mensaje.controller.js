@@ -1,24 +1,72 @@
 
-//1.======IMPORTAMOS EL MODEL DE MENSAJE======//
+/*----Importamos el modelo de mensajes----*/
 const mensajeModel = require("../models/mensaje.model");
 
 
+//=======VALIDAR DATOS DEL MENSAJE=======//
+
+/*----Comprobamos que los datos del mensaje sean correctos----*/
+const validarMensaje = (nombre, email, asunto, mensaje) => {
+
+    /*----Comprobamos que todos los campos sean textos con contenido----*/
+    if (
+        typeof nombre !== "string" ||
+        nombre.trim() === "" ||
+        typeof email !== "string" ||
+        email.trim() === "" ||
+        typeof asunto !== "string" ||
+        asunto.trim() === "" ||
+        typeof mensaje !== "string" ||
+        mensaje.trim() === ""
+    ) {
+
+        return "Todos los campos son obligatorios";
+
+    }
+
+    /*----Comprobamos que el email tenga un formato válido----*/
+    const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formatoEmail.test(email.trim())) {
+
+        return "El formato del email no es válido";
+
+    }
+
+    /*----Comprobamos que los campos no superen las longitudes permitidas----*/
+    if (
+        nombre.trim().length > 100 ||
+        email.trim().length > 254 ||
+        asunto.trim().length > 200 ||
+        mensaje.trim().length > 5000
+    ) {
+
+        return "Uno o varios campos superan la longitud permitida";
+
+    }
+
+    /*----Si no encontramos errores, devolvemos null----*/
+    return null;
+
+};
 
 
-//2.======OBTENER TODOS LOS MENSAJES======//
-const getMensajes = async(req, res) => {
+//=======OBTENER TODOS LOS MENSAJES=======//
+
+/*----Obtenemos todos los mensajes registrados en la base de datos----*/
+const getMensajes = async (req, res) => {
 
     try {
 
         const resultado = await mensajeModel.getMensajes();
 
-        res.json(resultado);
+        return res.status(200).json(resultado);
 
-    } catch(error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error("Error al obtener los mensajes:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al obtener los mensajes"
         });
 
@@ -27,17 +75,28 @@ const getMensajes = async(req, res) => {
 };
 
 
+//=======OBTENER MENSAJE POR ID=======//
 
-
-//3.======OBTENER MENSAJE POR ID======//
-const getMensajeById = async(req, res) => {
+/*----Buscamos un mensaje utilizando su identificador----*/
+const getMensajeById = async (req, res) => {
 
     try {
 
-        const { id_mensaje } = req.params;
+        const id_mensaje = Number(req.params.id_mensaje);
 
+        /*----Comprobamos que el ID sea un número entero positivo----*/
+        if (!Number.isSafeInteger(id_mensaje) || id_mensaje <= 0) {
+
+            return res.status(400).json({
+                error: "ID de mensaje no válido"
+            });
+
+        }
+
+        /*----Buscamos el mensaje en la base de datos----*/
         const resultado = await mensajeModel.getMensajeById(id_mensaje);
 
+        /*----Comprobamos que el mensaje exista----*/
         if (!resultado) {
 
             return res.status(404).json({
@@ -46,13 +105,13 @@ const getMensajeById = async(req, res) => {
 
         }
 
-        res.json(resultado);
+        return res.status(200).json(resultado);
 
-    } catch(error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error("Error al obtener el mensaje:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al obtener el mensaje"
         });
 
@@ -61,34 +120,51 @@ const getMensajeById = async(req, res) => {
 };
 
 
+//=======CREAR MENSAJE=======//
 
-
-//4.======CREAR MENSAJE======//
-const createMensaje = async(req, res) => {
+/*----Registramos un nuevo mensaje enviado desde el formulario de contacto----*/
+const createMensaje = async (req, res) => {
 
     try {
 
-        const {
-            nombre,
-            email,
-            asunto,
-            mensaje
-        } = req.body;
+        /*----Recogemos los datos enviados por el cliente----*/
+        const { nombre, email, asunto, mensaje } = req.body;
 
-        const resultado = await mensajeModel.createMensaje(
+        /*----Validamos los datos antes de guardarlos----*/
+        const errorValidacion = validarMensaje(
             nombre,
             email,
             asunto,
             mensaje
         );
 
-        res.status(201).json(resultado);
+        if (errorValidacion) {
 
-    } catch(error) {
+            return res.status(400).json({
+                error: errorValidacion
+            });
 
-        console.error(error);
+        }
 
-        res.status(500).json({
+        /*----Creamos el mensaje utilizando el modelo----*/
+        const resultado = await mensajeModel.createMensaje(
+            nombre.trim(),
+            email.trim().toLowerCase(),
+            asunto.trim(),
+            mensaje.trim()
+        );
+
+        /*----Confirmamos que el mensaje se ha registrado----*/
+        return res.status(201).json({
+            mensaje: "Mensaje enviado correctamente",
+            id_mensaje: resultado.id_mensaje
+        });
+
+    } catch (error) {
+
+        console.error("Error al crear el mensaje:", error);
+
+        return res.status(500).json({
             error: "Ha ocurrido un error al crear el mensaje"
         });
 
@@ -97,30 +173,53 @@ const createMensaje = async(req, res) => {
 };
 
 
+//=======ACTUALIZAR MENSAJE=======//
 
-
-//5.======ACTUALIZAR MENSAJE======//
-const updateMensaje = async(req, res) => {
+/*----Modificamos los datos de un mensaje existente----*/
+const updateMensaje = async (req, res) => {
 
     try {
 
-        const { id_mensaje } = req.params;
+        const id_mensaje = Number(req.params.id_mensaje);
 
-        const {
-            nombre,
-            email,
-            asunto,
-            mensaje
-        } = req.body;
+        /*----Comprobamos que el ID sea válido----*/
+        if (!Number.isSafeInteger(id_mensaje) || id_mensaje <= 0) {
 
-        const resultado = await mensajeModel.updateMensaje(
-            id_mensaje,
+            return res.status(400).json({
+                error: "ID de mensaje no válido"
+            });
+
+        }
+
+        /*----Recogemos los nuevos datos del mensaje----*/
+        const { nombre, email, asunto, mensaje } = req.body;
+
+        /*----Comprobamos que los datos sean correctos----*/
+        const errorValidacion = validarMensaje(
             nombre,
             email,
             asunto,
             mensaje
         );
 
+        if (errorValidacion) {
+
+            return res.status(400).json({
+                error: errorValidacion
+            });
+
+        }
+
+        /*----Actualizamos el mensaje utilizando el modelo----*/
+        const resultado = await mensajeModel.updateMensaje(
+            id_mensaje,
+            nombre.trim(),
+            email.trim().toLowerCase(),
+            asunto.trim(),
+            mensaje.trim()
+        );
+
+        /*----Comprobamos que el mensaje exista----*/
         if (!resultado) {
 
             return res.status(404).json({
@@ -129,13 +228,13 @@ const updateMensaje = async(req, res) => {
 
         }
 
-        res.json(resultado);
+        return res.status(200).json(resultado);
 
-    } catch(error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error("Error al actualizar el mensaje:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al actualizar el mensaje"
         });
 
@@ -144,17 +243,28 @@ const updateMensaje = async(req, res) => {
 };
 
 
+//=======ELIMINAR MENSAJE=======//
 
-
-//6.======ELIMINAR MENSAJE======//
-const deleteMensaje = async(req, res) => {
+/*----Eliminamos un mensaje utilizando su identificador----*/
+const deleteMensaje = async (req, res) => {
 
     try {
 
-        const { id_mensaje } = req.params;
+        const id_mensaje = Number(req.params.id_mensaje);
 
+        /*----Comprobamos que el ID sea válido----*/
+        if (!Number.isSafeInteger(id_mensaje) || id_mensaje <= 0) {
+
+            return res.status(400).json({
+                error: "ID de mensaje no válido"
+            });
+
+        }
+
+        /*----Eliminamos el mensaje utilizando el modelo----*/
         const resultado = await mensajeModel.deleteMensaje(id_mensaje);
 
+        /*----Comprobamos que el mensaje exista----*/
         if (!resultado) {
 
             return res.status(404).json({
@@ -163,13 +273,17 @@ const deleteMensaje = async(req, res) => {
 
         }
 
-        res.json(resultado);
+        /*----Confirmamos que el mensaje se ha eliminado correctamente----*/
+        return res.status(200).json({
+            mensaje: "Mensaje eliminado correctamente",
+            mensajeEliminado: resultado
+        });
 
-    } catch(error) {
+    } catch (error) {
 
-        console.error(error);
+        console.error("Error al eliminar el mensaje:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             error: "Ha ocurrido un error al eliminar el mensaje"
         });
 
@@ -178,15 +292,13 @@ const deleteMensaje = async(req, res) => {
 };
 
 
+//=======EXPORTAR FUNCIONES=======//
 
-
-//7.======EXPORTAMOS LAS FUNCIONES======//
+/*----Exportamos las funciones para utilizarlas en las rutas de mensajes----*/
 module.exports = {
-
     getMensajes,
     getMensajeById,
     createMensaje,
     updateMensaje,
     deleteMensaje
-
 };

@@ -1,12 +1,13 @@
 
 
-//1.======Importamos  la conexión con la base de datos  PostgreSQL======
+/*----Importamos la conexión con la base de datos PostgreSQL----*/
 const pool = require("../db/connection");
 
 
 
+//=======OBTENER TODOS LOS TRABAJOS=======//
 
-//2.======Obtener todos los trabajos======
+/*----Obtenemos todos los trabajos registrados en la base de datos----*/
 const getTrabajos = async () => {
 
     const result = await pool.query(
@@ -20,7 +21,11 @@ const getTrabajos = async () => {
 };
 
 
-//3.======Obtener trabajo por su id======
+
+
+//=======OBTENEMOS LOS TRABAJOS POR SU ID=======//
+
+/*----Buscamos un trabajo utilizando su identificador----*/
 const getTrabajoById = async(id_trabajo) => {
 
     const result  = await pool.query(
@@ -28,12 +33,18 @@ const getTrabajoById = async(id_trabajo) => {
         "SELECT * FROM trabajo WHERE id_trabajo=$1",
         [id_trabajo]
     );
-
+    
+    /*----Devolvemos el trabajo encontrado o undefined si no existe----*/
     return result.rows[0];
+
 };
 
 
-//4.======Crear un trabajo======
+
+
+//=======CREAR UN TRABAJO=======//
+
+/*----Registramos un nuevo trabajo asociado a un artista----*/
 const createTrabajo = async(id_artista, titulo, descripcion, imagen) => {
 
     const result = await pool.query(
@@ -58,7 +69,10 @@ const createTrabajo = async(id_artista, titulo, descripcion, imagen) => {
 
 
 
-//5.======Actualizar trabajo======
+
+//=======ACTUALIZAR TRABAJO=======//
+
+/*----Modificamos los datos de un trabajo existente----*/
 const updateTrabajo = async (id_trabajo, id_artista, titulo, descripcion, imagen) => {
 
     const result = await pool.query(
@@ -81,7 +95,11 @@ const updateTrabajo = async (id_trabajo, id_artista, titulo, descripcion, imagen
 };
 
 
-//6.Eliminar un trabajo
+
+
+//=======ELIMINAR TRABAJO=======//
+
+/*----Eliminamos un trabajo utilizando su identificador----*/
 const deleteTrabajo = async(id_trabajo) => {
 
     const result = await pool.query(
@@ -90,8 +108,6 @@ const deleteTrabajo = async(id_trabajo) => {
         
 
             [id_trabajo]
-
-
 
         
     );
@@ -102,7 +118,10 @@ const deleteTrabajo = async(id_trabajo) => {
 };
 
 
-//7.Exportar módulos
+
+
+//=======EXPORTAR FUNCIONES======//
+
 module.exports={
 
     getTrabajos,

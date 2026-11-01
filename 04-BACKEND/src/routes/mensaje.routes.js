@@ -1,32 +1,71 @@
-//1.======IMPORTAMOS EXPRESS======//
+
+/*----Importamos Express para crear las rutas de mensajes----*/
 const express = require("express");
 
 
-//2.======IMPORTAMOS EL CONTROLLER======//
+/*----Importamos el controlador de mensajes----*/
 const mensajeController = require("../controllers/mensaje.controller");
 
 
-//3.======CREAMOS EL ROUTER======//
+/*----Importamos los middlewares de autenticación y permisos----*/
+const {
+    verificarToken,
+    verificarAdmin
+} = require("../middlewares/auth.middleware");
+
+
+//=======CREAR ROUTER=======//
+
+/*----Creamos el router de Express----*/
 const router = express.Router();
 
 
-//4.======CREAMOS LAS RUTAS======//
+//=======RUTAS DE MENSAJES=======//
 
-// Obtener todos los mensajes
-router.get("/", mensajeController.getMensajes);
-
-// Obtener un mensaje por su ID
-router.get("/:id_mensaje", mensajeController.getMensajeById);
-
-// Crear un mensaje
-router.post("/", mensajeController.createMensaje);
-
-// Actualizar un mensaje
-router.put("/:id_mensaje", mensajeController.updateMensaje);
-
-// Eliminar un mensaje
-router.delete("/:id_mensaje", mensajeController.deleteMensaje);
+/*----Obtener todos los mensajes (solo administradores)----*/
+router.get(
+    "/",
+    verificarToken,
+    verificarAdmin,
+    mensajeController.getMensajes
+);
 
 
-//5.======EXPORTAMOS ROUTER======//
+/*----Obtener un mensaje por su identificador (solo administradores)----*/
+router.get(
+    "/:id_mensaje",
+    verificarToken,
+    verificarAdmin,
+    mensajeController.getMensajeById
+);
+
+
+/*----Crear un mensaje desde el formulario de contacto (ruta pública)----*/
+router.post(
+    "/",
+    mensajeController.createMensaje
+);
+
+
+/*----Actualizar un mensaje existente (solo administradores)----*/
+router.put(
+    "/:id_mensaje",
+    verificarToken,
+    verificarAdmin,
+    mensajeController.updateMensaje
+);
+
+
+/*----Eliminar un mensaje existente (solo administradores)----*/
+router.delete(
+    "/:id_mensaje",
+    verificarToken,
+    verificarAdmin,
+    mensajeController.deleteMensaje
+);
+
+
+//=======EXPORTAR ROUTER=======//
+
+/*----Exportamos el router para utilizarlo en app.js----*/
 module.exports = router;
