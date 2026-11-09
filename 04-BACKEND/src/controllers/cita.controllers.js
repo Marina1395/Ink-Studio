@@ -39,6 +39,31 @@ const validarFecha = (fecha) => {
 
 
 
+/*----Comprobar que la fecha de la hora no esté pasada-----*/
+const validarFechaNoPasada = (fecha) => {
+
+    const hoy = new Date();
+
+    const partes = new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Europe/Madrid",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).formatToParts(hoy);
+
+    const obtenerParte = (tipo) =>
+        partes.find((parte) => parte.type === tipo).value;
+
+    const fechaHoy =
+        `${obtenerParte("year")}-${obtenerParte("month")}-${obtenerParte("day")}`;
+
+    return fecha >= fechaHoy;
+
+};
+
+
+
+
 /*----Comprueba que la hora esté dentro del horario que tenemos permitido (13:30-21:30)----*/
 const validarHora = (hora) => {
 
@@ -339,6 +364,18 @@ const createCita = async (req, res) => {
             return res.status(400).json({
 
                 error: "La fecha debe ser válida y tener formato AAAA-MM-DD"
+
+            });
+
+        }
+
+        /*----Impedimos solicitar citas en fechas pasadas----*/
+        
+        if (!validarFechaNoPasada(fecha)) {
+
+            return res.status(400).json({
+
+                error: "No puedes solicitar una cita en una fecha pasada"
 
             });
 
