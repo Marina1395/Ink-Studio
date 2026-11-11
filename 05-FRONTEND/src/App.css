@@ -819,3 +819,16 @@ section p {
   }
 
 }
+
+/* ===== FOTOGRAFÍA DEL PERFIL DEL ARTISTA ===== */
+
+.foto-perfil-artista {
+    width: 100%;
+    max-width: 280px;
+    height: 350px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 12px;
+    display: block;
+    margin: 0 auto 20px;
+}

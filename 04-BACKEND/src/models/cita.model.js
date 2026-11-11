@@ -274,9 +274,32 @@ const getCitasOcupadas = async (id_artista, fecha) => {
 };
 
 
+//=======COMPROBAR SI EL ARTISTA OFRECE EL SERVICIO=======//
+
+/*----Comprobamos si el servicio solicitado está asociado al artista----*/
+const artistaOfreceServicio = async (id_artista, id_servicio) => {
+
+    const resultado = await pool.query(
+
+        `SELECT 1
+         FROM artista_servicio
+         WHERE id_artista = $1
+         AND id_servicio = $2
+         LIMIT 1`,
+
+        [id_artista, id_servicio]
+
+    );
+
+    /*----Devolvemos true si el artista ofrece el servicio y false si no lo ofrece----*/
+    return resultado.rows.length > 0;
+
+};
+
 //=======EXPORTAR FUNCIONES=======//
 
 /*----Exportamos las funciones para utilizarlas en el controlador de citas----*/
+
 module.exports = {
     getCitas,
     getCitasByCliente,
@@ -286,5 +309,7 @@ module.exports = {
     updateCita,
     deleteCita,
     comprobarSolapamiento,
-    getCitasOcupadas
+    getCitasOcupadas,
+    artistaOfreceServicio
+
 };

@@ -42,6 +42,14 @@ router.get(
 );
 
 
+/*----Obtener los servicios que ofrece un artista----*/
+router.get(
+
+    "/:id_usuario/servicios",
+    artistaController.getServiciosByArtista
+
+);
+
 /*----Registrar un nuevo artista (solo administradores)----*/
 router.post(
 

@@ -319,6 +319,56 @@ const deleteArtista = async (req, res) => {
 };
 
 
+ //=======OBTENER SERVICIOS DE UN ARTISTA=======//
+
+/*----Obtenemos los servicios que ofrece un artista determinado----*/
+const getServiciosByArtista = async (req, res) => {
+
+    try {
+
+        /*----Recogemos el ID del artista desde la URL----*/
+        const id_usuario = Number(req.params.id_usuario);
+
+        /*----Comprobamos que el identificador sea válido----*/
+        if (!Number.isSafeInteger(id_usuario) || id_usuario <= 0) {
+
+            return res.status(400).json({
+                error: "ID de artista no válido"
+            });
+
+        }
+
+        /*----Comprobamos que el artista exista----*/
+        const artista = await artistaModel.getArtistaById(id_usuario);
+
+        if (!artista) {
+
+            return res.status(404).json({
+                error: "Artista no encontrado"
+            });
+
+        }
+
+        /*----Consultamos los servicios asociados al artista----*/
+        const servicios = await artistaModel.getServiciosByArtista(id_usuario);
+
+        /*----Devolvemos los servicios encontrados----*/
+        return res.status(200).json(servicios);
+
+    } catch (error) {
+
+        console.error("Error al obtener los servicios del artista:", error);
+
+        return res.status(500).json({
+            error: "Error al obtener los servicios del artista"
+        });
+
+    }
+
+};
+
+
+
 //=======EXPORTAR FUNCIONES=======//
 
 /*----Exportamos las funciones para utilizarlas en las rutas de artistas----*/
@@ -327,5 +377,6 @@ module.exports = {
     getArtistaById,
     createArtista,
     updateArtista,
-    deleteArtista
+    deleteArtista,
+    getServiciosByArtista
 };

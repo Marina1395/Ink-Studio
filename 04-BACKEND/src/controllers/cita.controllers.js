@@ -5,41 +5,32 @@ const clienteModel = require("../models/cliente.model");
 
 //=======COMPROBACIONES Y VALIDACIONES========//
 
-/*----Comprobaremos que la fecha tiene el formato correcto y exista en nuestro calendario----*/
+/*----Comprobamos que la fecha tenga el formato correcto y exista en nuestro calendario----*/
 const validarFecha = (fecha) => {
 
     if (
-
         typeof fecha !== "string" ||
         !/^\d{4}-\d{2}-\d{2}$/.test(fecha)
-
     ) {
-
         return false;
-
     }
 
     const [anio, mes, dia] = fecha.split("-").map(Number);
 
     const fechaComprobacion = new Date(
-
         Date.UTC(anio, mes - 1, dia)
-
     );
 
     return (
-
         fechaComprobacion.getUTCFullYear() === anio &&
         fechaComprobacion.getUTCMonth() === mes - 1 &&
         fechaComprobacion.getUTCDate() === dia
-
     );
 
 };
 
 
-
-/*----Comprobar que la fecha de la hora no esté pasada-----*/
+/*----Comprobamos que la fecha no esté pasada----*/
 const validarFechaNoPasada = (fecha) => {
 
     const hoy = new Date();
@@ -62,19 +53,13 @@ const validarFechaNoPasada = (fecha) => {
 };
 
 
-
-
-/*----Comprueba que la hora esté dentro del horario que tenemos permitido (13:30-21:30)----*/
+/*----Comprobamos que la hora esté dentro del horario permitido (13:30-21:30)----*/
 const validarHora = (hora) => {
 
     if (
-
         typeof hora !== "string" ||
-
         !/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)
-
     ) {
-
         return false;
     }
 
@@ -82,23 +67,19 @@ const validarHora = (hora) => {
 
     const minutosTotales = horas * 60 + minutos;
 
-    //Convertimos las horas de apertura y cierre a minutos para poder compararlas
     const apertura = 13 * 60 + 30;
     const cierre = 21 * 60 + 30;
 
-
     return (
-
         minutosTotales >= apertura &&
         minutosTotales < cierre &&
         (minutos === 0 || minutos === 30)
-
     );
 
 };
 
 
-// Convertimos una hora a minutos.
+/*----Convertimos una hora a minutos----*/
 const convertirHoraAMinutos = (hora) => {
 
     const [horas, minutos] = hora.split(":").map(Number);
@@ -108,57 +89,41 @@ const convertirHoraAMinutos = (hora) => {
 };
 
 
-/*----Comprueba que el id sea un numero entero positivo y también valido----*/
+/*----Comprobamos que el ID sea un número entero positivo y válido----*/
 const validarId = (id) => {
 
     return (
-
         /^[1-9]\d*$/.test(String(id)) &&
         Number.isSafeInteger(Number(id))
-
     );
 
 };
 
 
-
-/*----Sacamos el ID y el rol del usuario para comprobar qué citas puede ver----*/
+/*----Comprobamos qué citas puede consultar cada usuario según su rol----*/
 const puedeConsultarCita = async (usuario, cita) => {
 
     const { id_usuario, rol } = usuario;
 
-    // El administrador puede consultar cualquier cita.
     if (rol === "admin") {
-
         return true;
-
     }
 
-    // El artista solo puede consultar las citas asignadas.
     if (rol === "artista") {
 
         return (
-
             Number(id_usuario) === Number(cita.id_artista)
-
         );
 
     }
 
-    // El cliente solo puede consultar sus propias citas.
     if (rol === "cliente") {
 
-
-        /*----Buscaremos la ficha del cliente asociada al usuario que ha iniciado sesiÓN---*/
         const cliente = await clienteModel.getClienteByUsuarioId(
             id_usuario
         );
 
-
-
-        /*----Si el usuario no tiene ficha cliente, no le permitimos consultar la cita----*/
         if (!cliente) {
-
             return false;
         }
 
@@ -174,7 +139,7 @@ const puedeConsultarCita = async (usuario, cita) => {
 };
 
 
-//==========OBTENER CITAS SEGUN EL ROL=========//
+//==========OBTENER CITAS SEGÚN EL ROL=========//
 
 const getCitas = async (req, res) => {
 
@@ -184,7 +149,6 @@ const getCitas = async (req, res) => {
 
         let resultado;
 
-        /*----Dependiendo del rol, mostramos todas las citas o solo las que correspondan al usuario----*/
         if (rol === "admin") {
 
             resultado = await citaModel.getCitas();
@@ -192,7 +156,6 @@ const getCitas = async (req, res) => {
         } else if (rol === "cliente") {
 
             resultado = await citaModel.getCitasByCliente(id_usuario);
-
 
         } else if (rol === "artista") {
 
@@ -221,28 +184,21 @@ const getCitas = async (req, res) => {
 };
 
 
-//========OBTENER CITAS POR SU ID========//
+//========OBTENER CITA POR SU ID========//
 
 const getCitaById = async (req, res) => {
 
     try {
 
-        /*----Cogemos el ID de la cita que nos llega por la URL----*/
         const { id_cita } = req.params;
 
-
-        /*----Comprobamos que el ID sea válido antes de buscar la cita----*/
         if (!validarId(id_cita)) {
 
             return res.status(400).json({
-
                 error: "El identificador de la cita no es válido"
-
             });
 
         }
-
-
 
         const resultado = await citaModel.getCitaById(id_cita);
 
@@ -254,9 +210,10 @@ const getCitaById = async (req, res) => {
 
         }
 
-        /*----Antes de mostrar la cita,comprobamos que esta tiene pertenencia al usuario o que tiene permiso para verla---*/
-        const tienePermiso = await puedeConsultarCita(req.usuario, resultado);
-
+        const tienePermiso = await puedeConsultarCita(
+            req.usuario,
+            resultado
+        );
 
         if (!tienePermiso) {
 
@@ -273,15 +230,12 @@ const getCitaById = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
-
             error: "Ha ocurrido un error al obtener la cita"
-
         });
 
     }
 
 };
-
 
 
 //========CREAR UNA CITA========//
@@ -290,62 +244,52 @@ const createCita = async (req, res) => {
 
     try {
 
-        /*----Comprobamos que quien solicita cita es un cliente----*/
+        /*----Solo los clientes pueden solicitar citas----*/
         if (req.usuario.rol !== "cliente") {
 
             return res.status(403).json({
-
                 error: "Solo los clientes pueden solicitar citas"
             });
 
         }
 
         const {
-
             id_artista,
             id_servicio,
             fecha,
             hora
-
         } = req.body;
 
-
-        /*----Buscamos los datos del cliente que ha iniciado sesióm----*/
-        const cliente = await clienteModel.getClienteByUsuarioId(req.usuario.id_usuario);
+        /*----Buscamos la ficha del cliente autenticado----*/
+        const cliente = await clienteModel.getClienteByUsuarioId(
+            req.usuario.id_usuario
+        );
 
         if (!cliente) {
 
             return res.status(404).json({
-
                 error: "No existe una ficha de cliente asociada a este usuario"
-
             });
 
         }
 
-
-        /*----Usamos el ID de la ficha del cliente que ha iniciado sesión----*/
         const id_cliente = cliente.id_cliente;
 
-
-        /*----Comprobamos que no falte ningún dato necesario para reservar la cita----*/
+        /*----Comprobamos que estén todos los datos obligatorios----*/
         if (
-
             id_artista == null ||
             id_servicio == null ||
             !fecha ||
             !hora
-
         ) {
 
             return res.status(400).json({
-
                 error: "Faltan datos obligatorios para crear la cita"
-
             });
 
         }
 
+        /*----Validamos los identificadores----*/
         if (
             !validarId(id_artista) ||
             !validarId(id_servicio)
@@ -357,52 +301,55 @@ const createCita = async (req, res) => {
 
         }
 
+        /*----NUEVA VALIDACIÓN: comprobar que el artista ofrece el servicio----*/
+        const ofreceServicio = await citaModel.artistaOfreceServicio(
+            id_artista,
+            id_servicio
+        );
 
-        /*----Comprobamos que la fecha tenga el formato correcto y exista realmente----*/
+        if (!ofreceServicio) {
+
+            return res.status(400).json({
+                error: "El artista seleccionado no ofrece este servicio"
+            });
+
+        }
+
+        /*----Comprobamos que la fecha sea válida----*/
         if (!validarFecha(fecha)) {
 
             return res.status(400).json({
-
                 error: "La fecha debe ser válida y tener formato AAAA-MM-DD"
-
             });
 
         }
 
-        /*----Impedimos solicitar citas en fechas pasadas----*/
-        
+        /*----Impedimos reservar fechas pasadas----*/
         if (!validarFechaNoPasada(fecha)) {
 
             return res.status(400).json({
-
                 error: "No puedes solicitar una cita en una fecha pasada"
-
             });
 
         }
 
-
-        /*----Comprobamos que la hora sea dentro del horario del estudio----*/
+        /*----Validamos el horario de la cita----*/
         if (!validarHora(hora)) {
 
             return res.status(400).json({
-
                 error: "Las citas deben comenzar entre las 13:30 y las 21:00, en punto o a y media"
-
             });
 
         }
 
-        /*--- Guardamos la cita como pendiente hasta que el artista la confirme ---*/
+        /*----Creamos la cita en estado pendiente----*/
         const resultado = await citaModel.createCita(
-
             id_cliente,
             id_artista,
             id_servicio,
             fecha,
             hora,
             "pendiente"
-
         );
 
         return res.status(201).json(resultado);
@@ -412,15 +359,12 @@ const createCita = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
-
             error: "Ha ocurrido un error al crear la nueva cita"
-
         });
 
     }
 
 };
-
 
 
 //=======ACTUALIZAR CITA=======//
@@ -431,69 +375,52 @@ const updateCita = async (req, res) => {
 
         const { id_cita } = req.params;
 
-
-        /*--- Comprobamos que sea un artista o administrador quien modifica la cita ---*/
+        /*----Solo artistas y administradores pueden actualizar citas----*/
         if (
-
             req.usuario.rol !== "artista" &&
             req.usuario.rol !== "admin"
-
         ) {
 
             return res.status(403).json({
-
                 error: "Solo los artistas y administradores pueden actualizar citas"
-
             });
 
         }
 
-
-        /*----Comprobamos que el ID de la cita sea válido antes de modificarla----*/
+        /*----Validamos el ID de la cita----*/
         if (!validarId(id_cita)) {
 
             return res.status(400).json({
-
                 error: "El identificador de la cita no es válido"
             });
 
         }
 
-        /*----Buscamos la cita que queremos modificar----*/
+        /*----Buscamos la cita existente----*/
         const citaExistente = await citaModel.getCitaById(id_cita);
-
 
         if (!citaExistente) {
 
             return res.status(404).json({
-
                 error: "Cita no encontrada"
-
             });
 
         }
 
-        /*--- Comprobamos que el artista tenga asignada la cita que quiere modificar ---*/
+        /*----El artista solo puede modificar sus propias citas----*/
         if (
-
             req.usuario.rol === "artista" &&
             Number(req.usuario.id_usuario) !==
             Number(citaExistente.id_artista)
-
         ) {
 
             return res.status(403).json({
-
                 error: "No tienes permiso para modificar esta cita"
-
             });
 
         }
 
-
-        /*---- Recogemos los datos de la cita que se quieren actualizar----*/
         const {
-
             id_cliente,
             id_artista,
             id_servicio,
@@ -501,20 +428,16 @@ const updateCita = async (req, res) => {
             hora,
             estado,
             duracion_minutos
-
         } = req.body;
 
-
-        /*----Comprobamos que estén todos los datos necesarios para actualizar la cita----*/
+        /*----Comprobamos que estén todos los datos obligatorios----*/
         if (
-
             id_cliente == null ||
             id_artista == null ||
             id_servicio == null ||
             !fecha ||
             !hora ||
             !estado
-
         ) {
 
             return res.status(400).json({
@@ -523,26 +446,20 @@ const updateCita = async (req, res) => {
 
         }
 
-
-        /*----Comprobamos que los ID del cliente, artista y servicio sean válidos----*/
+        /*----Validamos los identificadores----*/
         if (
-
             !validarId(id_cliente) ||
             !validarId(id_artista) ||
             !validarId(id_servicio)
-
         ) {
 
             return res.status(400).json({
-
                 error: "Alguno de los identificadores no es válido"
-
             });
 
         }
 
-
-        /*----Definimos los estados que puede tener una cita----*/
+        /*----Definimos los estados permitidos----*/
         const estadosPermitidos = [
             "pendiente",
             "confirmada",
@@ -552,36 +469,28 @@ const updateCita = async (req, res) => {
         if (!estadosPermitidos.includes(estado)) {
 
             return res.status(400).json({
-
                 error: "El estado de la cita no es válido"
             });
 
         }
 
-        /*--- El artista puede actualizar su cita, pero no cambiar el cliente,
-         el artista asignado ni el servicio ---*/
+        /*----El artista no puede cambiar el profesional, cliente o servicio----*/
         if (req.usuario.rol === "artista") {
 
             if (
-
                 Number(id_artista) !==
                 Number(citaExistente.id_artista)
-
             ) {
 
                 return res.status(403).json({
-
                     error: "No puedes asignar esta cita a otro artista"
-
                 });
 
             }
 
             if (
-
                 Number(id_cliente) !==
                 Number(citaExistente.id_cliente)
-
             ) {
 
                 return res.status(403).json({
@@ -603,109 +512,109 @@ const updateCita = async (req, res) => {
 
         }
 
+        /*----NUEVA VALIDACIÓN: comprobar que el artista ofrece el servicio----*/
+        const ofreceServicio = await citaModel.artistaOfreceServicio(
+            id_artista,
+            id_servicio
+        );
 
-        /*----Comprobamos que la nueva fecha sea válida antes de guardar los cambios----*/
+        if (!ofreceServicio) {
+
+            return res.status(400).json({
+                error: "El artista seleccionado no ofrece este servicio"
+            });
+
+        }
+
+        /*----Comprobamos que la fecha sea válida----*/
         if (!validarFecha(fecha)) {
 
             return res.status(400).json({
-
                 error: "La fecha debe ser válida y tener formato AAAA-MM-DD"
-
             });
 
         }
 
+        /*----Impedimos actualizar citas a fechas pasadas----*/
+        if (!validarFechaNoPasada(fecha)) {
 
-        /*----La hora también tiene que respetar el horario del estudio----*/
+            return res.status(400).json({
+                error: "No puedes actualizar una cita a una fecha pasada"
+            });
+
+        }
+
+        /*----Validamos el horario----*/
         if (!validarHora(hora)) {
 
             return res.status(400).json({
-
                 error: "La hora debe estar entre las 13:30 y las 21:00, en punto o a y media"
-
             });
 
         }
 
+        /*----Comprobamos que la duración sea positiva y múltiplo de 30----*/
         if (
             duracion_minutos != null &&
             (
                 !Number.isInteger(duracion_minutos) ||
-                duracion_minutos <= 0
+                duracion_minutos <= 0 ||
+                duracion_minutos % 30 !== 0
             )
         ) {
 
             return res.status(400).json({
-                error: "La duración debe ser un número entero mayor que cero"
+                error: "La duración debe ser un número entero positivo y múltiplo de 30 minutos"
             });
 
         }
 
-
-
-
-
-        /*--- Para confirmar una cita, comprobamos su duración y que no coincida con otra cita ---*/
+        /*----Para confirmar una cita comprobamos duración y solapamientos----*/
         if (estado === "confirmada") {
 
             if (duracion_minutos == null) {
 
                 return res.status(400).json({
-
                     error: "Para confirmar una cita debes indicar su duración"
-
                 });
 
             }
 
-
-            /*---Calculamos a qué hora terminará la cita sumando su duración a la hora de inicio----*/
+            /*----Calculamos la hora de finalización----*/
             const inicioMinutos = convertirHoraAMinutos(hora);
-
             const finMinutos = inicioMinutos + duracion_minutos;
-
-
 
             const cierre = 21 * 60 + 30;
 
             if (finMinutos > cierre) {
 
                 return res.status(400).json({
-
                     error: "La cita no puede terminar después de las 21:30"
-
                 });
 
             }
 
-            /*----Comprobamos que el artista no tenga otra cita confirmada que coincida con este horario----*/
-            const haySolapamiento =
-
-                await citaModel.comprobarSolapamiento(
-
-                    id_artista,
-                    fecha,
-                    hora,
-                    duracion_minutos,
-                    id_cita
-
-                );
+            /*----Comprobamos que no exista otra cita confirmada en ese horario----*/
+            const haySolapamiento = await citaModel.comprobarSolapamiento(
+                id_artista,
+                fecha,
+                hora,
+                duracion_minutos,
+                id_cita
+            );
 
             if (haySolapamiento) {
 
                 return res.status(409).json({
-
                     error: "El artista ya tiene una cita en ese horario"
-
                 });
 
             }
 
         }
 
-        /*--- Si todas las comprobaciones son correctas, actualizamos la cita en la base de datos ---*/
+        /*----Actualizamos la cita después de todas las comprobaciones----*/
         const resultado = await citaModel.updateCita(
-
             id_cita,
             id_cliente,
             id_artista,
@@ -714,7 +623,6 @@ const updateCita = async (req, res) => {
             hora,
             estado,
             duracion_minutos ?? null
-
         );
 
         return res.status(200).json(resultado);
@@ -724,9 +632,7 @@ const updateCita = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
-
             error: "Ha ocurrido un error al actualizar la cita"
-
         });
 
     }
@@ -735,45 +641,36 @@ const updateCita = async (req, res) => {
 
 
 //=======ELIMINAR CITA=======//
+
 const deleteCita = async (req, res) => {
 
     try {
 
-        /*--- Comprobamos que sea un administrador quien solicita eliminar la cita ---*/
+        /*----Solo los administradores pueden eliminar citas----*/
         if (req.usuario.rol !== "admin") {
 
             return res.status(403).json({
-
                 error: "Solo los administradores pueden eliminar citas"
-
             });
 
         }
 
         const { id_cita } = req.params;
 
-
-        /*----Comprobamos que el ID recibido sea válido antes de intentar eliminar la cita----*/
         if (!validarId(id_cita)) {
 
             return res.status(400).json({
-
                 error: "El identificador de la cita no es válido"
-
             });
 
         }
 
-
-        /*--- Eliminamos la cita de la base de datos utilizando su ID ---*/
         const resultado = await citaModel.deleteCita(id_cita);
 
         if (!resultado) {
 
             return res.status(404).json({
-
                 error: "Cita no encontrada"
-
             });
 
         }
@@ -785,16 +682,12 @@ const deleteCita = async (req, res) => {
         console.error(error);
 
         return res.status(500).json({
-
             error: "Ha ocurrido un error al eliminar la cita"
-
         });
 
     }
 
 };
-
-
 
 
 //=======CONSULTA HORARIOS DISPONIBLES=======//
@@ -803,18 +696,13 @@ const getDisponibilidad = async (req, res) => {
 
     try {
 
-
-        /*----Recogemos el artista y la fecha para consultar su disponibilidad----*/
+        /*----Recogemos el artista y la fecha----*/
         const { id_artista, fecha } = req.query;
 
-
-        /*----Comprobamos que los datos recibidos estén completos y sean válidos----*/
         if (!id_artista || !fecha) {
 
             return res.status(400).json({
-
                 error: "Debes indicar el artista y la fecha"
-
             });
 
         }
@@ -835,42 +723,48 @@ const getDisponibilidad = async (req, res) => {
 
         }
 
-        /*----Buscamos las citas confirmadas que ya tiene el artista ese día----*/
-        const citasOcupadas = await citaModel.getCitasOcupadas(id_artista, fecha);
+        /*----Consultamos las citas confirmadas del artista----*/
+        const citasOcupadas = await citaModel.getCitasOcupadas(
+            id_artista,
+            fecha
+        );
 
-        /*----Convertimos el horario del estudio a minutos para trabajar con las horas disponibles----*/
         const apertura = 13 * 60 + 30;
         const cierre = 21 * 60 + 30;
 
         const horariosDisponibles = [];
 
-        /*----Recorremos el horario del estudio de media hora en media hora----*/
-        for (let minuto = apertura; minuto < cierre; minuto += 30) {
+        /*----Recorremos el horario de media hora en media hora----*/
+        for (
+            let minuto = apertura;
+            minuto < cierre;
+            minuto += 30
+        ) {
 
-
-            /*----Comprobamos si ese horario está ocupado por alguna cita confirmada----*/
             const estaOcupado = citasOcupadas.some((cita) => {
 
+                const inicioCita = convertirHoraAMinutos(
+                    cita.hora.slice(0, 5)
+                );
 
-                const inicioCita = convertirHoraAMinutos(cita.hora.slice(0, 5));
                 const finCita = inicioCita + cita.duracion_minutos;
 
                 return (
-
                     minuto >= inicioCita &&
                     minuto < finCita
-
                 );
-
 
             });
 
             if (!estaOcupado) {
 
-                /*----Volvemos a convertir los minutos en horas y minutos para mostrarlos al cliente----*/
                 const horas = Math.floor(minuto / 60);
                 const minutos = minuto % 60;
-                const horaFormateada = String(horas).padStart(2, "0") + ":" + String(minutos).padStart(2, "0");
+
+                const horaFormateada =
+                    String(horas).padStart(2, "0") +
+                    ":" +
+                    String(minutos).padStart(2, "0");
 
                 horariosDisponibles.push(horaFormateada);
 
@@ -879,11 +773,9 @@ const getDisponibilidad = async (req, res) => {
         }
 
         return res.status(200).json({
-
             id_artista: Number(id_artista),
             fecha,
             horarios_disponibles: horariosDisponibles
-
         });
 
     } catch (error) {
@@ -900,13 +792,12 @@ const getDisponibilidad = async (req, res) => {
 
 
 //=======EXPORTAR FUNCIONES=======//
-module.exports = {
 
+module.exports = {
     getCitas,
     getCitaById,
     createCita,
     updateCita,
     deleteCita,
     getDisponibilidad
-
 };
