@@ -243,7 +243,7 @@ function PerfilArtista({ artistas, token, usuario }) {
         <section id="perfil-artista">
 
             <h2>Perfil del artista</h2>
-            
+
 
             {/* ===== DATOS DEL ARTISTA ===== */}
             <div className="datos-artista">
@@ -260,7 +260,21 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                 <p>{artista.especialidad}</p>
 
-                <p>{artista.descripcion}</p>
+
+                {/* ===== BIOGRAFÍA DEL ARTISTA ===== */}
+                <div className="biografia-artista">
+
+                    {(artista.descripcion_larga || artista.descripcion)
+                        ?.split("\n\n")
+                        .map((parrafo, index) => (
+
+                            <p key={index}>
+                                {parrafo}
+                            </p>
+
+                        ))}
+
+                </div>
 
             </div>
 

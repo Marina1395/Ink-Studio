@@ -455,6 +455,16 @@ function App() {
                     key={profesional.id_usuario}
                   >
 
+                    {/* ===== FOTOGRAFÍA DEL ARTISTA ===== */}
+                    {(profesional.imagen_tarjeta || profesional.imagen) && (
+                      <img
+                        src={profesional.imagen_tarjeta || profesional.imagen}
+                        alt={`Fotografía de ${profesional.nombre}`}
+                        className="foto-tarjeta-artista"
+                      />
+                    )}
+
+                    {/* ===== INFORMACIÓN DEL ARTISTA ===== */}
                     <h3>{profesional.nombre}</h3>
 
                     <p>{profesional.especialidad}</p>
@@ -469,60 +479,64 @@ function App() {
 
                   </div>
 
+                
+
+              
+
                 ))}
-
-              </div>
-
-            </section>
-
-
-            {/* ===== TRABAJOS ===== */}
-            <section id="trabajos">
-
-              <h2>Nuestros trabajos</h2>
-
-              <p>
-                Descubre los trabajos realizados por nuestros artistas.
-              </p>
-
-            </section>
 
           </div>
 
-        }
-      />
+            </section>
 
 
-      {/* ===== PERFIL DEL ARTISTA ===== */}
-      <Route
-        path="/artistas/:id"
-        element={
+            {/* ===== TRABAJOS ===== */ }
+  <section id="trabajos">
 
-          cargando ? (
+    <h2>Nuestros trabajos</h2>
 
-            <p>Cargando perfil del artista...</p>
+    <p>
+      Descubre los trabajos realizados por nuestros artistas.
+    </p>
 
-          ) : (
+  </section>
 
-            <div>
-
-              {/* Login también disponible en el perfil */}
-              {formularioLogin}
-
-              <PerfilArtista
-                artistas={artistas}
-                token={token}
-                usuario={usuario}
-              />
-
-            </div>
-
-          )
+          </div >
 
         }
       />
 
-    </Routes>
+
+{/* ===== PERFIL DEL ARTISTA ===== */ }
+<Route
+  path="/artistas/:id"
+  element={
+
+    cargando ? (
+
+      <p>Cargando perfil del artista...</p>
+
+    ) : (
+
+      <div>
+
+        {/* Login también disponible en el perfil */}
+        {formularioLogin}
+
+        <PerfilArtista
+          artistas={artistas}
+          token={token}
+          usuario={usuario}
+        />
+
+      </div>
+
+    )
+
+  }
+/>
+
+    </Routes >
 
   );
 

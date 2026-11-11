@@ -6,6 +6,7 @@ const pool = require("../db/connection");
 //========OBTENER TODOS LOS ARTISTAS========//
 const getArtistas = async () => {
 
+    
     /*----Obtenemos los artistas junto con sus nombres e imágenes----*/
     const result = await pool.query(
 
@@ -14,16 +15,18 @@ const getArtistas = async () => {
             usuario.nombre,
             artista.especialidad,
             artista.descripcion,
-            artista.imagen
-
+            artista.descripcion_larga,
+            artista.imagen,
+            artista.imagen_tarjeta
         FROM artista
         INNER JOIN usuario
-        ON artista.id_usuario = usuario.id_usuario
-        `
+        ON artista.id_usuario = usuario.id_usuario`
 
     );
 
-    return result.rows;
+   
+
+return result.rows;
 
 };
 
