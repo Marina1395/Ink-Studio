@@ -832,3 +832,130 @@ section p {
     display: block;
     margin: 0 auto 20px;
 }
+
+
+/* ==========================================
+   NUEVO DISEÑO - PERFIL DE ARTISTAS
+========================================== */
+
+/* ===== FOTO IZQUIERDA + BIOGRAFÍA DERECHA ===== */
+
+#perfil-artista .datos-artista {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    align-items: center;
+    gap: 40px;
+
+    width: 100%;
+    max-width: 1150px;
+    margin: 40px auto 70px;
+    padding: 30px;
+
+    text-align: left;
+}
+
+/* ===== FOTOGRAFÍA GRANDE ===== */
+
+#perfil-artista .foto-perfil-artista {
+    width: 100%;
+    max-width: none;
+    height: 580px;
+
+    object-fit: cover;
+    object-position: center;
+
+    border-radius: 14px;
+    margin: 0;
+
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45);
+}
+
+/* ===== INFORMACIÓN DEL ARTISTA ===== */
+
+#perfil-artista .datos-artista h3 {
+    font-size: 42px;
+    color: #ffffff;
+    margin: 0 0 15px;
+}
+
+#perfil-artista .datos-artista > p {
+    font-size: 18px;
+    color: var(--azul-claro);
+    margin-bottom: 25px;
+}
+
+/* ===== BIOGRAFÍA ===== */
+
+#perfil-artista .biografia-artista {
+    max-width: 550px;
+}
+
+#perfil-artista .biografia-artista p {
+    font-size: 16px;
+    line-height: 1.9;
+    color: var(--texto-secundario);
+    margin-bottom: 20px;
+}
+
+/* ===== TRABAJOS ===== */
+
+#perfil-artista .trabajos-artista {
+    max-width: 1150px;
+    margin: 50px auto;
+    padding: 40px;
+
+    background: #10151d;
+    border: 1px solid var(--azul-oscuro);
+    border-radius: 14px;
+}
+
+/* ===== TABLETS ===== */
+
+@media (max-width: 900px) {
+
+    #perfil-artista .datos-artista {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    #perfil-artista .foto-perfil-artista {
+        max-width: 450px;
+        height: 500px;
+        margin: 0 auto;
+    }
+
+    #perfil-artista .biografia-artista {
+        margin: 0 auto;
+    }
+
+}
+
+/* ===== MÓVILES ===== */
+
+@media (max-width: 600px) {
+
+    #perfil-artista .datos-artista {
+        padding: 10px;
+        margin: 20px auto 40px;
+    }
+
+    #perfil-artista .foto-perfil-artista {
+        width: 100%;
+        height: 400px;
+    }
+
+    #perfil-artista .datos-artista h3 {
+        font-size: 32px;
+    }
+
+    #perfil-artista .biografia-artista p {
+        font-size: 15px;
+    }
+
+    #perfil-artista .trabajos-artista {
+        padding: 25px 15px;
+    }
+
+}

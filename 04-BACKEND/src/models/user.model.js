@@ -47,16 +47,22 @@ const createUser = async (nombre, email, contrasena, rol) => {
 //======OBTENER UN USUARIO POR ID========//
 
 
+
 const getUserById = (id_usuario) => {
 
-    /*----Buscamos un usuario concreto utilizando su ID----*/
+    /*----Buscamos un usuario por su ID sin devolver su contraseña----*/
     return pool.query(
 
-        'SELECT * FROM usuario WHERE id_usuario,nombre, email, rol FROM usuario WHERE id_usuario = $1',
+        `SELECT id_usuario, nombre, email, rol
+         FROM usuario
+         WHERE id_usuario = $1`,
+
         [id_usuario]
+
     );
 
 };
+
 
 
 //======ACTUALIZAR UN USUARIO======//

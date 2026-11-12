@@ -245,38 +245,54 @@ function PerfilArtista({ artistas, token, usuario }) {
             <h2>Perfil del artista</h2>
 
 
+
             {/* ===== DATOS DEL ARTISTA ===== */}
             <div className="datos-artista">
 
-                {artista.imagen && (
-                    <img
-                        src={artista.imagen}
-                        alt={`Fotografía de ${artista.nombre}`}
-                        className="foto-perfil-artista"
-                    />
-                )}
+                {/* ===== FOTOGRAFÍA IZQUIERDA ===== */}
+                <div className="contenedor-foto-artista">
 
-                <h3>{artista.nombre}</h3>
+                    {artista.imagen && (
+                        <img
+                            src={artista.imagen}
+                            alt={`Fotografía de ${artista.nombre}`}
+                            className="foto-perfil-artista"
+                        />
+                    )}
 
-                <p>{artista.especialidad}</p>
+                </div>
 
+                {/* ===== INFORMACIÓN DERECHA ===== */}
+                <div className="informacion-artista">
 
-                {/* ===== BIOGRAFÍA DEL ARTISTA ===== */}
-                <div className="biografia-artista">
+                    <h3>{artista.nombre}</h3>
 
-                    {(artista.descripcion_larga || artista.descripcion)
-                        ?.split("\n\n")
-                        .map((parrafo, index) => (
+                    <p className="especialidad-artista">
+                        {artista.especialidad}
+                    </p>
 
-                            <p key={index}>
-                                {parrafo}
-                            </p>
+                    
 
-                        ))}
+                    {/* ===== BIOGRAFÍA ===== */}
+                    <div className="biografia-artista">
+
+                        {(artista.descripcion_larga || artista.descripcion)
+
+                            ?.split("\n\n")
+                            .map((parrafo, index) => (
+
+                                <p key={index}>
+                                    {parrafo}
+                                </p>
+
+                            ))}
+
+                    </div>
 
                 </div>
 
             </div>
+
 
             {/* ===== TRABAJOS DEL ARTISTA ===== */}
             <div className="trabajos-artista">
