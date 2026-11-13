@@ -1,19 +1,20 @@
 
 import { useState, useEffect } from "react";
-import PerfilArtista from "./components/PerfilArtista";
 
 import {
   Routes,
   Route,
   Link,
-  useLocation
+  NavLink,
+  Navigate
 } from "react-router-dom";
+
+import PerfilArtista from "./components/PerfilArtista";
 
 import "./App.css";
 
+
 const API_URL = "http://localhost:3000";
-
-
 
 
 // ===== COMPONENTE PRINCIPAL =====
@@ -22,24 +23,24 @@ function App() {
   // ===== FILTRO DE ARTISTAS =====
   const [filtro, setFiltro] = useState("Todos");
 
+
   // ===== ARTISTAS =====
   const [artistas, setArtistas] = useState([]);
   const [cargando, setCargando] = useState(true);
+
 
   // ===== LOGIN =====
   const [email, setEmail] = useState("");
   const [contrasena, setContrasena] = useState("");
 
   // Guardamos la autenticación en memoria.
-  // Al recargar la página será necesario iniciar sesión de nuevo.
+  // Al recargar será necesario iniciar sesión de nuevo.
   const [token, setToken] = useState("");
   const [usuario, setUsuario] = useState(null);
 
   const [iniciandoSesion, setIniciandoSesion] = useState(false);
   const [errorLogin, setErrorLogin] = useState("");
   const [mensajeLogin, setMensajeLogin] = useState("");
-
-  const location = useLocation();
 
 
   // ===== INICIAR SESIÓN =====
@@ -53,20 +54,21 @@ function App() {
 
     try {
 
-      const respuesta = await fetch(`${API_URL}/usuarios/login`, {
+      const respuesta = await fetch(
+        `${API_URL}/usuarios/login`,
+        {
+          method: "POST",
 
-        method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          email: email.trim(),
-          contrasena: contrasena
-        })
-
-      });
+          body: JSON.stringify({
+            email: email.trim(),
+            contrasena: contrasena
+          })
+        }
+      );
 
       const datos = await respuesta.json();
 
@@ -89,7 +91,7 @@ function App() {
       setToken(datos.token);
       setUsuario(datos.usuario);
 
-      // No mantenemos la contraseña escrita en el formulario
+      // Limpiamos la contraseña después del acceso.
       setContrasena("");
 
       setMensajeLogin(
@@ -124,23 +126,6 @@ function App() {
   };
 
 
-  // ===== VOLVER A LA SECCIÓN DEL EQUIPO =====
-  useEffect(() => {
-
-    if (
-      location.pathname === "/" &&
-      location.state?.volverAEquipo
-    ) {
-
-      document.getElementById("equipo")?.scrollIntoView({
-        behavior: "smooth"
-      });
-
-    }
-
-  }, [location]);
-
-
   // ===== OBTENER ARTISTAS =====
   useEffect(() => {
 
@@ -153,7 +138,11 @@ function App() {
         );
 
         if (!respuesta.ok) {
-          throw new Error("Error al obtener los artistas");
+
+          throw new Error(
+            "Error al obtener los artistas"
+          );
+
         }
 
         const datos = await respuesta.json();
@@ -298,248 +287,396 @@ function App() {
   );
 
 
+  // ===== CABECERA Y MENÚ DE NAVEGACIÓN =====
+  const cabecera = (
+
+    <header>
+
+      <Link to="/">
+
+        <img
+          src="/artistas/logo_hache.png"
+          alt="Hache Studio"
+          className="logo-hache"
+        />
+
+      </Link>
+
+      <nav className="nav-gotico">
+
+        <span
+          className="filigrana-lateral filigrana-izquierda"
+          aria-hidden="true"
+        ></span>
+
+
+        {/* ===== MENÚ DE NAVEGACIÓN ENTRE PÁGINAS ===== */}
+
+        <NavLink to="/" end>
+          Inicio
+        </NavLink>
+
+        <NavLink to="/servicios">
+          Servicios
+        </NavLink>
+
+        <NavLink to="/equipo">
+          Nuestro equipo
+        </NavLink>
+
+        <NavLink to="/trabajos">
+          Trabajos
+        </NavLink>
+
+        <NavLink to="/contacto">
+          Contacto
+        </NavLink>
+
+
+        <span
+          className="filigrana-lateral filigrana-derecha"
+          aria-hidden="true"
+        ></span>
+
+      </nav>
+
+    </header>
+
+  );
+
+
+  // ===== MOSTRAR PÁGINAS DE LA APLICACIÓN =====
   return (
 
-    <Routes>
+    <div className="app-hache">
 
-      {/* ===== PÁGINA PRINCIPAL ===== */}
-      <Route
-        path="/"
-        element={
-
-          <div>
-
-            {/* ===== CABECERA ===== */}
-            <header>
-
-              <img
-                src="/artistas/logo_hache.png"
-                alt="Hache Studio"
-                className="logo-hache"
-              />
-
-              <nav className="nav-gotico">
-
-                <span
-                  className="filigrana-lateral filigrana-izquierda"
-                  aria-hidden="true"
-                ></span>
-
-                <a href="#inicio">Inicio</a>
-                <a href="#servicios">Servicios</a>
-                <a href="#equipo">Nuestro equipo</a>
-                <a href="#trabajos">Trabajos</a>
-                <a href="#contacto">Contacto</a>
-
-                <span
-                  className="filigrana-lateral filigrana-derecha"
-                  aria-hidden="true"
-                ></span>
-
-              </nav>
-
-            </header>
+      {/* ===== CABECERA COMÚN ===== */}
+      {cabecera}
 
 
-            {/* ===== INICIO ===== */}
-            <section id="inicio">
+      <Routes>
 
-              <h2>Bienvenido a Hache Studio</h2>
+        {/* ===== PÁGINA PRINCIPAL ===== */}
+        <Route
+          path="/"
+          element={
 
-              <p>
-                Estudio de tatuajes, piercings y gemas dentales.
-              </p>
+            <main>
 
-              <a href="#servicios">
-                Descubre nuestros servicios
-              </a>
+              {/* ===== INICIO ===== */}
+              <section id="inicio">
 
-            </section>
+                <h2>Bienvenido a Hache Studio</h2>
 
+                <p>
+                  Estudio de tatuajes, piercings y gemas dentales.
+                </p>
 
-            {/* ===== LOGIN ===== */}
-            <section id="acceso-clientes">
+                <Link to="/servicios">
+                  Descubre nuestros servicios
+                </Link>
 
-              {formularioLogin}
-
-            </section>
-
-
-            {/* ===== SERVICIOS ===== */}
-            <section id="servicios">
-
-              <h2>Nuestros servicios</h2>
-
-              <div className="servicios-container">
-
-                <div className="servicio">
-
-                  <h3>Tatuajes</h3>
-
-                  <p>
-                    Diseños personalizados realizados por nuestros artistas.
-                  </p>
-
-                </div>
-
-                <div className="servicio">
-
-                  <h3>Piercings</h3>
-
-                  <p>
-                    Perforaciones profesionales adaptadas a tu estilo.
-                  </p>
-
-                </div>
-
-                <div className="servicio">
-
-                  <h3>Gemas dentales</h3>
-
-                  <p>
-                    Un toque de brillo para tu sonrisa.
-                  </p>
-
-                </div>
-
-              </div>
-
-            </section>
+              </section>
 
 
-            {/* ===== EQUIPO ===== */}
-            <section id="equipo">
+              {/* ===== LOGIN ===== */}
+              <section id="acceso-clientes">
 
-              <h2>Conoce a nuestro equipo</h2>
+                {formularioLogin}
 
-              <div className="filtros-equipo">
+              </section>
 
-                <button
-                  type="button"
-                  onClick={() => setFiltro("Todos")}
-                >
-                  Todos
-                </button>
+            </main>
 
-                <button
-                  type="button"
-                  onClick={() => setFiltro("Tatuajes")}
-                >
-                  Tatuajes
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setFiltro("Piercings")}
-                >
-                  Piercings
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setFiltro("Gemas dentales")}
-                >
-                  Gemas dentales
-                </button>
-
-              </div>
+          }
+        />
 
 
-              {/* ===== TARJETAS DE ARTISTAS ===== */}
-              <div className="equipo-container">
+        {/* ===== PÁGINA INDEPENDIENTE DE SERVICIOS ===== */}
+        <Route
+          path="/servicios"
+          element={
 
-                {profesionalesFiltrados.map((profesional) => (
+            <main>
 
-                  <div
-                    className="profesional"
-                    key={profesional.id_usuario}
-                  >
+              <section id="servicios">
 
-                    {/* ===== FOTOGRAFÍA DEL ARTISTA ===== */}
-                    {(profesional.imagen_tarjeta || profesional.imagen) && (
-                      <img
-                        src={profesional.imagen_tarjeta || profesional.imagen}
-                        alt={`Fotografía de ${profesional.nombre}`}
-                        className="foto-tarjeta-artista"
-                      />
-                    )}
+                <h2>Nuestros servicios</h2>
 
-                    {/* ===== INFORMACIÓN DEL ARTISTA ===== */}
-                    <h3>{profesional.nombre}</h3>
+                <div className="servicios-container">
 
-                    <p>{profesional.especialidad}</p>
+                  <div className="servicio">
 
-                    <p>{profesional.descripcion}</p>
+                    <h3>Tatuajes</h3>
 
-                    <Link
-                      to={`/artistas/${profesional.id_usuario}`}
-                    >
-                      Ver perfil
-                    </Link>
+                    <p>
+                      Diseños personalizados realizados por nuestros artistas.
+                    </p>
 
                   </div>
 
-                
 
-              
+                  <div className="servicio">
 
-                ))}
+                    <h3>Piercings</h3>
 
-          </div>
+                    <p>
+                      Perforaciones profesionales adaptadas a tu estilo.
+                    </p>
 
-            </section>
-
-
-            {/* ===== TRABAJOS ===== */ }
-  <section id="trabajos">
-
-    <h2>Nuestros trabajos</h2>
-
-    <p>
-      Descubre los trabajos realizados por nuestros artistas.
-    </p>
-
-  </section>
-
-          </div >
-
-        }
-      />
+                  </div>
 
 
-{/* ===== PERFIL DEL ARTISTA ===== */ }
-<Route
-  path="/artistas/:id"
-  element={
+                  <div className="servicio">
 
-    cargando ? (
+                    <h3>Gemas dentales</h3>
 
-      <p>Cargando perfil del artista...</p>
+                    <p>
+                      Un toque de brillo para tu sonrisa.
+                    </p>
 
-    ) : (
+                  </div>
 
-      <div>
+                </div>
 
-        {/* Login también disponible en el perfil */}
-        {formularioLogin}
 
-        <PerfilArtista
-          artistas={artistas}
-          token={token}
-          usuario={usuario}
+                <Link to="/equipo">
+                  Conoce a nuestro equipo
+                </Link>
+
+              </section>
+
+            </main>
+
+          }
         />
 
-      </div>
 
-    )
+        {/* ===== PÁGINA INDEPENDIENTE DE NUESTRO EQUIPO ===== */}
+        <Route
+          path="/equipo"
+          element={
 
-  }
-/>
+            <main>
 
-    </Routes >
+              <section id="equipo">
+
+                <h2>Conoce a nuestro equipo</h2>
+
+
+                {/* ===== FILTROS DE ARTISTAS ===== */}
+                <div className="filtros-equipo">
+
+                  <button
+                    type="button"
+                    onClick={() => setFiltro("Todos")}
+                  >
+                    Todos
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFiltro("Tatuajes")}
+                  >
+                    Tatuajes
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFiltro("Piercings")}
+                  >
+                    Piercings
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFiltro("Gemas dentales")}
+                  >
+                    Gemas dentales
+                  </button>
+
+                </div>
+
+
+                {/* ===== TARJETAS DE ARTISTAS ===== */}
+                {cargando ? (
+
+                  <p>Cargando profesionales...</p>
+
+                ) : (
+
+                  <div className="equipo-container">
+
+                    {profesionalesFiltrados.map((profesional) => (
+
+                      <div
+                        className="profesional"
+                        key={profesional.id_usuario}
+                      >
+
+                        {/* ===== FOTOGRAFÍA DEL ARTISTA ===== */}
+                        {(profesional.imagen_tarjeta || profesional.imagen) && (
+
+                          <img
+                            src={
+                              profesional.imagen_tarjeta ||
+                              profesional.imagen
+                            }
+                            alt={`Fotografía de ${profesional.nombre}`}
+                            className="foto-tarjeta-artista"
+                          />
+
+                        )}
+
+
+                        {/* ===== INFORMACIÓN DEL ARTISTA ===== */}
+                        <h3>{profesional.nombre}</h3>
+
+                        <p>{profesional.especialidad}</p>
+
+                        <p>{profesional.descripcion}</p>
+
+
+                        <Link
+                          to={`/artistas/${profesional.id_usuario}`}
+                        >
+                          Ver perfil
+                        </Link>
+
+                      </div>
+
+                    ))}
+
+                    {profesionalesFiltrados.length === 0 && (
+
+                      <p>
+                        No hay profesionales disponibles
+                        para esta especialidad.
+                      </p>
+
+                    )}
+
+                  </div>
+
+                )}
+
+              </section>
+
+            </main>
+
+          }
+        />
+
+
+        {/* ===== PÁGINA INDEPENDIENTE DE TRABAJOS ===== */}
+        <Route
+          path="/trabajos"
+          element={
+
+            <main>
+
+              <section id="trabajos">
+
+                <h2>Nuestros trabajos</h2>
+
+                <p>
+                  Descubre los trabajos realizados por nuestros artistas.
+                </p>
+
+                <Link to="/equipo">
+                  Ver perfiles de los artistas
+                </Link>
+
+              </section>
+
+            </main>
+
+          }
+        />
+
+
+        {/* ===== PÁGINA INDEPENDIENTE DE CONTACTO ===== */}
+        <Route
+          path="/contacto"
+          element={
+
+            <main>
+
+              <section id="contacto">
+
+                <h2>Contacto</h2>
+
+                <p>
+                  ¿Tienes alguna duda sobre nuestros servicios?
+                </p>
+
+                <p>
+                  Consulta los perfiles de nuestros profesionales
+                  y solicita una cita con el artista que prefieras.
+                </p>
+
+                <Link to="/equipo">
+                  Conoce a nuestro equipo
+                </Link>
+
+              </section>
+
+            </main>
+
+          }
+        />
+
+
+        {/* ===== PERFIL INDIVIDUAL DEL ARTISTA ===== */}
+        <Route
+          path="/artistas/:id"
+          element={
+
+            cargando ? (
+
+              <p>Cargando perfil del artista...</p>
+
+            ) : (
+
+              <main>
+
+                {/* ===== LOGIN DISPONIBLE EN EL PERFIL ===== */}
+                <section id="acceso-clientes">
+
+                  {formularioLogin}
+
+                </section>
+
+
+                {/* ===== INFORMACIÓN Y RESERVAS DEL ARTISTA ===== */}
+                <PerfilArtista
+                  artistas={artistas}
+                  token={token}
+                  usuario={usuario}
+                />
+
+              </main>
+
+            )
+
+          }
+        />
+
+
+        {/* ===== RUTAS NO ENCONTRADAS ===== */}
+        <Route
+          path="*"
+          element={<Navigate to="/" replace />}
+        />
+
+      </Routes>
+
+    </div>
 
   );
 
 }
 
+
+// ===== EXPORTAR COMPONENTE PRINCIPAL =====
 export default App;

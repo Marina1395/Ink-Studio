@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -30,7 +31,6 @@ function PerfilArtista({ artistas, token, usuario }) {
     const [errorCita, setErrorCita] = useState("");
     const [mensajeCita, setMensajeCita] = useState("");
 
-
     // ===== CARGAR SERVICIOS =====
     useEffect(() => {
 
@@ -62,7 +62,6 @@ function PerfilArtista({ artistas, token, usuario }) {
         obtenerServicios();
 
     }, [id]);
-
 
     // ===== CONSULTAR DISPONIBILIDAD =====
     const consultarDisponibilidad = async () => {
@@ -117,7 +116,6 @@ function PerfilArtista({ artistas, token, usuario }) {
         }
 
     };
-
 
     // ===== SOLICITAR CITA =====
     const solicitarCita = async () => {
@@ -217,7 +215,6 @@ function PerfilArtista({ artistas, token, usuario }) {
 
     };
 
-
     // ===== COMPROBAR SI EXISTE EL ARTISTA =====
     if (!artista) {
 
@@ -227,8 +224,8 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                 <h2>Artista no encontrado</h2>
 
-                <Link to="/">
-                    Volver al inicio
+                <Link to="/equipo">
+                    Volver a nuestro equipo
                 </Link>
 
             </section>
@@ -237,14 +234,41 @@ function PerfilArtista({ artistas, token, usuario }) {
 
     }
 
+    // ===== FOTOGRAFÍAS DE LOS ARTISTAS =====
+    const trabajosPorArtista = {
+
+        // José
+        23: [
+            "IMG_0006.jpeg",
+            "IMG_1338.jpeg",
+            "IMG_3468.jpeg",
+            "IMG_3704.jpeg",
+            "IMG_6182.jpeg",
+            "jose-06.jpeg"
+        ],
+
+        // Fanny
+        21: [
+            "f_01.jpg",
+            "f_02.jpg",
+            "f_03.jpg"
+        ]
+
+    };
+
+    const carpetasPorArtista = {
+        23: "Jose",
+        21: "Fanny"
+    };
+
+    const trabajos = trabajosPorArtista[artista.id_usuario] || [];
+    const carpetaTrabajos = carpetasPorArtista[artista.id_usuario];
 
     return (
 
         <section id="perfil-artista">
 
             <h2>Perfil del artista</h2>
-
-
 
             {/* ===== DATOS DEL ARTISTA ===== */}
             <div className="datos-artista">
@@ -271,13 +295,10 @@ function PerfilArtista({ artistas, token, usuario }) {
                         {artista.especialidad}
                     </p>
 
-                    
-
                     {/* ===== BIOGRAFÍA ===== */}
                     <div className="biografia-artista">
 
                         {(artista.descripcion_larga || artista.descripcion)
-
                             ?.split("\n\n")
                             .map((parrafo, index) => (
 
@@ -293,18 +314,37 @@ function PerfilArtista({ artistas, token, usuario }) {
 
             </div>
 
-
             {/* ===== TRABAJOS DEL ARTISTA ===== */}
             <div className="trabajos-artista">
 
                 <h3>Trabajos realizados</h3>
 
-                <p>
-                    Aquí podrás ver los trabajos realizados por {artista.nombre}.
-                </p>
+                {trabajos.length > 0 ? (
+
+                    <div className="galeria-trabajos">
+
+                        {trabajos.map((imagen) => (
+
+                            <img
+                                key={imagen}
+                                src={`/Trabajos/${carpetaTrabajos}/${imagen}`}
+                                alt={`Trabajo realizado por ${artista.nombre}`}
+                                className="imagen-trabajo"
+                            />
+
+                        ))}
+
+                    </div>
+
+                ) : (
+
+                    <p>
+                        Aquí podrás ver los trabajos realizados por {artista.nombre}.
+                    </p>
+
+                )}
 
             </div>
-
 
             {/* ===== RESERVAR CITA ===== */}
             <div className="reserva-artista">
@@ -350,7 +390,6 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                 </select>
 
-
                 {/* ===== SELECCIONAR FECHA ===== */}
                 <label htmlFor="fecha-cita">
                     Fecha de la cita:
@@ -375,7 +414,6 @@ function PerfilArtista({ artistas, token, usuario }) {
                     }}
                 />
 
-
                 {/* ===== BOTÓN CONSULTAR ===== */}
                 <button
                     type="button"
@@ -389,7 +427,6 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                 </button>
 
-
                 {/* ===== ERRORES DE DISPONIBILIDAD ===== */}
                 {errorHorarios && (
 
@@ -398,7 +435,6 @@ function PerfilArtista({ artistas, token, usuario }) {
                     </p>
 
                 )}
-
 
                 {/* ===== HORARIOS DISPONIBLES ===== */}
                 {fechaConsultada && (
@@ -445,7 +481,6 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                         )}
 
-
                         {/* ===== HORA SELECCIONADA ===== */}
                         {horaSeleccionada && (
 
@@ -456,14 +491,12 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                         )}
 
-
                         {/* ===== INFORMACIÓN DE LA RESERVA ===== */}
                         <p>
                             Los horarios permiten solicitar una cita.
                             La reserva quedará pendiente hasta que
                             el artista confirme su duración y disponibilidad.
                         </p>
-
 
                         {/* ===== BOTÓN SOLICITAR CITA ===== */}
                         {horaSeleccionada && (
@@ -499,7 +532,6 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                 )}
 
-
                 {/* ===== RESULTADO DE LA SOLICITUD ===== */}
                 {errorCita && (
 
@@ -519,9 +551,8 @@ function PerfilArtista({ artistas, token, usuario }) {
 
             </div>
 
-
             {/* ===== VOLVER AL EQUIPO ===== */}
-            <Link to="/" state={{ volverAEquipo: true }}>
+            <Link to="/equipo">
                 Volver a nuestro equipo
             </Link>
 

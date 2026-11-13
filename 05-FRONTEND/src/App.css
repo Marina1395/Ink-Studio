@@ -959,3 +959,37 @@ section p {
     }
 
 }
+
+/* ===== GALERÍA DE TRABAJOS DE LOS ARTISTAS ===== */
+
+.galeria-trabajos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.imagen-trabajo {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+}
+
+/* Adaptación a móviles */
+@media (max-width: 768px) {
+    .galeria-trabajos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .imagen-trabajo {
+        height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .galeria-trabajos {
+        grid-template-columns: 1fr;
+    }
+}
