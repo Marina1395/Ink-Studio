@@ -158,6 +158,64 @@ const cambiarContrasena = async (id_usuario, nuevaContrasena) => {
 
 
 
+const registrarCliente = async ({
+    nombre,
+    apellidos,
+    email,
+    contrasena,
+    telefono,
+    direccion
+}) => {
+
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        // Ciframos la contraseña.
+        const contrasenaHash = await bcrypt.hash(contrasena, 10);
+
+        // Creamos el usuario con el rol cliente.
+        const resultadoUsuario = await client.query(
+            `INSERT INTO usuario (nombre, email, contrasena, rol)
+             VALUES ($1, $2, $3, 'cliente')
+             RETURNING id_usuario, nombre, email, rol`,
+            [nombre, email, contrasenaHash]
+        );
+
+        const usuario = resultadoUsuario.rows[0];
+
+        // Creamos el perfil de cliente asociado.
+        await client.query(
+            `INSERT INTO cliente
+             (nombre, apellidos, telefono, direccion, id_usuario)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [
+                nombre,
+                apellidos,
+                telefono || null,
+                direccion || null,
+                usuario.id_usuario
+            ]
+        );
+
+        // Confirmamos ambas operaciones.
+        await client.query("COMMIT");
+
+        return usuario;
+
+    } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+
+    } finally {
+        client.release();
+    }
+};
+
+
+
+
 //=======EXPORTAMOS LAS FUNCIONES======//
 
 module.exports = {
@@ -168,7 +226,8 @@ module.exports = {
     updateUser,
     deleteUser,
     getUserByEmail,
-    cambiarContrasena
+    cambiarContrasena,
+    registrarCliente
 
 };
 

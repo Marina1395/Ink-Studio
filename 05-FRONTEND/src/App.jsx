@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import PerfilArtista from "./components/PerfilArtista";
+import Login from "../Pages/Login";
 
 import "./App.css";
 
@@ -202,87 +203,23 @@ function App() {
   });
 
 
+
   // ===== FORMULARIO DE LOGIN =====
+
   const formularioLogin = (
 
-    <div className="login-usuario">
-
-      {usuario ? (
-
-        <div>
-
-          <p>
-            Sesión iniciada como{" "}
-            <strong>{usuario.nombre}</strong>
-          </p>
-
-          <button
-            type="button"
-            onClick={cerrarSesion}
-          >
-            Cerrar sesión
-          </button>
-
-        </div>
-
-      ) : (
-
-        <form onSubmit={iniciarSesion}>
-
-          <h3>Iniciar sesión</h3>
-
-          <label htmlFor="email-login">
-            Correo electrónico:
-          </label>
-
-          <input
-            id="email-login"
-            type="email"
-            value={email}
-            onChange={(evento) =>
-              setEmail(evento.target.value)
-            }
-            autoComplete="email"
-            required
-          />
-
-          <label htmlFor="contrasena-login">
-            Contraseña:
-          </label>
-
-          <input
-            id="contrasena-login"
-            type="password"
-            value={contrasena}
-            onChange={(evento) =>
-              setContrasena(evento.target.value)
-            }
-            autoComplete="current-password"
-            required
-          />
-
-          <button
-            type="submit"
-            disabled={iniciandoSesion}
-          >
-            {iniciandoSesion
-              ? "Iniciando sesión..."
-              : "Entrar"}
-          </button>
-
-        </form>
-
-      )}
-
-      {errorLogin && (
-        <p role="alert">{errorLogin}</p>
-      )}
-
-      {mensajeLogin && (
-        <p role="status">{mensajeLogin}</p>
-      )}
-
-    </div>
+    <Login
+      usuario={usuario}
+      email={email}
+      setEmail={setEmail}
+      contrasena={contrasena}
+      setContrasena={setContrasena}
+      iniciarSesion={iniciarSesion}
+      cerrarSesion={cerrarSesion}
+      iniciandoSesion={iniciandoSesion}
+      errorLogin={errorLogin}
+      mensajeLogin={mensajeLogin}
+    />
 
   );
 
@@ -333,10 +270,16 @@ function App() {
         </NavLink>
 
 
-        <span
-          className="filigrana-lateral filigrana-derecha"
-          aria-hidden="true"
-        ></span>
+        {/* ===== ACCESO DE USUARIOS ===== */}
+        {usuario ? (
+          <button type="button" onClick={cerrarSesion}>
+            Cerrar sesión
+          </button>
+        ) : (
+          <NavLink to="/login">
+            Iniciar sesión
+          </NavLink>
+        )}
 
       </nav>
 
@@ -355,6 +298,19 @@ function App() {
 
 
       <Routes>
+
+        {/* ===== PÁGINA INDEPENDIENTE DE LOGIN ===== */}
+        <Route
+          path="/login"
+          element={
+            <main>
+              <section id="acceso-clientes">
+                {formularioLogin}
+              </section>
+            </main>
+
+          }
+        />
 
         {/* ===== PÁGINA PRINCIPAL ===== */}
         <Route
@@ -379,12 +335,7 @@ function App() {
               </section>
 
 
-              {/* ===== LOGIN ===== */}
-              <section id="acceso-clientes">
-
-                {formularioLogin}
-
-              </section>
+              
 
             </main>
 

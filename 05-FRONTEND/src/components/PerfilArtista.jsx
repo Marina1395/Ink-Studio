@@ -252,13 +252,25 @@ function PerfilArtista({ artistas, token, usuario }) {
             "f_01.jpg",
             "f_02.jpg",
             "f_03.jpg"
+        ],
+
+
+
+        // Fran
+        22: [
+            "fran_01.jpeg",
+            "fran_02.jpeg",
+            "fran_03.jpg",
+            "fran_04.jpg",
+            "fran_05.jpg"
         ]
 
     };
 
     const carpetasPorArtista = {
         23: "Jose",
-        21: "Fanny"
+        21: "Fanny",
+        22: "Fran",
     };
 
     const trabajos = trabajosPorArtista[artista.id_usuario] || [];

@@ -56,38 +56,85 @@ const createUser = async (req, res) => {
 
     try {
 
-        /*----Recogemos los datos que nos envía el usuario----*/
-        const { nombre, email, contrasena } = req.body;
+
+        const {
+            nombre,
+            apellidos,
+            email,
+            contrasena,
+            telefono,
+            direccion
+
+        } = req.body;
 
 
-        /*----Comprobamos que no falte ningún campo obligatorio----*/
-        if (!nombre || !email || !contrasena) {
+
+
+
+        if (!nombre || !apellidos || !email || !contrasena || !telefono) {
 
             return res.status(400).json({
-
-                error: "Nombre, email y contraseña son obligatorios"
-
-
+                error: "Nombre, apellidos, email, contraseña y teléfono son obligatorios"
             });
 
+
+
         }
+
 
 
 
         /*----Comprobamos que los datos recibidos sean textos----*/
+
         if (
 
             typeof nombre !== "string" ||
+            typeof apellidos !== "string" ||
             typeof email !== "string" ||
-            typeof contrasena !== "string"
+            typeof contrasena !== "string" ||
+            typeof telefono !== "string" ||
+            (direccion != null && typeof direccion !== "string")
 
         ) {
             return res.status(400).json({
 
-                error: "Nombre, email y contraseña deben ser textos"
+                error: "Los datos del registro deben ser textos"
+
+            });
+
+        }
+
+
+
+        /*----Validamos los apellidos del cliente----*/
+
+        const apellidosLimpios = apellidos.trim();
+
+        if (apellidosLimpios.length < 2 || apellidosLimpios.length > 100) {
+
+            return res.status(400).json({
+
+                error: "Los apellidos deben tener entre 2 y 100 caracteres"
 
             });
         }
+
+
+
+        /*----Validamos el teléfono del cliente----*/
+
+        const telefonoLimpio = telefono.trim();
+
+        if (!/^\+?[0-9\s-]{9,20}$/.test(telefonoLimpio)) {
+
+            return res.status(400).json({
+
+                error: "Introduce un número de teléfono válido"
+
+            });
+        }
+
+
 
         /*----Comprobamos que el nombre tenga entre 2 y 100 caracteres----*/
         const nombreLimpio = nombre.trim();
@@ -117,10 +164,15 @@ const createUser = async (req, res) => {
 
 
 
+        /*----Normalizamos el correo electrónico----*/
+        const emailLimpio = email.trim().toLowerCase();
+
+
+
         /*----Comprobamos que el email tenga un formato válido----*/
         const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!formatoEmail.test(email)) {
+        if (!formatoEmail.test(emailLimpio)) {
 
             return res.status(400).json({
 
@@ -132,7 +184,7 @@ const createUser = async (req, res) => {
 
 
         /*----Comprobamos si ya existe un usuario registrado con ese correo electrónico----*/
-        const usuarioExistente = await usuarioModel.getUserByEmail(email);
+        const usuarioExistente = await usuarioModel.getUserByEmail(emailLimpio);
 
         if (usuarioExistente) {
 
@@ -147,40 +199,61 @@ const createUser = async (req, res) => {
 
 
 
-        /*----Asignamos el rol de cliente a todos los usuarios que se registren----*/
-        const rol = "cliente";
 
+        /*----Registramos el usuario y su perfil de cliente en una transacción----*/
 
+        const usuarioRegistrado = await usuarioModel.registrarCliente({
 
-        /*----Enviamos los datos al modelo para guardar el nuevo usuario en la base de datos----*/
-        const resultado = await usuarioModel.createUser(
-
-            nombre,
-            email,
+            nombre: nombreLimpio,
+            apellidos: apellidosLimpios,
+            email: emailLimpio,
             contrasena,
-            rol
+            telefono: telefonoLimpio,
+            direccion: direccion?.trim() || null
 
-        );
+        });
 
 
-        /*----Devolvemos los datos del usuario que acabamos de registrar----*/
-        return res.status(201).json(resultado.rows[0]);
 
+        /*----Confirmamos que la cuenta se ha creado correctamente----*/
+        return res.status(201).json({
+
+            mensaje: "Cuenta de cliente creada correctamente",
+            usuario: usuarioRegistrado
+
+        });
 
 
 
     } catch (error) {
 
+        console.error("Error al registrar el cliente:", error);
 
-        console.error(error);
 
 
-        res.status(500).json({
 
-            error: "Error al crear el usuario"
+        /*----Controlamos los registros duplicados----*/
+
+        if (error.code === "23505") {
+
+            return res.status(409).json({
+
+                error: "Ya existe una cuenta con esos datos"
+
+            });
+        }
+
+
+
+        /*----Controlamos los errores inesperados----*/
+        return res.status(500).json({
+
+            error: "Error interno al registrar el cliente"
 
         });
+
     }
+
 };
 
 
