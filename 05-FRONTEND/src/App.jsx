@@ -12,6 +12,10 @@ import {
 import PerfilArtista from "./components/PerfilArtista";
 import Login from "../Pages/Login";
 
+/*----Importamos la página de registro de clientes----*/
+import Registro from "../Pages/Registro";
+
+
 import "./App.css";
 
 
@@ -299,6 +303,26 @@ function App() {
 
       <Routes>
 
+
+
+        {/* ===== PÁGINA INDEPENDIENTE DE REGISTRO ===== */}
+        <Route
+
+          path="/registro"
+          element={
+
+            <main>
+
+              <section id="registro-clientes">
+
+                <Registro />
+              </section>
+
+            </main>
+          }
+        />
+
+
         {/* ===== PÁGINA INDEPENDIENTE DE LOGIN ===== */}
         <Route
           path="/login"
@@ -335,7 +359,7 @@ function App() {
               </section>
 
 
-              
+
 
             </main>
 
@@ -616,6 +640,7 @@ function App() {
 
         {/* ===== RUTAS NO ENCONTRADAS ===== */}
         <Route
+        
           path="*"
           element={<Navigate to="/" replace />}
         />

@@ -1,3 +1,5 @@
+/*----Importamos Link para navegar a la página de registro----*/
+import { Link } from "react-router-dom";
 
 function Login({
     usuario,
@@ -79,6 +81,23 @@ function Login({
                 </form>
 
             )}
+
+
+            {/*----Enlace para clientes que todavía no tienen cuenta----*/}
+            {!usuario && (
+
+                <p>
+
+                    ¿Todavía no tienes cuenta?{" "}
+                    <Link to="/registro">
+
+                        Regístrate
+
+                    </Link>
+                    
+                </p>
+            )}
+
 
             {errorLogin && (
                 <p role="alert">{errorLogin}</p>
