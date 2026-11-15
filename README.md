@@ -3,20 +3,23 @@
 
 ## Descripción del proyecto
 
-Hache Studio es una aplicación web desarrollada como proyecto final del Grado Superior en Desarrollo de Aplicaciones Web (DAW).
+Hache Studio es una aplicación web desarrollada como Trabajo de Fin de Grado del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web (DAW).
 
 El proyecto representa un estudio especializado en tatuajes, piercings y gemas dentales.
 
-La aplicación combina una interfaz desarrollada con React, una API REST construida con Node.js y Express y una base de datos PostgreSQL.
+La aplicación integra un frontend desarrollado con React, una API REST construida con Node.js y Express y una base de datos PostgreSQL.
 
-Su objetivo es permitir la consulta de artistas y servicios, la autenticación de usuarios y la gestión de solicitudes de citas.
+Su objetivo es permitir a los usuarios consultar servicios y profesionales, registrarse, iniciar sesión y gestionar solicitudes de citas.
 
-Esta versión corresponde a una entrega parcial del proyecto, con las funcionalidades principales desarrolladas y otras pendientes de completar.
+**Estado actual:** versión avanzada del proyecto, preparada para la revisión parcial orientativa del 85 % del 16 de noviembre de 2026.
 
-## Tecnologías utilizadas
+**Entrega definitiva:** 29 de noviembre de 2026.
+
+---
+
+## 1. Tecnologías utilizadas
 
 ### Frontend
-
 - HTML5
 - CSS3
 - JavaScript
@@ -25,59 +28,89 @@ Esta versión corresponde a una entrega parcial del proyecto, con las funcionali
 - Vite
 
 ### Backend
-
 - Node.js
 - Express 5
-- JWT (JSON Web Tokens)
+- JWT
 - bcrypt
 - CORS
 - dotenv
 
 ### Base de datos
-
 - PostgreSQL
 - pgAdmin 4
 - psql
 
-### Herramientas de desarrollo
-
+### Herramientas
 - Visual Studio Code
 - Postman
 - Git y GitHub
 
-## Funcionalidades implementadas
+---
+
+## 2. Funcionalidades implementadas
 
 ### Interfaz web
 
 - Página principal de presentación del estudio.
 - Información sobre tatuajes, piercings y gemas dentales.
-- Listado de artistas obtenido desde la API.
-- Filtrado de artistas por especialidad.
+- Listado de profesionales obtenido desde la API.
+- Filtrado de profesionales por especialidad.
 - Consulta de perfiles individuales.
+- Visualización de servicios.
+- Registro de clientes.
 - Inicio y cierre de sesión.
-- Consulta de servicios y horarios disponibles.
-- Solicitud de citas por usuarios autenticados con rol de cliente.
+- Navegación condicionada por el rol del usuario.
+
+### Gestión de citas del cliente
+
+- Consulta de artistas y servicios.
+- Selección de fecha y horario disponible.
+- Solicitud de citas mediante una cuenta autenticada.
+- Consulta de citas desde el apartado "Mis citas".
+- Visualización del estado de cada solicitud.
+- Consulta de los cambios realizados por el artista.
+
+### Gestión de citas del artista
+
+- Acceso al panel "Gestión de citas".
+- Consulta de las solicitudes asignadas al artista.
+- Selección de la duración estimada.
+- Confirmación de solicitudes pendientes.
+- Rechazo de solicitudes pendientes.
+- Actualización del estado de las citas en PostgreSQL.
+
+Los estados utilizados actualmente son:
+
+- `pendiente`: solicitud todavía sin resolver.
+- `confirmada`: cita aceptada por el artista.
+- `cancelada`: cita cancelada o solicitud rechazada.
 
 ### API REST
 
 - Gestión de usuarios.
 - Autenticación mediante JWT.
-- Contraseñas protegidas mediante bcrypt.
+- Protección de contraseñas con bcrypt.
 - Control de acceso mediante roles.
 - Gestión de clientes y artistas.
-- Gestión de trabajos y servicios.
+- Gestión de servicios y trabajos.
 - Creación, consulta, actualización y eliminación de citas según los permisos establecidos.
-- Comprobación de disponibilidad y prevención de solapamientos de citas confirmadas.
-- Gestión de mensajes.
+- Consulta de disponibilidad.
+- Validación de fechas y horarios.
+- Control de duración de las citas.
+- Prevención de solapamientos entre citas confirmadas.
+- Gestión de mensajes mediante la API.
 
-Algunas funcionalidades administrativas están disponibles a través de la API y todavía no cuentan con una interfaz gráfica específica.
+Algunas operaciones administrativas todavía no disponen de una interfaz gráfica específica.
 
-## Estructura del proyecto
+---
+
+## 3. Estructura del proyecto
 
 ```text
 INKSTUDIO/
 ├── 03-BASE DE DATOS/
 │   └── ink_studio.sql
+│
 ├── 04-BACKEND/
 │   ├── src/
 │   │   ├── controllers/
@@ -89,54 +122,68 @@ INKSTUDIO/
 │   ├── .env.example
 │   ├── package.json
 │   └── package-lock.json
+│
 ├── 05-FRONTEND/
 │   ├── public/
 │   ├── src/
 │   ├── package.json
 │   └── package-lock.json
+│
 └── README.md
 ```
 
-## Requisitos previos
+---
+
+## 4. Requisitos previos
 
 Para ejecutar el proyecto es necesario disponer de:
 
-- Node.js y npm compatibles con las dependencias instaladas.
+- Node.js y npm compatibles con las dependencias.
 - PostgreSQL.
-- psql, incluido en las instalaciones habituales de PostgreSQL.
-- Un editor de código, como Visual Studio Code.
+- psql para importar la estructura SQL.
+- Un editor de código.
 
-pgAdmin 4 es opcional, pero facilita la creación de la base de datos y la consulta de sus tablas.
+Se recomienda utilizar pgAdmin 4 para consultar y administrar la base de datos.
 
-## Instalación y configuración
+---
 
-### 1. Preparar la base de datos
+## 5. Instalación y configuración
 
-Crear en PostgreSQL una base de datos llamada:
+### 5.1. Preparar PostgreSQL
+
+Crear una base de datos llamada:
 
 ```text
 inkstudio
 ```
 
-El archivo `03-BASE DE DATOS/ink_studio.sql` contiene la estructura de las siete tablas del proyecto, incluidas sus claves, relaciones y secuencias.
-
-Para importar la estructura se recomienda utilizar `psql`, ya que la exportación contiene instrucciones específicas de esta herramienta.
-
-Desde una terminal situada en la carpeta principal `INKSTUDIO`, ejecutar:
+Desde la carpeta principal del proyecto, importar la estructura:
 
 ```bash
 psql -U postgres -d inkstudio -f "03-BASE DE DATOS/ink_studio.sql"
 ```
 
-Cuando corresponda, PostgreSQL solicitará la contraseña del usuario.
+El archivo SQL contiene las siete tablas principales:
 
-Si `psql` no se reconoce como comando, deberá ejecutarse desde la carpeta de herramientas de PostgreSQL o añadirse a la variable PATH del sistema.
+- usuario
+- cliente
+- artista
+- servicio
+- trabajo
+- cita
+- mensaje
 
-La exportación incluye únicamente la estructura de la base de datos, no los registros de prueba.
+También incluye claves primarias, claves foráneas y secuencias.
 
-### 2. Configurar el backend
+**Importante:** el archivo SQL actual contiene únicamente la estructura, sin los registros de demostración.
 
-Desde la carpeta principal del proyecto, acceder al backend:
+Para utilizar todas las funcionalidades será necesario disponer de artistas, servicios y usuarios de prueba.
+
+El procedimiento completo de inicialización de estos datos está pendiente de finalizar.
+
+### 5.2. Configurar el backend
+
+Acceder a la carpeta:
 
 ```bash
 cd 04-BACKEND
@@ -148,7 +195,7 @@ Instalar las dependencias:
 npm install
 ```
 
-Crear un archivo `.env` a partir de `.env.example` y configurar los datos de conexión:
+Crear un archivo `.env` a partir de `.env.example`:
 
 ```env
 DB_HOST=localhost
@@ -158,58 +205,63 @@ DB_USER=postgres
 DB_PASSWORD=tu_contrasena
 
 JWT_SECRET=tu_clave_secreta_larga_y_aleatoria
+
 PORT=3000
 ```
 
-Los valores deben adaptarse a la configuración local de PostgreSQL.
+Los valores deben adaptarse a la configuración local.
 
-`JWT_SECRET` debe contener una clave larga, aleatoria y privada para firmar los tokens de autenticación.
+El archivo `.env` contiene información privada y no debe publicarse en GitHub.
 
-El archivo `.env` contiene información privada y no debe publicarse en el repositorio.
-
-Iniciar el servidor:
+Iniciar el backend:
 
 ```bash
 npm start
 ```
 
-Por defecto, la API estará disponible en:
+Dirección de la API:
 
+```text
 http://localhost:3000
+```
 
-### 3. Configurar el frontend
+### 5.3. Configurar el frontend
 
-Abrir otra terminal y, desde la carpeta principal del proyecto, acceder a:
+Desde otra terminal, acceder a:
 
 ```bash
 cd 05-FRONTEND
 ```
 
-Instalar las dependencias:
+Instalar dependencias:
 
 ```bash
 npm install
 ```
 
-Iniciar el servidor de desarrollo:
+Iniciar React:
 
 ```bash
 npm run dev
 ```
 
-Con la configuración habitual de Vite, la aplicación estará disponible en:
+Dirección habitual de Vite:
 
+```text
 http://localhost:5173
+```
 
-El frontend está configurado para realizar peticiones a:
+El frontend realiza peticiones al backend mediante:
 
+```text
 http://localhost:3000
+```
 
-Para utilizar las funcionalidades conectadas con PostgreSQL, el backend y el frontend deben estar ejecutándose.
+Ambos servidores deben estar ejecutándose para utilizar las funcionalidades conectadas con PostgreSQL.
 
-### 4. Comprobar la compilación del frontend
+### 5.4. Comprobar la compilación
 
-Para comprobar que el frontend puede generar una versión de producción, ejecutar desde `05-FRONTEND`:
+Desde la carpeta `05-FRONTEND`:
 
 ```bash
 npm run build
@@ -217,113 +269,190 @@ npm run build
 
 Este comando genera la carpeta `dist`.
 
-La compilación se ha comprobado correctamente durante la preparación de esta entrega parcial.
+La compilación se ha comprobado correctamente el 15 de noviembre de 2026 utilizando Vite.
 
-## Datos iniciales para las pruebas
+---
 
-La base de datos se entrega sin registros de demostración ni información personal.
+## 6. Autenticación y permisos
 
-Una vez importada la estructura, es posible registrar usuarios con rol de cliente mediante la aplicación.
-
-Para probar las reservas es necesario disponer previamente de artistas y servicios registrados.
-
-Las operaciones administrativas requieren un usuario con rol de administrador. La creación inicial de este usuario y la preparación de datos de demostración quedan pendientes de documentar para una instalación nueva.
-
-No se incluyen tokens JWT en la entrega, ya que se generan al iniciar sesión y tienen una duración limitada.
-
-## Endpoints principales
-
-| Ruta | Descripción |
-|---|---|
-| `/usuarios` | Gestión de usuarios |
-| `/usuarios/login` | Autenticación |
-| `/clientes` | Gestión de clientes |
-| `/artistas` | Gestión de artistas |
-| `/trabajos` | Gestión de trabajos |
-| `/servicios` | Gestión de servicios |
-| `/citas` | Gestión de citas |
-| `/citas/disponibilidad` | Consulta de horarios disponibles |
-| `/mensajes` | Gestión de mensajes |
-
-Los métodos HTTP disponibles y los permisos necesarios dependen de cada operación.
-
-Algunas rutas requieren autenticación y un rol determinado.
-
-## Autenticación y seguridad
-
-La API utiliza JWT para autenticar usuarios.
-
-Los tokens se generan después de validar las credenciales y tienen una duración de una hora.
+La aplicación utiliza JWT para autenticar usuarios.
 
 Las contraseñas se almacenan mediante hashes generados con bcrypt.
 
-La aplicación contempla tres roles:
+Se contemplan tres roles:
 
-- **Administrador:** operaciones de administración autorizadas.
-- **Artista:** operaciones relacionadas con la gestión de citas según sus permisos.
-- **Cliente:** acceso a sus citas y solicitud de nuevas reservas.
+### Administrador
+Puede realizar las operaciones administrativas autorizadas por la API.
 
-Las rutas protegidas requieren enviar el token mediante la cabecera:
+### Artista
+Puede consultar y gestionar las solicitudes de citas que le corresponden.
+
+### Cliente
+Puede solicitar citas y consultar sus reservas.
+
+Las rutas protegidas requieren enviar el token:
 
 ```text
 Authorization: Bearer TOKEN
 ```
 
-El token debe sustituirse por el generado al iniciar sesión.
+El token se obtiene al iniciar sesión.
 
-Cuando un token caduca, es necesario volver a iniciar sesión para obtener uno nuevo.
+Cuando caduca, es necesario volver a autenticarse.
 
-## Funcionamiento de las citas
+---
 
-El cliente puede consultar los horarios disponibles de un artista y solicitar una cita.
+## 7. Funcionamiento de las citas
 
-La solicitud se registra inicialmente como pendiente.
+El proceso principal de reservas funciona de la siguiente manera:
 
-El artista puede confirmar la cita y establecer su duración.
+1. El cliente inicia sesión.
+2. Consulta los servicios y profesionales.
+3. Selecciona un artista.
+4. Escoge una fecha y un horario disponible.
+5. Envía una solicitud.
+6. La cita se registra inicialmente como `pendiente`.
+7. El artista inicia sesión.
+8. Accede a su panel de gestión.
+9. Puede confirmar o rechazar la solicitud.
+10. Si confirma, establece la duración estimada.
+11. PostgreSQL guarda el estado actualizado.
+12. El cliente consulta el resultado desde "Mis citas".
 
-El backend comprueba las restricciones horarias y evita solapamientos con citas confirmadas.
+### Disponibilidad
 
-La disponibilidad depende de los artistas, servicios y citas existentes en la base de datos.
+La aplicación consulta los horarios disponibles según las reservas existentes.
 
-## Pruebas realizadas
+El backend comprueba las restricciones horarias y evita que se confirmen citas solapadas.
 
-Durante el desarrollo se han utilizado Postman y pgAdmin para comprobar el funcionamiento de la API y su comunicación con PostgreSQL.
+La duración de una cita confirmada se utiliza para determinar el intervalo ocupado.
 
-Se han realizado pruebas de:
+---
 
-- Operaciones CRUD de distintos módulos.
-- Inicio de sesión y generación de tokens JWT.
-- Restricciones de acceso según el rol.
-- Validación de datos.
-- Creación y gestión de citas.
-- Consulta de disponibilidad.
-- Prevención de solapamientos entre citas confirmadas.
+## 8. Endpoints principales
+
+| Ruta | Funcionalidad |
+|---|---|
+| `/usuarios` | Gestión de usuarios |
+| `/usuarios/login` | Autenticación |
+| `/clientes` | Gestión de clientes |
+| `/artistas` | Gestión de profesionales |
+| `/trabajos` | Gestión de trabajos |
+| `/servicios` | Gestión de servicios |
+| `/citas` | Gestión de citas |
+| `/citas/disponibilidad` | Consulta de disponibilidad |
+| `/mensajes` | Gestión de mensajes |
+
+Los métodos HTTP y permisos disponibles dependen de cada operación.
+
+---
+
+## 9. Pruebas realizadas
+
+Durante el desarrollo se han utilizado React, Postman y pgAdmin para comprobar la comunicación entre frontend, backend y PostgreSQL.
+
+### Pruebas de autenticación
+
+- Inicio de sesión.
+- Generación de tokens JWT.
+- Restricciones según el rol.
+- Acceso a las pantallas correspondientes.
+
+### Pruebas de citas
+
+- Creación de solicitudes.
+- Consulta de citas del cliente.
+- Consulta de citas del artista.
+- Confirmación de solicitudes.
+- Rechazo de solicitudes.
+- Actualización de estados.
+- Persistencia de cambios en PostgreSQL.
+- Comprobación de horarios disponibles.
+- Validación de duración.
+- Comprobación de citas consecutivas.
+- Prevención de solapamientos.
+
+### Pruebas de interfaz
+
+- Navegación entre las páginas principales.
+- Consulta de servicios.
+- Visualización de profesionales.
+- Acceso a perfiles individuales.
+- Revisión básica de la consola del navegador.
+
+### Pruebas técnicas
+
+- Arranque del servidor Express.
+- Conexión funcional con PostgreSQL.
+- Compilación del frontend con Vite.
+- Revisión de los archivos registrados en Git.
+- Comprobación de que el archivo `.env` real no está registrado en Git.
+
+La compilación de React y el arranque del backend se comprobaron correctamente el 15 de noviembre de 2026.
+
+La instalación completa desde cero en otro equipo todavía está pendiente de verificar.
+
+---
+
+## 10. Estado actual del proyecto
+
+Hache Studio se encuentra en una fase avanzada de desarrollo.
+
+La arquitectura principal está implementada y se ha comprobado el funcionamiento de los procesos fundamentales de autenticación, consulta de profesionales y gestión de citas.
+
+Esta versión se prepara para la revisión parcial orientativa del 85 % prevista para el 16 de noviembre de 2026.
+
+El porcentaje es una referencia de avance y no una medición exacta de las funcionalidades completadas.
+
+### Funcionalidades verificadas
+
+- Autenticación y control de roles.
+- Consulta de servicios.
+- Consulta de perfiles de profesionales existentes.
+- Solicitud de citas.
+- Gestión de citas por el artista.
+- Aceptación y rechazo de solicitudes.
+- Consulta de estados por el cliente.
+- Disponibilidad de horarios.
 - Comunicación entre React, Express y PostgreSQL.
-
-También se ha comprobado el arranque del backend, el funcionamiento del frontend y la compilación de React mediante `npm run build`.
-
-Las operaciones de consulta individual, actualización y eliminación del módulo de mensajes no se han verificado completamente en la revisión final.
-
-## Estado del proyecto
-
-Esta versión corresponde a una **entrega parcial del 50 % del proyecto final de DAW**.
-
-Actualmente se encuentran implementados los módulos principales de la API, la autenticación mediante JWT, la gestión de citas y una interfaz React conectada con el backend.
-
-La aplicación permite consultar artistas, acceder a sus perfiles, iniciar sesión y solicitar citas, siempre que existan los datos necesarios en PostgreSQL.
 
 ### Aspectos pendientes
 
+- Completar la incorporación de los profesionales previstos.
+- Revisar y limpiar los registros de prueba.
+- Preparar datos ficticios para una instalación nueva.
+- Documentar la creación inicial de un administrador.
 - Completar la galería dinámica de trabajos.
+- Implementar notificaciones internas para los clientes.
 - Incorporar interfaces gráficas para determinadas operaciones administrativas.
-- Preparar un procedimiento de inicialización con datos ficticios y un administrador de pruebas.
-- Completar las pruebas de los endpoints que todavía no se han verificado.
-- Continuar mejorando y ampliando las funcionalidades de la aplicación.
+- Completar las pruebas de endpoints pendientes.
+- Realizar ajustes visuales y responsive.
+- Verificar la instalación completa en un entorno limpio.
+- Finalizar la documentación del proyecto.
 
-Estos apartados forman parte del desarrollo pendiente para la versión final del proyecto.
+Estas tareas se abordarán antes de la entrega definitiva del 29 de noviembre de 2026, según su prioridad.
 
-## Autoría
+---
+
+## 11. Seguridad
+
+- Las contraseñas se protegen mediante bcrypt.
+- La autenticación utiliza JWT.
+- Las operaciones protegidas requieren permisos adecuados.
+- El archivo `.env` real no debe incluirse en el repositorio.
+- Las contraseñas de PostgreSQL y las claves JWT deben mantenerse privadas.
+- Los datos de demostración deben ser ficticios.
+
+---
+
+## 12. Autoría
 
 **Marina Martín Hacar**
 
-Proyecto final del Grado Superior en Desarrollo de Aplicaciones Web (DAW).
+Trabajo de Fin de Grado del Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Web (DAW).
+
+**Proyecto:** Hache Studio
+
+**Revisión parcial:** 15 de noviembre de 2026.
+
+**Entrega definitiva prevista:** 29 de noviembre de 2026.
