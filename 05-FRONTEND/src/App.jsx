@@ -16,6 +16,13 @@ import Login from "../Pages/Login";
 import Registro from "../Pages/Registro";
 
 
+/*----Importamos la página de citas del cliente----*/
+import MisCitas from "../Pages/Miscitas";
+
+/*----Importamos el panel de gestión de citas para artistas----*/
+import MisCitasArtista from "../Pages/MisCitasArtista";
+
+
 import "./App.css";
 
 
@@ -274,6 +281,29 @@ function App() {
         </NavLink>
 
 
+        {/*----Acceso a las citas de los clientes autenticados----*/}
+        {usuario?.rol === "cliente" && (
+
+          <NavLink to="/mis-citas">
+            Mis citas
+          </NavLink>
+
+        )}
+
+
+        {/*----Acceso al panel de citas de los artistas autenticados----*/}
+        {usuario?.rol === "artista" && (
+          
+          <NavLink to="/gestion-citas">
+            Gestión de citas
+          </NavLink>
+
+        )}
+
+
+
+
+
         {/* ===== ACCESO DE USUARIOS ===== */}
         {usuario ? (
           <button type="button" onClick={cerrarSesion}>
@@ -305,6 +335,53 @@ function App() {
 
 
 
+        {/*----Panel privado de gestión de citas para artistas----*/}
+        <Route
+
+          path="/gestion-citas"
+
+          element={
+
+            usuario?.rol === "artista" && token ? (
+
+              <main>
+
+                <MisCitasArtista token={token} />
+              </main>
+
+            ) : (
+
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+
+        {/*----Página de citas del cliente autenticado----*/}
+        <Route
+
+          path="/mis-citas"
+
+          element={
+
+            usuario?.rol === "cliente" && token ? (
+
+              <main>
+
+                <MisCitas token={token} />
+
+              </main>
+
+            ) : (
+
+              <Navigate to="/login" replace />
+
+            )
+          }
+        />
+
+
+
         {/* ===== PÁGINA INDEPENDIENTE DE REGISTRO ===== */}
         <Route
 
@@ -324,13 +401,19 @@ function App() {
 
 
         {/* ===== PÁGINA INDEPENDIENTE DE LOGIN ===== */}
+
         <Route
           path="/login"
+
           element={
+
             <main>
+
               <section id="acceso-clientes">
                 {formularioLogin}
+
               </section>
+
             </main>
 
           }
@@ -640,7 +723,7 @@ function App() {
 
         {/* ===== RUTAS NO ENCONTRADAS ===== */}
         <Route
-        
+
           path="*"
           element={<Navigate to="/" replace />}
         />

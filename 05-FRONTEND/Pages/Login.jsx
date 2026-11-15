@@ -1,7 +1,9 @@
 /*----Importamos Link para navegar a la página de registro----*/
 import { Link } from "react-router-dom";
 
+
 function Login({
+
     usuario,
     email,
     setEmail,
@@ -12,6 +14,7 @@ function Login({
     iniciandoSesion,
     errorLogin,
     mensajeLogin
+
 }) {
 
     return (
@@ -21,16 +24,21 @@ function Login({
 
                 <div>
                     <p>
+
                         Sesión iniciada como{" "}
                         <strong>{usuario.nombre}</strong>
+
                     </p>
 
                     <button
+
                         type="button"
                         onClick={cerrarSesion}
                     >
                         Cerrar sesión
+
                     </button>
+
                 </div>
 
             ) : (
@@ -40,38 +48,49 @@ function Login({
                     <h3>Iniciar sesión</h3>
 
                     <label htmlFor="email-login">
+
                         Correo electrónico:
+
                     </label>
 
                     <input
+
                         id="email-login"
                         type="email"
                         value={email}
                         onChange={(evento) =>
                             setEmail(evento.target.value)
+
                         }
+
                         autoComplete="email"
                         required
                     />
 
                     <label htmlFor="contrasena-login">
+
                         Contraseña:
+
                     </label>
 
                     <input
+
                         id="contrasena-login"
                         type="password"
                         value={contrasena}
                         onChange={(evento) =>
                             setContrasena(evento.target.value)
                         }
+
                         autoComplete="current-password"
                         required
                     />
 
                     <button
+
                         type="submit"
                         disabled={iniciandoSesion}
+                        
                     >
                         {iniciandoSesion
                             ? "Iniciando sesión..."
