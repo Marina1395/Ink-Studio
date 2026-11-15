@@ -1,4 +1,3 @@
-
 # Hache Studio
 
 ## Descripción del proyecto
@@ -11,9 +10,9 @@ La aplicación integra un frontend desarrollado con React, una API REST construi
 
 Su objetivo es permitir a los usuarios consultar servicios y profesionales, registrarse, iniciar sesión y gestionar solicitudes de citas.
 
-**Estado actual:** versión avanzada del proyecto, preparada para la revisión parcial orientativa del 85 % del 16 de noviembre de 2026.
+**Estado actual:** versión avanzada del proyecto, preparada para la entrega del 85 % prevista para el 15 de noviembre de 2026.
 
-**Entrega definitiva:** 29 de noviembre de 2026.
+**Entrega definitiva prevista:** 29 de noviembre de 2026.
 
 ---
 
@@ -36,7 +35,7 @@ Su objetivo es permitir a los usuarios consultar servicios y profesionales, regi
 - dotenv
 
 ### Base de datos
-- PostgreSQL
+- PostgreSQL 18
 - pgAdmin 4
 - psql
 
@@ -66,13 +65,13 @@ Su objetivo es permitir a los usuarios consultar servicios y profesionales, regi
 - Consulta de artistas y servicios.
 - Selección de fecha y horario disponible.
 - Solicitud de citas mediante una cuenta autenticada.
-- Consulta de citas desde el apartado "Mis citas".
+- Consulta de citas desde el apartado «Mis citas».
 - Visualización del estado de cada solicitud.
 - Consulta de los cambios realizados por el artista.
 
 ### Gestión de citas del artista
 
-- Acceso al panel "Gestión de citas".
+- Acceso al panel «Gestión de citas».
 - Consulta de las solicitudes asignadas al artista.
 - Selección de la duración estimada.
 - Confirmación de solicitudes pendientes.
@@ -93,6 +92,7 @@ Los estados utilizados actualmente son:
 - Control de acceso mediante roles.
 - Gestión de clientes y artistas.
 - Gestión de servicios y trabajos.
+- Gestión de las relaciones entre artistas y servicios.
 - Creación, consulta, actualización y eliminación de citas según los permisos establecidos.
 - Consulta de disponibilidad.
 - Validación de fechas y horarios.
@@ -108,8 +108,10 @@ Algunas operaciones administrativas todavía no disponen de una interfaz gráfic
 
 ```text
 INKSTUDIO/
+│
 ├── 03-BASE DE DATOS/
-│   └── ink_studio.sql
+│   ├── ink_studio.sql
+│   └── HACHE_STUDIO_ENTREGA_JOSE_MANUEL_15_NOV_2026.sql
 │
 ├── 04-BACKEND/
 │   ├── src/
@@ -139,8 +141,8 @@ INKSTUDIO/
 Para ejecutar el proyecto es necesario disponer de:
 
 - Node.js y npm compatibles con las dependencias.
-- PostgreSQL.
-- psql para importar la estructura SQL.
+- PostgreSQL 18.
+- psql para importar la base de datos.
 - Un editor de código.
 
 Se recomienda utilizar pgAdmin 4 para consultar y administrar la base de datos.
@@ -151,35 +153,42 @@ Se recomienda utilizar pgAdmin 4 para consultar y administrar la base de datos.
 
 ### 5.1. Preparar PostgreSQL
 
-Crear una base de datos llamada:
+Crear una base de datos nueva llamada:
 
 ```text
 inkstudio
 ```
 
-Desde la carpeta principal del proyecto, importar la estructura:
+Para inicializar el proyecto con los datos de demostración, utilizar el archivo:
 
-```bash
-psql -U postgres -d inkstudio -f "03-BASE DE DATOS/ink_studio.sql"
+```text
+03-BASE DE DATOS/HACHE_STUDIO_ENTREGA_JOSE_MANUEL_15_NOV_2026.sql
 ```
 
-El archivo SQL contiene las siete tablas principales:
+Desde la carpeta principal del proyecto, ejecutar:
 
-- usuario
-- cliente
-- artista
-- servicio
-- trabajo
-- cita
-- mensaje
+```bash
+psql -U postgres -d inkstudio -f "03-BASE DE DATOS/HACHE_STUDIO_ENTREGA_JOSE_MANUEL_15_NOV_2026.sql"
+```
 
-También incluye claves primarias, claves foráneas y secuencias.
+Este archivo incluye la estructura de la base de datos y los registros de demostración preparados para la entrega.
 
-**Importante:** el archivo SQL actual contiene únicamente la estructura, sin los registros de demostración.
+La base de datos contiene ocho tablas:
 
-Para utilizar todas las funcionalidades será necesario disponer de artistas, servicios y usuarios de prueba.
+1. `usuario`
+2. `cliente`
+3. `artista`
+4. `artista_servicio`
+5. `servicio`
+6. `trabajo`
+7. `cita`
+8. `mensaje`
 
-El procedimiento completo de inicialización de estos datos está pendiente de finalizar.
+También incluye claves primarias, claves foráneas, relaciones y secuencias necesarias para generar nuevos identificadores.
+
+**Importante:** la importación debe realizarse sobre una base de datos nueva y vacía. No se debe utilizar para sobrescribir una base de datos que ya contenga información.
+
+El archivo `ink_studio.sql` se conserva como referencia de la estructura de la primera entrega.
 
 ### 5.2. Configurar el backend
 
@@ -195,7 +204,9 @@ Instalar las dependencias:
 npm install
 ```
 
-Crear un archivo `.env` a partir de `.env.example`:
+Crear un archivo `.env` a partir de `.env.example`.
+
+Configurar las variables necesarias:
 
 ```env
 DB_HOST=localhost
@@ -209,7 +220,7 @@ JWT_SECRET=tu_clave_secreta_larga_y_aleatoria
 PORT=3000
 ```
 
-Los valores deben adaptarse a la configuración local.
+Los valores deben adaptarse a la configuración local de PostgreSQL.
 
 El archivo `.env` contiene información privada y no debe publicarse en GitHub.
 
@@ -233,7 +244,7 @@ Desde otra terminal, acceder a:
 cd 05-FRONTEND
 ```
 
-Instalar dependencias:
+Instalar las dependencias:
 
 ```bash
 npm install
@@ -282,12 +293,15 @@ Las contraseñas se almacenan mediante hashes generados con bcrypt.
 Se contemplan tres roles:
 
 ### Administrador
+
 Puede realizar las operaciones administrativas autorizadas por la API.
 
 ### Artista
+
 Puede consultar y gestionar las solicitudes de citas que le corresponden.
 
 ### Cliente
+
 Puede solicitar citas y consultar sus reservas.
 
 Las rutas protegidas requieren enviar el token:
@@ -302,7 +316,27 @@ Cuando caduca, es necesario volver a autenticarse.
 
 ---
 
-## 7. Funcionamiento de las citas
+## 7. Datos de demostración
+
+Para facilitar la revisión del proyecto se ha preparado una base de datos independiente con registros de demostración.
+
+La base incluye:
+
+- **Fanny:** cuenta de artista.
+- **Laura:** cuenta de cliente.
+- **Cliente Prueba:** segunda cuenta de cliente.
+- Dos servicios: tatuaje y piercing.
+- La relación entre Fanny y el servicio de piercing.
+
+Las cuentas de demostración conservan sus contraseñas almacenadas mediante hashes bcrypt.
+
+Las credenciales necesarias para iniciar sesión se facilitarán por separado para la revisión.
+
+Los datos se han incorporado en una base de demostración independiente, sin modificar la base de datos original utilizada durante el desarrollo.
+
+---
+
+## 8. Funcionamiento de las citas
 
 El proceso principal de reservas funciona de la siguiente manera:
 
@@ -317,7 +351,7 @@ El proceso principal de reservas funciona de la siguiente manera:
 9. Puede confirmar o rechazar la solicitud.
 10. Si confirma, establece la duración estimada.
 11. PostgreSQL guarda el estado actualizado.
-12. El cliente consulta el resultado desde "Mis citas".
+12. El cliente consulta el resultado desde «Mis citas».
 
 ### Disponibilidad
 
@@ -329,7 +363,7 @@ La duración de una cita confirmada se utiliza para determinar el intervalo ocup
 
 ---
 
-## 8. Endpoints principales
+## 9. Endpoints principales
 
 | Ruta | Funcionalidad |
 |---|---|
@@ -343,11 +377,11 @@ La duración de una cita confirmada se utiliza para determinar el intervalo ocup
 | `/citas/disponibilidad` | Consulta de disponibilidad |
 | `/mensajes` | Gestión de mensajes |
 
-Los métodos HTTP y permisos disponibles dependen de cada operación.
+Los métodos HTTP y permisos disponibles dependen de cada operación y de la configuración de las rutas del backend.
 
 ---
 
-## 9. Pruebas realizadas
+## 10. Pruebas realizadas
 
 Durante el desarrollo se han utilizado React, Postman y pgAdmin para comprobar la comunicación entre frontend, backend y PostgreSQL.
 
@@ -387,22 +421,28 @@ Durante el desarrollo se han utilizado React, Postman y pgAdmin para comprobar l
 - Compilación del frontend con Vite.
 - Revisión de los archivos registrados en Git.
 - Comprobación de que el archivo `.env` real no está registrado en Git.
+- Restauración de la base de datos en una base independiente.
+- Importación y comprobación de los datos de demostración.
+- Comprobación de las relaciones entre usuarios, clientes, artistas y servicios.
+- Sincronización de las secuencias automáticas de identificadores.
 
-La compilación de React y el arranque del backend se comprobaron correctamente el 15 de noviembre de 2026.
+La compilación del frontend se ha comprobado correctamente el 15 de noviembre de 2026.
 
-La instalación completa desde cero en otro equipo todavía está pendiente de verificar.
+La restauración de la base de datos y la carga de los datos de demostración también se han comprobado localmente.
+
+La instalación completa desde cero en otro ordenador todavía está pendiente de verificar.
 
 ---
 
-## 10. Estado actual del proyecto
+## 11. Estado actual del proyecto
 
 Hache Studio se encuentra en una fase avanzada de desarrollo.
 
 La arquitectura principal está implementada y se ha comprobado el funcionamiento de los procesos fundamentales de autenticación, consulta de profesionales y gestión de citas.
 
-Esta versión se prepara para la revisión parcial orientativa del 85 % prevista para el 16 de noviembre de 2026.
+Esta versión corresponde a la **entrega del 85 % del proyecto, prevista para el 15 de noviembre de 2026**.
 
-El porcentaje es una referencia de avance y no una medición exacta de las funcionalidades completadas.
+El porcentaje representa una estimación del avance general del proyecto.
 
 ### Funcionalidades verificadas
 
@@ -415,26 +455,25 @@ El porcentaje es una referencia de avance y no una medición exacta de las funci
 - Consulta de estados por el cliente.
 - Disponibilidad de horarios.
 - Comunicación entre React, Express y PostgreSQL.
+- Preparación de una base de datos independiente con datos de demostración.
 
 ### Aspectos pendientes
 
 - Completar la incorporación de los profesionales previstos.
-- Revisar y limpiar los registros de prueba.
-- Preparar datos ficticios para una instalación nueva.
-- Documentar la creación inicial de un administrador.
+- Revisar y limpiar los registros de prueba de la base original.
 - Completar la galería dinámica de trabajos.
 - Implementar notificaciones internas para los clientes.
 - Incorporar interfaces gráficas para determinadas operaciones administrativas.
 - Completar las pruebas de endpoints pendientes.
 - Realizar ajustes visuales y responsive.
-- Verificar la instalación completa en un entorno limpio.
+- Verificar la instalación completa en un entorno externo.
 - Finalizar la documentación del proyecto.
 
 Estas tareas se abordarán antes de la entrega definitiva del 29 de noviembre de 2026, según su prioridad.
 
 ---
 
-## 11. Seguridad
+## 12. Seguridad
 
 - Las contraseñas se protegen mediante bcrypt.
 - La autenticación utiliza JWT.
@@ -442,10 +481,11 @@ Estas tareas se abordarán antes de la entrega definitiva del 29 de noviembre de
 - El archivo `.env` real no debe incluirse en el repositorio.
 - Las contraseñas de PostgreSQL y las claves JWT deben mantenerse privadas.
 - Los datos de demostración deben ser ficticios.
+- Los archivos temporales que contengan información sensible no deben publicarse en GitHub.
 
 ---
 
-## 12. Autoría
+## 13. Autoría
 
 **Marina Martín Hacar**
 
@@ -453,6 +493,6 @@ Trabajo de Fin de Grado del Ciclo Formativo de Grado Superior en Desarrollo de A
 
 **Proyecto:** Hache Studio
 
-**Revisión parcial:** 15 de noviembre de 2026.
+**Entrega del 85 %:** 15 de noviembre de 2026.
 
 **Entrega definitiva prevista:** 29 de noviembre de 2026.
