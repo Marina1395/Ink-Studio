@@ -263,6 +263,17 @@ function PerfilArtista({ artistas, token, usuario }) {
             "fran_03.jpg",
             "fran_04.jpg",
             "fran_05.jpg"
+        ],
+
+        
+        // Estela - Gemas dentales
+        27: [
+            "E_1.jpeg",
+            "E_2.jpeg",
+            "E_3.jpeg",
+            "E_4.jpeg",
+            "E_5.jpeg",
+            "E_6.jpeg"
         ]
 
     };
@@ -271,6 +282,7 @@ function PerfilArtista({ artistas, token, usuario }) {
         23: "Jose",
         21: "Fanny",
         22: "Fran",
+        27: "Estela"
     };
 
     const trabajos = trabajosPorArtista[artista.id_usuario] || [];
