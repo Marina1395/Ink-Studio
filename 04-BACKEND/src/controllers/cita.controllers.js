@@ -1,6 +1,10 @@
 
 const citaModel = require("../models/cita.model");
+
 const clienteModel = require("../models/cliente.model");
+
+/*----Importamos el modelo de artistas para comprobar su estado----*/
+const artistaModel = require("../models/artista.model");
 
 
 //=======COMPROBACIONES Y VALIDACIONES========//
@@ -300,6 +304,20 @@ const createCita = async (req, res) => {
             });
 
         }
+
+
+
+        /*----Comprobamos que el artista exista y esté activo----*/
+        const artista = await artistaModel.getArtistaById(id_artista);
+
+        if (!artista || artista.activo === false) {
+
+            return res.status(404).json({
+                error: "El artista seleccionado no está disponible"
+            });
+
+        }
+
 
         /*----NUEVA VALIDACIÓN: comprobar que el artista ofrece el servicio----*/
         const ofreceServicio = await citaModel.artistaOfreceServicio(
@@ -722,6 +740,19 @@ const getDisponibilidad = async (req, res) => {
             });
 
         }
+
+
+        /*----Comprobamos que el artista exista y esté activo----*/
+        const artista = await artistaModel.getArtistaById(id_artista);
+
+        if (!artista || artista.activo === false) {
+
+            return res.status(404).json({
+                error: "El artista seleccionado no está disponible"
+            });
+
+        }
+
 
         /*----Consultamos las citas confirmadas del artista----*/
         const citasOcupadas = await citaModel.getCitasOcupadas(

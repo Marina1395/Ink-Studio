@@ -3,6 +3,9 @@
 
 const usuarioModel = require("../models/user.model");
 
+/*----Importamos el modelo de artistas para comprobar su estado----*/
+const artistaModel = require("../models/artista.model");
+
 
 /*----Importamos bcrypt para comprobar las contraseñas durante el login----*/
 const bcrypt = require("bcrypt");
@@ -538,6 +541,27 @@ const loginUser = async (req, res) => {
             });
 
         }
+
+
+
+        /*----Comprobamos que los artistas no estén dados de baja----*/
+        if (usuario.rol === "artista") {
+
+            const artista = await artistaModel.getArtistaById(
+                usuario.id_usuario
+            );
+
+            /*----Impedimos iniciar sesión si el artista no está activo----*/
+            if (!artista || artista.activo !== true) {
+
+                return res.status(403).json({
+                    error: "Tu cuenta de artista está desactivada"
+                });
+
+            }
+
+        }
+
 
         /*----Creamos un token JWT si el usuario se ha autenticado correctamente----*/
         const token = jwt.sign(

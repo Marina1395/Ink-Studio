@@ -2,11 +2,14 @@
 /*----Importamos la librería jsonwebtoken para verificar los tokens----*/
 const jwt = require("jsonwebtoken");
 
+/*----Importamos el modelo de artistas para comprobar su estado----*/
+const artistaModel = require("../models/artista.model");
+
 
 //=======VERIFICAR TOKEN=======//
 
 /*----Comprobamos que el usuario haya enviado un token válido----*/
-const verificarToken = (req, res, next) => {
+const verificarToken = async (req, res, next) => {
 
     const authHeader = req.headers.authorization;
 
@@ -33,22 +36,52 @@ const verificarToken = (req, res, next) => {
     /*----Guardamos únicamente el token----*/
     const token = partes[1];
 
+    let usuario;
+
     try {
 
         /*----Verificamos el token utilizando nuestra clave secreta----*/
-        const usuario = jwt.verify(token, process.env.JWT_SECRET);
+        usuario = jwt.verify(token, process.env.JWT_SECRET);
 
-        /*----Comprobamos que el token contenga los datos necesarios----*/
-        if (
-            !usuario ||
-            !Number.isInteger(usuario.id_usuario) ||
-            usuario.id_usuario <= 0 ||
-            typeof usuario.rol !== "string"
-        ) {
+    } catch (error) {
 
-            return res.status(401).json({
-                error: "Token no válido"
-            });
+        return res.status(401).json({
+            error: "Token no válido o caducado"
+        });
+
+    }
+
+    /*----Comprobamos que el token contenga los datos necesarios----*/
+    if (
+        !usuario ||
+        !Number.isInteger(usuario.id_usuario) ||
+        usuario.id_usuario <= 0 ||
+        typeof usuario.rol !== "string"
+    ) {
+
+        return res.status(401).json({
+            error: "Token no válido"
+        });
+
+    }
+
+    try {
+
+        /*----Comprobamos el estado de los usuarios con rol artista----*/
+        if (usuario.rol === "artista") {
+
+            const artista = await artistaModel.getArtistaById(
+                usuario.id_usuario
+            );
+
+            /*----Bloqueamos el acceso si el artista está dado de baja----*/
+            if (!artista || artista.activo !== true) {
+
+                return res.status(403).json({
+                    error: "Tu cuenta de artista está desactivada"
+                });
+
+            }
 
         }
 
@@ -60,8 +93,13 @@ const verificarToken = (req, res, next) => {
 
     } catch (error) {
 
-        return res.status(401).json({
-            error: "Token no válido o caducado"
+        console.error(
+            "Error al comprobar el estado del artista:",
+            error
+        );
+
+        return res.status(500).json({
+            error: "Error al verificar el acceso del usuario"
         });
 
     }

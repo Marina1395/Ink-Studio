@@ -25,13 +25,13 @@ const getUsers = () => {
 //========CREAR UN USUARIO=======//
 
 
-const createUser = async (nombre, email, contrasena, rol) => {
+const createUser = async (nombre, email, contrasena, rol,conexion = pool) => {
 
     /*----Convertimos la contraseña en un hash antes de guardarla en la base de datos----*/
     const contrasenaHash = await bcrypt.hash(contrasena, 10);
 
     /*----Guardamos el nuevo usuario y devolvemos sus datos sin incluir la contraseña----*/
-    return pool.query(
+    return conexion.query(
 
         `INSERT INTO usuario (nombre,email,contrasena, rol)
          VALUES ($1, $2, $3, $4)

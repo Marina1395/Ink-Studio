@@ -3,11 +3,12 @@
 const pool = require("../db/connection");
 
 
+
 //========OBTENER TODOS LOS ARTISTAS========//
+
 const getArtistas = async () => {
 
-    
-    /*----Obtenemos los artistas junto con sus nombres e imágenes----*/
+    /*----Obtenemos únicamente los artistas activos junto con sus nombres e imágenes----*/
     const result = await pool.query(
 
         `SELECT
@@ -20,27 +21,29 @@ const getArtistas = async () => {
             artista.imagen_tarjeta
         FROM artista
         INNER JOIN usuario
-        ON artista.id_usuario = usuario.id_usuario`
+            ON artista.id_usuario = usuario.id_usuario
+        WHERE artista.activo = TRUE
+        ORDER BY artista.id_usuario`
 
     );
 
-   
-
-return result.rows;
+    return result.rows;
 
 };
 
 
 
-
 //=======OBTENER ARTISTA POR ID=======//
-const getArtistaById = async (id_usuario) => {
 
+const getArtistaById = async (id_usuario) => {
 
     /*----Buscamos un artista utilizando su ID de usuario----*/
     const result = await pool.query(
 
-        "SELECT * FROM artista WHERE id_usuario = $1",
+        `SELECT *
+         FROM artista
+         WHERE id_usuario = $1`,
+
         [id_usuario]
 
     );
@@ -53,25 +56,33 @@ const getArtistaById = async (id_usuario) => {
 
 //=======CREAR ARTISTA=======//
 
-/*----Guardamos el perfil profesional de un artista asociado a su usuario----*/
-const createArtista = async (id_usuario, especialidad, descripcion) => {
+/*----Guardamos el perfil profesional de un artista----*/
+const createArtista = async (
+    id_usuario,
+    especialidad,
+    descripcion,
+    conexion = pool
+) => {
 
     /*----Guardamos el perfil profesional del artista asociado a su cuenta de usuario----*/
-    const result = await pool.query(
+    const result = await conexion.query(
 
-        "INSERT INTO artista (id_usuario,especialidad,descripcion) VALUES ($1,$2,$3) RETURNING * ",
-
+        `INSERT INTO artista
+            (id_usuario, especialidad, descripcion)
+         VALUES ($1, $2, $3)
+         RETURNING *`,
 
         [
             id_usuario,
             especialidad,
             descripcion
         ]
+
     );
 
     return result.rows[0];
-};
 
+};
 
 
 
@@ -80,18 +91,20 @@ const createArtista = async (id_usuario, especialidad, descripcion) => {
 /*----Actualizamos la especialidad y la descripción de un artista----*/
 const updateArtista = async (id_usuario, artista) => {
 
-
-    /*----Actualizamos la especialidad y la descripción del artista indicado----*/
+    /*----Actualizamos únicamente los perfiles de artistas activos----*/
     const result = await pool.query(
 
-        "UPDATE artista SET especialidad =$1,descripcion = $2 WHERE id_usuario= $3 RETURNING *",
+        `UPDATE artista
+         SET especialidad = $1,
+             descripcion = $2
+         WHERE id_usuario = $3
+           AND activo = TRUE
+         RETURNING *`,
 
         [
-
             artista.especialidad,
             artista.descripcion,
             id_usuario
-
         ]
 
     );
@@ -102,32 +115,33 @@ const updateArtista = async (id_usuario, artista) => {
 
 
 
-//=======ELIMINAR ARTISTA=======//
+//=======DAR DE BAJA A UN ARTISTA=======//
 
+/*----Desactivamos al artista sin borrar su historial----*/
 const deleteArtista = async (id_usuario) => {
 
-
-    /*----Eliminamos el perfil del artista que corresponda al ID recibido----*/
+    /*----Marcamos al artista como inactivo en PostgreSQL----*/
     const result = await pool.query(
 
-        "DELETE FROM artista WHERE id_usuario = $1  RETURNING *",
-        [
-            id_usuario
+        `UPDATE artista
+         SET activo = FALSE
+         WHERE id_usuario = $1
+           AND activo = TRUE
+         RETURNING *`,
 
-        ]
+        [id_usuario]
 
     );
 
     return result.rows[0];
 
 };
-
 
 
 
 //=======OBTENER SERVICIOS DE UN ARTISTA=======//
 
-/*----Consultamos los servicios asociados a un artista----*/
+/*----Consultamos los servicios asociados a un artista activo----*/
 const getServiciosByArtista = async (id_artista) => {
 
     const result = await pool.query(
@@ -135,8 +149,11 @@ const getServiciosByArtista = async (id_artista) => {
         `SELECT servicio.*
          FROM servicio
          INNER JOIN artista_servicio
-         ON servicio.id_servicio = artista_servicio.id_servicio
+             ON servicio.id_servicio = artista_servicio.id_servicio
+         INNER JOIN artista
+             ON artista_servicio.id_artista = artista.id_usuario
          WHERE artista_servicio.id_artista = $1
+           AND artista.activo = TRUE
          ORDER BY servicio.id_servicio`,
 
         [id_artista]
@@ -146,6 +163,7 @@ const getServiciosByArtista = async (id_artista) => {
     return result.rows;
 
 };
+
 
 
 //=======EXPORTAR FUNCIONES=======//
@@ -160,17 +178,3 @@ module.exports = {
     getServiciosByArtista
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
