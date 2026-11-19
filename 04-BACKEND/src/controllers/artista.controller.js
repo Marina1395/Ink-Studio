@@ -56,7 +56,7 @@ const getArtistaById = async (req, res) => {
         const resultado = await artistaModel.getArtistaById(id_usuario);
 
         /*----Comprobamos que el artista exista----*/
-        if (!resultado || resultado.activo === false){
+        if (!resultado || resultado.activo === false) {
 
             return res.status(404).json({
                 error: "Artista no encontrado"
@@ -364,6 +364,20 @@ const deleteArtista = async (req, res) => {
 
         }
 
+
+
+        /*----Comprobamos si el artista tiene citas futuras activas----*/
+        const tieneCitas = await artistaModel.tieneCitasFuturas(id_usuario);
+
+        if (tieneCitas) {
+
+            return res.status(409).json({
+                error: "No se puede dar de baja al artista porque tiene citas futuras pendientes o confirmadas"
+            });
+
+        }
+
+
         /*----Marcamos al artista como inactivo----*/
         const resultado = await artistaModel.deleteArtista(id_usuario);
 
@@ -398,7 +412,7 @@ const deleteArtista = async (req, res) => {
 
 
 
- //=======OBTENER SERVICIOS DE UN ARTISTA=======//
+//=======OBTENER SERVICIOS DE UN ARTISTA=======//
 
 /*----Obtenemos los servicios que ofrece un artista determinado----*/
 const getServiciosByArtista = async (req, res) => {

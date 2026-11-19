@@ -114,6 +114,32 @@ const updateArtista = async (id_usuario, artista) => {
 };
 
 
+ 
+
+
+/*----Comprobamos si un artista tiene citas futuras activas----*/
+const tieneCitasFuturas = async (id_usuario) => {
+
+    const result = await pool.query(
+
+        `SELECT EXISTS (
+            SELECT 1
+            FROM cita
+            WHERE id_artista = $1
+              AND estado IN ('pendiente', 'confirmada')
+              AND (fecha + hora) > (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Madrid')
+        ) AS tiene_citas`,
+
+        [id_usuario]
+
+    );
+
+    return result.rows[0].tiene_citas;
+
+};
+
+
+
 
 //=======DAR DE BAJA A UN ARTISTA=======//
 
@@ -174,6 +200,7 @@ module.exports = {
     getArtistaById,
     createArtista,
     updateArtista,
+    tieneCitasFuturas,
     deleteArtista,
     getServiciosByArtista
 
