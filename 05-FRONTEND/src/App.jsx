@@ -10,11 +10,14 @@ import {
 } from "react-router-dom";
 
 import PerfilArtista from "./components/PerfilArtista";
+
 import Login from "../Pages/Login";
+
+/*----Importamos el panel de administración----*/
+import PanelAdmin from "../Pages/PanelAdmin";
 
 /*----Importamos la página de registro de clientes----*/
 import Registro from "../Pages/Registro";
-
 
 /*----Importamos la página de citas del cliente----*/
 import MisCitas from "../Pages/Miscitas";
@@ -22,9 +25,7 @@ import MisCitas from "../Pages/Miscitas";
 /*----Importamos el panel de gestión de citas para artistas----*/
 import MisCitasArtista from "../Pages/MisCitasArtista";
 
-
 import "./App.css";
-
 
 const API_URL = "http://localhost:3000";
 
@@ -214,9 +215,7 @@ function App() {
   });
 
 
-
   // ===== FORMULARIO DE LOGIN =====
-
   const formularioLogin = (
 
     <Login
@@ -293,7 +292,7 @@ function App() {
 
         {/*----Acceso al panel de citas de los artistas autenticados----*/}
         {usuario?.rol === "artista" && (
-          
+
           <NavLink to="/gestion-citas">
             Gestión de citas
           </NavLink>
@@ -301,18 +300,29 @@ function App() {
         )}
 
 
+        {/*----Acceso al panel de administración----*/}
+        {usuario?.rol === "admin" && (
 
+          <NavLink to="/admin">
+            Administración
+          </NavLink>
+
+        )}
 
 
         {/* ===== ACCESO DE USUARIOS ===== */}
         {usuario ? (
+
           <button type="button" onClick={cerrarSesion}>
             Cerrar sesión
           </button>
+
         ) : (
+
           <NavLink to="/login">
             Iniciar sesión
           </NavLink>
+
         )}
 
       </nav>
@@ -330,16 +340,31 @@ function App() {
       {/* ===== CABECERA COMÚN ===== */}
       {cabecera}
 
-
       <Routes>
 
+
+        {/*----Panel privado de administración----*/}
+        <Route
+          path="/admin"
+          element={
+
+            usuario?.rol === "admin" && token ? (
+
+              <PanelAdmin token={token} />
+
+            ) : (
+
+              <Navigate to="/login" replace />
+
+            )
+
+          }
+        />
 
 
         {/*----Panel privado de gestión de citas para artistas----*/}
         <Route
-
           path="/gestion-citas"
-
           element={
 
             usuario?.rol === "artista" && token ? (
@@ -347,21 +372,22 @@ function App() {
               <main>
 
                 <MisCitasArtista token={token} />
+
               </main>
 
             ) : (
 
               <Navigate to="/login" replace />
+
             )
+
           }
         />
 
 
         {/*----Página de citas del cliente autenticado----*/}
         <Route
-
           path="/mis-citas"
-
           element={
 
             usuario?.rol === "cliente" && token ? (
@@ -377,14 +403,13 @@ function App() {
               <Navigate to="/login" replace />
 
             )
+
           }
         />
 
 
-
         {/* ===== PÁGINA INDEPENDIENTE DE REGISTRO ===== */}
         <Route
-
           path="/registro"
           element={
 
@@ -393,23 +418,24 @@ function App() {
               <section id="registro-clientes">
 
                 <Registro />
+
               </section>
 
             </main>
+
           }
         />
 
 
         {/* ===== PÁGINA INDEPENDIENTE DE LOGIN ===== */}
-
         <Route
           path="/login"
-
           element={
 
             <main>
 
               <section id="acceso-clientes">
+
                 {formularioLogin}
 
               </section>
@@ -418,6 +444,7 @@ function App() {
 
           }
         />
+
 
         {/* ===== PÁGINA PRINCIPAL ===== */}
         <Route
@@ -440,9 +467,6 @@ function App() {
                 </Link>
 
               </section>
-
-
-
 
             </main>
 
@@ -723,7 +747,6 @@ function App() {
 
         {/* ===== RUTAS NO ENCONTRADAS ===== */}
         <Route
-
           path="*"
           element={<Navigate to="/" replace />}
         />

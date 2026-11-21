@@ -1,25 +1,39 @@
 
 import { useState, useEffect } from "react";
 
-/*----Formulario para registrar artistas desde administración----*/
+import AdminGestionCitas from "./AdminGestionCitas";
+
+/*----Componentes de administración----*/
 import AdminCrearArtista from "./AdminCrearArtista";
+import AdminEditarArtista from "./AdminEditarArtista";
+import AdminBajaArtista from "./AdminBajaArtista";
 
 function PanelAdmin({ token }) {
 
     // ===== SECCIÓN SELECCIONADA =====
     const [seccion, setSeccion] = useState("inicio");
 
-
     // ===== LISTADO DE ARTISTAS =====
     const [artistas, setArtistas] = useState([]);
     const [cargandoArtistas, setCargandoArtistas] = useState(false);
     const [errorArtistas, setErrorArtistas] = useState("");
+
+    // ===== ARTISTA SELECCIONADO PARA EDITAR =====
+    const [artistaEditar, setArtistaEditar] = useState(null);
+
+    // ===== MENSAJE DE BAJA =====
+    const [mensajeBaja, setMensajeBaja] = useState("");
+
+    // ===== ACTUALIZACIÓN DEL LISTADO =====
+    const [recargarArtistas, setRecargarArtistas] = useState(0);
 
 
     // ===== OBTENER ARTISTAS DEL BACKEND =====
     useEffect(() => {
 
         if (seccion !== "artistas") return;
+
+        let cancelado = false;
 
         const obtenerArtistas = async () => {
 
@@ -46,7 +60,9 @@ function PanelAdmin({ token }) {
                     );
                 }
 
-                setArtistas(datos);
+                if (!cancelado) {
+                    setArtistas(datos);
+                }
 
             } catch (error) {
 
@@ -55,11 +71,15 @@ function PanelAdmin({ token }) {
                     error
                 );
 
-                setErrorArtistas(error.message);
+                if (!cancelado) {
+                    setErrorArtistas(error.message);
+                }
 
             } finally {
 
-                setCargandoArtistas(false);
+                if (!cancelado) {
+                    setCargandoArtistas(false);
+                }
 
             }
 
@@ -67,7 +87,17 @@ function PanelAdmin({ token }) {
 
         obtenerArtistas();
 
-    }, [seccion]);
+        return () => {
+            cancelado = true;
+        };
+
+    }, [seccion, recargarArtistas]);
+
+
+    // ===== ACTUALIZAR LISTADO =====
+    const actualizarListado = () => {
+        setRecargarArtistas((anterior) => anterior + 1);
+    };
 
 
     // ===== PANEL DE ADMINISTRACIÓN =====
@@ -131,23 +161,25 @@ function PanelAdmin({ token }) {
                     <h2>Gestión de artistas</h2>
 
 
-                    {/* MENSAJE DE CARGA */}
+                    {/* ===== MENSAJE DE BAJA CORRECTA ===== */}
+                    {mensajeBaja && (
+                        <p role="status">{mensajeBaja}</p>
+                    )}
+
+
+                    {/* ===== MENSAJE DE CARGA ===== */}
                     {cargandoArtistas && (
-
                         <p>Cargando artistas...</p>
-
                     )}
 
 
-                    {/* MENSAJE DE ERROR */}
+                    {/* ===== MENSAJE DE ERROR ===== */}
                     {errorArtistas && (
-
                         <p role="alert">{errorArtistas}</p>
-
                     )}
 
 
-                    {/* LISTADO DE ARTISTAS */}
+                    {/* ===== LISTADO DE ARTISTAS ===== */}
                     {!cargandoArtistas && !errorArtistas && (
 
                         <div>
@@ -176,6 +208,36 @@ function PanelAdmin({ token }) {
 
                                             {artista.especialidad}
 
+                                            {" "}
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setArtistaEditar(artista);
+                                                    setMensajeBaja("");
+                                                }}
+                                            >
+                                                Editar
+                                            </button>
+
+                                            {" "}
+
+                                            <AdminBajaArtista
+                                                artista={artista}
+                                                token={token}
+                                                onArtistaDesactivado={() => {
+
+                                                    setArtistaEditar(null);
+
+                                                    setMensajeBaja(
+                                                        `${artista.nombre} ha sido dado de baja correctamente.`
+                                                    );
+
+                                                    actualizarListado();
+
+                                                }}
+                                            />
+
                                         </li>
 
                                     ))}
@@ -189,11 +251,36 @@ function PanelAdmin({ token }) {
                     )}
 
 
+                    {/* ===== FORMULARIO PARA EDITAR ARTISTA ===== */}
+                    {artistaEditar && (
+
+                        <AdminEditarArtista
+                            artista={artistaEditar}
+                            token={token}
+                            onArtistaActualizado={() => {
+
+                                setArtistaEditar(null);
+                                setMensajeBaja("");
+                                actualizarListado();
+
+                            }}
+                            onCancelar={() => {
+                                setArtistaEditar(null);
+                            }}
+                        />
+
+                    )}
+
+
                     {/* ===== FORMULARIO PARA CREAR ARTISTAS ===== */}
                     <AdminCrearArtista
                         token={token}
                         onArtistaCreado={() => {
-                            setSeccion("inicio");
+
+                            setArtistaEditar(null);
+                            setMensajeBaja("");
+                            actualizarListado();
+
                         }}
                     />
 
@@ -204,18 +291,7 @@ function PanelAdmin({ token }) {
 
             {/* ===== GESTIÓN DE CITAS ===== */}
             {seccion === "citas" && (
-
-                <section>
-
-                    <h2>Gestión de citas</h2>
-
-                    <p>
-                        Aquí podremos consultar las citas
-                        del estudio.
-                    </p>
-
-                </section>
-
+                <AdminGestionCitas token={token} />
             )}
 
 
@@ -242,4 +318,3 @@ function PanelAdmin({ token }) {
 }
 
 export default PanelAdmin;
-
