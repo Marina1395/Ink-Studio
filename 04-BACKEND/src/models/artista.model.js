@@ -114,7 +114,7 @@ const updateArtista = async (id_usuario, artista) => {
 };
 
 
- 
+
 
 
 /*----Comprobamos si un artista tiene citas futuras activas----*/
@@ -167,7 +167,8 @@ const deleteArtista = async (id_usuario) => {
 
 //=======OBTENER SERVICIOS DE UN ARTISTA=======//
 
-/*----Consultamos los servicios asociados a un artista activo----*/
+
+/*----Consultamos únicamente los servicios activos de un artista activo----*/
 const getServiciosByArtista = async (id_artista) => {
 
     const result = await pool.query(
@@ -180,6 +181,7 @@ const getServiciosByArtista = async (id_artista) => {
              ON artista_servicio.id_artista = artista.id_usuario
          WHERE artista_servicio.id_artista = $1
            AND artista.activo = TRUE
+           AND servicio.activo = TRUE
          ORDER BY servicio.id_servicio`,
 
         [id_artista]
@@ -191,6 +193,7 @@ const getServiciosByArtista = async (id_artista) => {
 };
 
 
+  
 
 //=======EXPORTAR FUNCIONES=======//
 

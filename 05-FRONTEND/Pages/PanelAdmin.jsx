@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 
 import AdminGestionCitas from "./AdminGestionCitas";
 
+import AdminGestionServicios from "./AdminGestionServicios";
+
 /*----Componentes de administración----*/
 import AdminCrearArtista from "./AdminCrearArtista";
 import AdminEditarArtista from "./AdminEditarArtista";
@@ -297,18 +299,7 @@ function PanelAdmin({ token }) {
 
             {/* ===== GESTIÓN DE SERVICIOS ===== */}
             {seccion === "servicios" && (
-
-                <section>
-
-                    <h2>Gestión de servicios</h2>
-
-                    <p>
-                        Aquí podremos crear, editar y
-                        eliminar servicios.
-                    </p>
-
-                </section>
-
+                <AdminGestionServicios token={token} />
             )}
 
         </main>

@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import AdminEditarCita from "./AdminEditarCita";
 
 function AdminGestionCitas({ token }) {
 
@@ -8,6 +9,10 @@ function AdminGestionCitas({ token }) {
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
     const [filtroEstado, setFiltroEstado] = useState("todas");
+
+    // ===== EDICIÓN DE CITAS =====
+    const [citaEditar, setCitaEditar] = useState(null);
+    const [recargarCitas, setRecargarCitas] = useState(0);
 
     // ===== OBTENER TODAS LAS CITAS =====
     useEffect(() => {
@@ -82,7 +87,7 @@ function AdminGestionCitas({ token }) {
             cancelado = true;
         };
 
-    }, [token]);
+    }, [token, recargarCitas]);
 
 
     // ===== FILTRAR CITAS POR ESTADO =====
@@ -214,6 +219,7 @@ function AdminGestionCitas({ token }) {
                                     <th>Hora</th>
                                     <th>Estado</th>
                                     <th>Duración</th>
+                                    <th>Acciones</th>
                                 </tr>
 
                             </thead>
@@ -229,15 +235,15 @@ function AdminGestionCitas({ token }) {
                                         </td>
 
                                         <td>
-                                            {cita.id_cliente}
+                                            {cita.nombre_cliente || "Sin nombre"}
                                         </td>
 
                                         <td>
-                                            {cita.id_artista}
+                                            {cita.nombre_artista || "Sin nombre"}
                                         </td>
 
                                         <td>
-                                            {cita.id_servicio}
+                                            {cita.nombre_servicio || "Sin servicio"}
                                         </td>
 
                                         <td>
@@ -258,6 +264,15 @@ function AdminGestionCitas({ token }) {
                                                 : "Sin asignar"}
                                         </td>
 
+                                        <td>
+                                            <button
+                                                type="button"
+                                                onClick={() => setCitaEditar(cita)}
+                                            >
+                                                Editar
+                                            </button>
+                                        </td>
+
                                     </tr>
 
                                 ))}
@@ -272,6 +287,30 @@ function AdminGestionCitas({ token }) {
 
             )}
 
+            {/* ===== FORMULARIO PARA EDITAR CITA ===== */}
+            {citaEditar && (
+
+                <AdminEditarCita
+                    cita={citaEditar}
+                    token={token}
+
+                    onCitaActualizada={() => {
+
+                        setCitaEditar(null);
+
+                        setRecargarCitas(
+                            (anterior) => anterior + 1
+                        );
+
+                    }}
+
+                    onCancelar={() => {
+                        setCitaEditar(null);
+                    }}
+                />
+
+            )}
+
         </section>
 
     );
@@ -279,3 +318,5 @@ function AdminGestionCitas({ token }) {
 }
 
 export default AdminGestionCitas;
+
+

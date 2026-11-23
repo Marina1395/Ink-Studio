@@ -1,6 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 /* ==========================================
    HACHE STUDIO - ESTILOS GENERALES
 ========================================== */
@@ -42,7 +40,7 @@ header {
   background-color: #000000;
   padding: 20px 25px 35px;
   text-align: center;
-  border-bottom: 1px solid var(--azul-oscuro);
+
 }
 
 /* ===== LOGOTIPO HACHE STUDIO ===== */
@@ -191,18 +189,30 @@ section p {
   line-height: 1.7;
 }
 
+
+
 /* ==========================================
    SECCIÓN INICIO
 ========================================== */
 
-#inicio {
-  padding: 100px 20px;
 
-  background: radial-gradient(
-    ellipse at center,
-    #10263b 0%,
-    #080a0f 70%
-  );
+
+#inicio {
+  padding: 40px 20px;
+  min-height: 650px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  background-color: #000000;
+  background-image: url('/fondo-inicio-cyberpunk.png');
+  background-size: 100% auto;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 #inicio h2 {
@@ -295,6 +305,23 @@ section p {
   background-color: var(--fondo);
 }
 
+/* ===== TÍTULO CYBERPUNK DEL EQUIPO ===== */
+
+#equipo h2 {
+  font-family: 'Audiowide', sans-serif;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #ffffff;
+
+  text-shadow:
+    0 0 5px rgba(255, 46, 219, 0.5),
+    0 0 12px rgba(255, 46, 219, 0.3);
+
+  margin-bottom: 30px;
+}
+
 /* ===== FILTROS DE ARTISTAS ===== */
 
 .filtros-equipo {
@@ -312,6 +339,7 @@ section p {
   padding: 12px 20px;
   border-radius: 8px;
   font-size: 14px;
+  font-family: 'Audiowide', sans-serif;
   cursor: pointer;
 
   transition:
@@ -411,11 +439,9 @@ section p {
   min-height: 100vh;
   padding: 90px 20px;
 
-  background: radial-gradient(
-    ellipse at top,
-    #10263b 0%,
-    #080a0f 65%
-  );
+  background: radial-gradient(ellipse at top,
+      #10263b 0%,
+      #080a0f 65%);
 
   text-align: center;
 }
@@ -425,12 +451,12 @@ section p {
   margin-bottom: 35px;
 }
 
-#perfil-artista > h3 {
+#perfil-artista>h3 {
   font-size: 34px;
   margin-bottom: 15px;
 }
 
-#perfil-artista > p {
+#perfil-artista>p {
   max-width: 650px;
   margin: 15px auto;
 }
@@ -511,7 +537,7 @@ section p {
 
 /* ===== BOTÓN CONSULTAR DISPONIBILIDAD ===== */
 
-.reserva-artista > button {
+.reserva-artista>button {
   display: inline-block;
   padding: 13px 25px;
   background-color: #124b72;
@@ -527,12 +553,12 @@ section p {
     box-shadow 0.3s ease;
 }
 
-.reserva-artista > button:hover:not(:disabled) {
+.reserva-artista>button:hover:not(:disabled) {
   background-color: #1976ae;
   box-shadow: 0 0 14px rgba(0, 191, 255, 0.3);
 }
 
-.reserva-artista > button:disabled {
+.reserva-artista>button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -601,7 +627,7 @@ section p {
 /* ===== ACCESIBILIDAD DE BOTONES ===== */
 
 .lista-horarios button:focus-visible,
-.reserva-artista > button:focus-visible {
+.reserva-artista>button:focus-visible {
   outline: 2px solid var(--azul-claro);
   outline-offset: 3px;
 }
@@ -622,7 +648,7 @@ section p {
    VOLVER AL EQUIPO
 ========================================== */
 
-#perfil-artista > a {
+#perfil-artista>a {
   display: inline-block;
   padding: 14px 25px;
   color: var(--azul-claro);
@@ -636,7 +662,7 @@ section p {
     box-shadow 0.3s ease;
 }
 
-#perfil-artista > a:hover {
+#perfil-artista>a:hover {
   background-color: var(--azul-neon);
   color: #000000;
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
@@ -762,7 +788,7 @@ section p {
     padding: 60px 20px;
   }
 
-  #perfil-artista > h3 {
+  #perfil-artista>h3 {
     font-size: 28px;
   }
 
@@ -787,7 +813,7 @@ section p {
     padding: 12px 8px;
   }
 
-  .reserva-artista > button {
+  .reserva-artista>button {
     max-width: 100%;
   }
 
@@ -808,8 +834,8 @@ section p {
   .profesional,
   .profesional a,
   #inicio a,
-  #perfil-artista > a,
-  .reserva-artista > button,
+  #perfil-artista>a,
+  .reserva-artista>button,
   .lista-horarios button {
     transition: none;
   }
@@ -823,14 +849,14 @@ section p {
 /* ===== FOTOGRAFÍA DEL PERFIL DEL ARTISTA ===== */
 
 .foto-perfil-artista {
-    width: 100%;
-    max-width: 280px;
-    height: 350px;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 12px;
-    display: block;
-    margin: 0 auto 20px;
+  width: 100%;
+  max-width: 280px;
+  height: 350px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto 20px;
 }
 
 
@@ -841,94 +867,94 @@ section p {
 /* ===== FOTO IZQUIERDA + BIOGRAFÍA DERECHA ===== */
 
 #perfil-artista .datos-artista {
-    display: grid;
-    grid-template-columns: 45% 55%;
-    align-items: center;
-    gap: 40px;
+  display: grid;
+  grid-template-columns: 45% 55%;
+  align-items: center;
+  gap: 40px;
 
-    width: 100%;
-    max-width: 1150px;
-    margin: 40px auto 70px;
-    padding: 30px;
+  width: 100%;
+  max-width: 1150px;
+  margin: 40px auto 70px;
+  padding: 30px;
 
-    text-align: left;
+  text-align: left;
 }
 
 /* ===== FOTOGRAFÍA GRANDE ===== */
 
 #perfil-artista .foto-perfil-artista {
-    width: 100%;
-    max-width: none;
-    height: 580px;
+  width: 100%;
+  max-width: none;
+  height: 580px;
 
-    object-fit: cover;
-    object-position: center;
+  object-fit: cover;
+  object-position: center;
 
-    border-radius: 14px;
-    margin: 0;
+  border-radius: 14px;
+  margin: 0;
 
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45);
 }
 
 /* ===== INFORMACIÓN DEL ARTISTA ===== */
 
 #perfil-artista .datos-artista h3 {
-    font-size: 42px;
-    color: #ffffff;
-    margin: 0 0 15px;
+  font-size: 42px;
+  color: #ffffff;
+  margin: 0 0 15px;
 }
 
-#perfil-artista .datos-artista > p {
-    font-size: 18px;
-    color: var(--azul-claro);
-    margin-bottom: 25px;
+#perfil-artista .datos-artista>p {
+  font-size: 18px;
+  color: var(--azul-claro);
+  margin-bottom: 25px;
 }
 
 /* ===== BIOGRAFÍA ===== */
 
 #perfil-artista .biografia-artista {
-    max-width: 550px;
+  max-width: 550px;
 }
 
 #perfil-artista .biografia-artista p {
-    font-size: 16px;
-    line-height: 1.9;
-    color: var(--texto-secundario);
-    margin-bottom: 20px;
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--texto-secundario);
+  margin-bottom: 20px;
 }
 
 /* ===== TRABAJOS ===== */
 
 #perfil-artista .trabajos-artista {
-    max-width: 1150px;
-    margin: 50px auto;
-    padding: 40px;
+  max-width: 1150px;
+  margin: 50px auto;
+  padding: 40px;
 
-    background: #10151d;
-    border: 1px solid var(--azul-oscuro);
-    border-radius: 14px;
+  background: #10151d;
+  border: 1px solid var(--azul-oscuro);
+  border-radius: 14px;
 }
 
 /* ===== TABLETS ===== */
 
 @media (max-width: 900px) {
 
-    #perfil-artista .datos-artista {
-        grid-template-columns: 1fr;
-        gap: 30px;
-        padding: 20px;
-        text-align: center;
-    }
+  #perfil-artista .datos-artista {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 20px;
+    text-align: center;
+  }
 
-    #perfil-artista .foto-perfil-artista {
-        max-width: 450px;
-        height: 500px;
-        margin: 0 auto;
-    }
+  #perfil-artista .foto-perfil-artista {
+    max-width: 450px;
+    height: 500px;
+    margin: 0 auto;
+  }
 
-    #perfil-artista .biografia-artista {
-        margin: 0 auto;
-    }
+  #perfil-artista .biografia-artista {
+    margin: 0 auto;
+  }
 
 }
 
@@ -936,60 +962,939 @@ section p {
 
 @media (max-width: 600px) {
 
-    #perfil-artista .datos-artista {
-        padding: 10px;
-        margin: 20px auto 40px;
-    }
+  #perfil-artista .datos-artista {
+    padding: 10px;
+    margin: 20px auto 40px;
+  }
 
-    #perfil-artista .foto-perfil-artista {
-        width: 100%;
-        height: 400px;
-    }
+  #perfil-artista .foto-perfil-artista {
+    width: 100%;
+    height: 400px;
+  }
 
-    #perfil-artista .datos-artista h3 {
-        font-size: 32px;
-    }
+  #perfil-artista .datos-artista h3 {
+    font-size: 32px;
+  }
 
-    #perfil-artista .biografia-artista p {
-        font-size: 15px;
-    }
+  #perfil-artista .biografia-artista p {
+    font-size: 15px;
+  }
 
-    #perfil-artista .trabajos-artista {
-        padding: 25px 15px;
-    }
+  #perfil-artista .trabajos-artista {
+    padding: 25px 15px;
+  }
 
 }
 
 /* ===== GALERÍA DE TRABAJOS DE LOS ARTISTAS ===== */
 
 .galeria-trabajos {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 25px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 25px;
 }
 
 .imagen-trabajo {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 10px;
-    display: block;
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
 }
 
 /* Adaptación a móviles */
 @media (max-width: 768px) {
-    .galeria-trabajos {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .galeria-trabajos {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
-    .imagen-trabajo {
-        height: 180px;
-    }
+  .imagen-trabajo {
+    height: 180px;
+  }
 }
 
 @media (max-width: 480px) {
-    .galeria-trabajos {
-        grid-template-columns: 1fr;
-    }
+  .galeria-trabajos {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ==========================================
+   HACHE STUDIO - AJUSTE DE CABECERA
+========================================== */
+
+.cabecera-hache {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  margin: 0 auto;
+  transform: scale(1.12);
+  transform-origin: center center;
+}
+
+header {
+  overflow: hidden;
+}
+
+
+/* ===== MENÚ CYBERPUNK HACHE STUDIO ===== */
+
+.nav-gotico a {
+  font-family: 'Audiowide', sans-serif !important;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #e1eaff;
+  text-decoration: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.nav-gotico a:hover,
+.nav-gotico a.active {
+  color: #55d8ff;
+  text-shadow:
+    0 0 5px #00bfff,
+    0 0 12px rgba(0, 191, 255, 0.6);
+}
+
+
+/* ==========================================
+   HACHE STUDIO - MENÚ CYBERPUNK
+   TAMAÑO Y EFECTO HOVER
+========================================== */
+
+/* Menú de navegación */
+.nav-gotico {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 24px 30px;
+}
+
+/* Enlaces */
+.nav-gotico a {
+  display: inline-block;
+
+  font-family: 'Audiowide', sans-serif !important;
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  color: #e1eaff;
+  text-decoration: none;
+
+  transform: scale(1);
+
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+/* Efecto al pasar el ratón */
+.nav-gotico a:hover {
+  transform: scale(1.15);
+
+  color: #66dcff;
+
+  text-shadow:
+    0 0 6px rgba(0, 191, 255, 0.9),
+    0 0 15px rgba(0, 191, 255, 0.6),
+    0 0 25px rgba(0, 191, 255, 0.3);
+}
+
+/* Enlace de la página actual */
+.nav-gotico a.active {
+  color: #55d8ff;
+  text-shadow: 0 0 8px rgba(0, 191, 255, 0.5);
+}
+
+/* Adaptación a pantallas pequeñas */
+@media (max-width: 768px) {
+  .nav-gotico {
+    gap: 15px;
+    padding: 18px 12px;
+  }
+
+  .nav-gotico a {
+    font-size: 14px;
+  }
+}
+
+/* Accesibilidad: reducir animaciones si se solicita */
+@media (prefers-reduced-motion: reduce) {
+  .nav-gotico a {
+    transition: none;
+  }
+}
+
+
+/* ==========================================
+   HACHE STUDIO - HOVER CYBERPUNK
+========================================== */
+
+/* Enlaces del menú */
+.nav-gotico a {
+  position: relative;
+  display: inline-block;
+  padding: 10px 8px;
+
+  font-family: 'Audiowide', sans-serif !important;
+  color: #e1eaff;
+
+  transform: scale(1);
+  transition:
+    transform 0.3s ease,
+    color 0.3s ease,
+    text-shadow 0.3s ease;
+}
+
+/* Esquinas de neón, ocultas inicialmente */
+.nav-gotico a::before,
+.nav-gotico a::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 10px;
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 0.3s ease;
+}
+
+/* Esquina superior izquierda */
+.nav-gotico a::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid #ff2edb;
+  border-left: 2px solid #ff2edb;
+  filter: drop-shadow(0 0 5px #ff2edb);
+}
+
+/* Esquina inferior derecha */
+.nav-gotico a::after {
+  right: 0;
+  bottom: 0;
+  border-right: 2px solid #00cfff;
+  border-bottom: 2px solid #00cfff;
+  filter: drop-shadow(0 0 5px #00cfff);
+}
+
+/* Efecto al pasar el ratón */
+.nav-gotico a:hover {
+  transform: scale(1.12);
+  color: #8beaff;
+
+  text-shadow:
+    -1px 0 rgba(255, 46, 219, 0.8),
+    1px 0 rgba(0, 207, 255, 0.9),
+    0 0 12px rgba(0, 207, 255, 0.7);
+}
+
+.nav-gotico a:hover::before,
+.nav-gotico a:hover::after {
+  opacity: 1;
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+
+  .nav-gotico a,
+  .nav-gotico a::before,
+  .nav-gotico a::after {
+    transition: none;
+  }
+}
+
+
+/* ==========================================
+   HACHE STUDIO - TARJETAS CYBERPUNK
+========================================== */
+
+/* ===== CONTENEDOR DE ARTISTAS ===== */
+
+#equipo .equipo-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+
+  width: 94%;
+  max-width: 1700px;
+  box-sizing: border-box;
+
+  margin: 55px auto 0;
+  padding: 0;
+  transform: none;
+}
+
+/* ===== TARJETA PRINCIPAL ===== */
+
+#equipo .profesional {
+  position: relative;
+  display: grid;
+  grid-template-columns: 47% minmax(0, 1fr);
+
+  min-width: 0;
+  min-height: 320px;
+  padding: 3px;
+
+  text-align: left;
+  border: none;
+  border-radius: 0;
+
+  background: transparent;
+  isolation: isolate;
+  box-shadow: none;
+
+  filter:
+    drop-shadow(0 0 5px rgba(255, 46, 219, 0.35)) drop-shadow(0 0 5px rgba(0, 207, 255, 0.35));
+
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+/* ===== BORDE DE NEÓN ===== */
+
+#equipo .profesional::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  background: linear-gradient(135deg,
+      #ff2edb 0%,
+      #ff2edb 15%,
+      #8d3eff 35%,
+      #00cfff 65%,
+      #00e5ff 80%,
+      #ff2edb 100%);
+
+  clip-path: polygon(18px 0,
+      100% 0,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      0 100%,
+      0 18px);
+
+  pointer-events: none;
+}
+
+/* ===== INTERIOR OSCURO ===== */
+
+#equipo .profesional::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+
+  background: linear-gradient(135deg,
+      #151625,
+      #080c16);
+
+  clip-path: polygon(17px 0,
+      100% 0,
+      100% calc(100% - 17px),
+      calc(100% - 17px) 100%,
+      0 100%,
+      0 17px);
+
+  pointer-events: none;
+}
+
+/* ===== EFECTO HOVER ===== */
+
+#equipo .profesional:hover {
+  transform: translateY(-5px);
+  box-shadow: none;
+
+  filter:
+    drop-shadow(0 0 9px rgba(255, 46, 219, 0.65)) drop-shadow(0 0 9px rgba(0, 207, 255, 0.55));
+}
+
+/* ===== CONTENEDOR DE FOTOGRAFÍA ===== */
+
+#equipo .profesional-foto {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+  margin: 0;
+
+  background: #10121c;
+
+  clip-path: polygon(15px 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 15px);
+}
+
+/* ===== FOTOGRAFÍA DEL ARTISTA ===== */
+
+#equipo .foto-tarjeta-artista {
+  position: absolute;
+  inset: 0;
+
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  border-radius: 0;
+
+  object-fit: cover;
+  object-position: center 25%;
+
+  filter: contrast(1.08) saturate(0.95);
+
+  transition: transform 0.4s ease;
+}
+
+#equipo .profesional:hover .foto-tarjeta-artista {
+  transform: scale(1.04);
+}
+
+/* ===== INFORMACIÓN DEL ARTISTA ===== */
+
+#equipo .profesional-info {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  min-width: 0;
+  padding: 24px 18px;
+}
+
+/* ===== NOMBRE DEL ARTISTA ===== */
+
+#equipo .profesional-info h3 {
+  margin: 0 0 15px;
+
+  color: #ffffff;
+  font-family: 'Audiowide', sans-serif;
+  font-size: clamp(19px, 1.7vw, 27px);
+  font-weight: normal;
+  line-height: 1.3;
+
+  overflow-wrap: anywhere;
+
+  text-shadow:
+    0 0 5px rgba(255, 46, 219, 0.5),
+    0 0 12px rgba(255, 46, 219, 0.3);
+}
+
+/* ===== ESPECIALIDAD ===== */
+
+#equipo .profesional-especialidad {
+  margin: 0 0 15px;
+
+  color: #00e5ff;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1.5;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  overflow-wrap: anywhere;
+
+  text-shadow: 0 0 8px rgba(0, 207, 255, 0.25);
+}
+
+/* ===== DESCRIPCIÓN ===== */
+
+#equipo .profesional-descripcion {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+
+  overflow: hidden;
+  overflow-wrap: anywhere;
+
+  margin: 0 0 22px;
+
+  color: #d0d6e2;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* ===== BOTÓN VER PERFIL ===== */
+
+#equipo .profesional-boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+  max-width: 100%;
+  margin-top: auto;
+  padding: 12px 16px;
+
+  color: #00e5ff;
+  background: rgba(0, 207, 255, 0.06);
+
+  border: 1px solid #00cfff;
+  border-radius: 0;
+
+  font-family: 'Audiowide', sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+
+  text-decoration: none;
+
+  box-shadow:
+    0 0 8px rgba(0, 207, 255, 0.2),
+    inset 0 0 8px rgba(0, 207, 255, 0.05);
+
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+/* ===== EFECTO HOVER DEL BOTÓN ===== */
+
+#equipo .profesional-boton:hover {
+  color: #ffffff;
+
+  background: rgba(255, 46, 219, 0.15);
+  border-color: #ff2edb;
+
+  box-shadow:
+    0 0 10px rgba(255, 46, 219, 0.5),
+    0 0 20px rgba(255, 46, 219, 0.2);
+}
+
+#equipo .profesional-boton:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+/* ==========================================
+   RESPONSIVE - TABLETS
+========================================== */
+
+@media (max-width: 1100px) {
+
+  #equipo .equipo-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  #equipo .profesional {
+    min-height: 300px;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE - MÓVILES
+========================================== */
+
+@media (max-width: 700px) {
+
+  #equipo .equipo-container {
+    grid-template-columns: 1fr;
+
+    width: 100%;
+    max-width: 500px;
+
+    gap: 22px;
+    padding: 0;
+    margin: 35px auto 0;
+  }
+
+  #equipo .profesional {
+    grid-template-columns: 43% minmax(0, 1fr);
+    min-height: 280px;
+  }
+
+  #equipo .profesional-info {
+    padding: 20px 14px;
+  }
+
+  #equipo .profesional-info h3 {
+    font-size: 19px;
+  }
+
+  #equipo .profesional-especialidad {
+    font-size: 12px;
+  }
+
+  #equipo .profesional-descripcion {
+    font-size: 13px;
+  }
+
+  #equipo .profesional-boton {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+}
+
+/* ===== MÓVILES PEQUEÑOS ===== */
+
+@media (max-width: 380px) {
+
+  #equipo .profesional {
+    grid-template-columns: 1fr;
+  }
+
+  #equipo .profesional-foto {
+    height: 260px;
+  }
+
+  #equipo .profesional-info {
+    padding: 22px;
+  }
+}
+
+/* ==========================================
+   ACCESIBILIDAD - REDUCIR MOVIMIENTO
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  #equipo .profesional,
+  #equipo .foto-tarjeta-artista,
+  #equipo .profesional-boton {
+    transition: none;
+  }
+
+  #equipo .profesional:hover,
+  #equipo .profesional:hover .foto-tarjeta-artista {
+    transform: none;
+  }
+}
+
+/* =========================================
+   HACHE STUDIO - LOGIN CYBERPUNK
+========================================= */
+
+#acceso-clientes {
+  background-color: #000000;
+  padding: 60px 20px;
+}
+
+/* ===== TARJETA DE INICIO DE SESIÓN ===== */
+
+.login-usuario {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 40px;
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(#10121c, #10121c) padding-box,
+    linear-gradient(135deg, #ff2edb, #00cfff, #ff2edb) border-box;
+
+  border: 2px solid transparent;
+  border-radius: 8px;
+
+  box-shadow:
+    0 0 15px rgba(0, 207, 255, 0.15),
+    0 0 25px rgba(255, 46, 219, 0.12);
+}
+
+/* ===== FORMULARIO ===== */
+
+.login-usuario form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+/* ===== TÍTULO ===== */
+
+.login-usuario h3 {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 28px;
+  text-transform: uppercase;
+  text-align: center;
+  color: #ffffff;
+
+  margin: 0 0 35px;
+
+  text-shadow: 0 0 10px rgba(255, 46, 219, 0.7);
+}
+
+/* ===== ETIQUETAS ===== */
+
+.login-usuario label {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #00cfff;
+  margin-bottom: 10px;
+}
+
+/* ===== CAMPOS DEL FORMULARIO ===== */
+
+.login-usuario input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  margin-bottom: 25px;
+
+  background-color: #080a0f;
+  color: #ffffff;
+
+  border: 1px solid #29465b;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+.login-usuario input:focus {
+  outline: none;
+  border-color: #00cfff;
+  box-shadow: 0 0 8px rgba(0, 207, 255, 0.35);
+}
+
+/* ===== BOTÓN ENTRAR ===== */
+
+.login-usuario button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 5px;
+
+  font-family: 'Audiowide', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+
+  background-color: #081820;
+  color: #00cfff;
+  border: 1px solid #00cfff;
+  border-radius: 4px;
+
+  cursor: pointer;
+}
+
+.login-usuario button:hover {
+  background-color: #00cfff;
+  color: #000000;
+}
+
+.login-usuario button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== ENLACE DE REGISTRO ===== */
+
+.login-usuario p {
+  margin: 25px 0 0;
+  font-size: 14px;
+  text-align: center;
+  color: #c5c9d4;
+}
+
+.login-usuario a {
+  color: #ff2edb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-usuario a:hover {
+  text-decoration: underline;
+}
+
+/* ===== MENSAJES DE ERROR Y CONFIRMACIÓN ===== */
+
+.login-usuario p[role="alert"] {
+  color: #ff6060;
+}
+
+.login-usuario p[role="status"] {
+  color: #00cfff;
+}
+
+/* ===== ADAPTACIÓN A MÓVILES ===== */
+
+@media (max-width: 600px) {
+  .login-usuario {
+    padding: 25px 20px;
+  }
+
+  .login-usuario h3 {
+    font-size: 22px;
+  }
+}
+
+/* =========================================
+   HACHE STUDIO - REGISTRO CYBERPUNK
+========================================= */
+
+/* ===== FONDO DE LA PÁGINA ===== */
+
+main:has(.registro-usuario) {
+  background-color: #000000;
+  padding: 60px 20px;
+}
+
+/* ===== TARJETA DE REGISTRO ===== */
+
+.registro-usuario {
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+  padding: 40px;
+  box-sizing: border-box;
+
+  background:
+    linear-gradient(#10121c, #10121c) padding-box,
+    linear-gradient(135deg, #ff2edb, #00cfff, #ff2edb) border-box;
+
+  border: 2px solid transparent;
+  border-radius: 8px;
+
+  box-shadow:
+    0 0 15px rgba(0, 207, 255, 0.15),
+    0 0 25px rgba(255, 46, 219, 0.12);
+}
+
+/* ===== TÍTULO ===== */
+
+.registro-usuario h2 {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 28px;
+  text-transform: uppercase;
+  text-align: center;
+  color: #ffffff;
+
+  margin: 0 0 20px;
+
+  text-shadow: 0 0 10px rgba(255, 46, 219, 0.7);
+}
+
+/* ===== TEXTOS ===== */
+
+.registro-usuario p {
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  color: #c5c9d4;
+  margin: 20px 0 30px;
+}
+
+/* ===== FORMULARIO ===== */
+
+.registro-usuario form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+/* ===== ETIQUETAS ===== */
+
+.registro-usuario label {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #00cfff;
+  margin-bottom: 10px;
+}
+
+/* ===== CAMPOS DEL FORMULARIO ===== */
+
+.registro-usuario input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+
+  background-color: #080a0f;
+  color: #ffffff;
+
+  border: 1px solid #29465b;
+  border-radius: 4px;
+  font-size: 15px;
+}
+
+.registro-usuario input:focus {
+  outline: none;
+  border-color: #00cfff;
+  box-shadow: 0 0 8px rgba(0, 207, 255, 0.35);
+}
+
+/* ===== BOTÓN CREAR CUENTA ===== */
+
+.registro-usuario button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 5px;
+
+  font-family: 'Audiowide', sans-serif;
+  font-size: 14px;
+  text-transform: uppercase;
+
+  background-color: #081820;
+  color: #00cfff;
+  border: 1px solid #00cfff;
+  border-radius: 4px;
+
+  cursor: pointer;
+}
+
+.registro-usuario button:hover {
+  background-color: #00cfff;
+  color: #000000;
+}
+
+/* ===== ENLACE INICIAR SESIÓN ===== */
+
+.registro-usuario > p:last-child {
+  margin: 25px 0 0;
+}
+
+.registro-usuario a {
+  color: #ff2edb;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.registro-usuario a:hover {
+  text-decoration: underline;
+}
+
+/* ===== MENSAJES DE ERROR ===== */
+
+.registro-usuario .error-registro {
+  color: #ff6060;
+  margin: 20px 0 0;
+}
+
+/* ===== MENSAJES DE CONFIRMACIÓN ===== */
+
+.registro-usuario .mensaje-registro {
+  color: #00cfff;
+  margin: 20px 0 0;
+}
+
+/* ===== ADAPTACIÓN A MÓVILES ===== */
+
+@media (max-width: 600px) {
+  .registro-usuario {
+    padding: 25px 20px;
+  }
+
+  .registro-usuario h2 {
+    font-size: 22px;
+  }
+
+  .registro-usuario input {
+    font-size: 16px;
+  }
 }

@@ -239,22 +239,16 @@ function App() {
 
     <header>
 
-      <Link to="/">
 
-        <img
-          src="/artistas/logo_hache.png"
-          alt="Hache Studio"
-          className="logo-hache"
-        />
-
-      </Link>
+      <img
+        src="/hache-cabecera.png"
+        alt="Hache Studio - Cabecera"
+        className="cabecera-hache"
+      />
 
       <nav className="nav-gotico">
 
-        <span
-          className="filigrana-lateral filigrana-izquierda"
-          aria-hidden="true"
-        ></span>
+
 
 
         {/* ===== MENÚ DE NAVEGACIÓN ENTRE PÁGINAS ===== */}
@@ -591,41 +585,46 @@ function App() {
 
                     {profesionalesFiltrados.map((profesional) => (
 
+
                       <div
                         className="profesional"
                         key={profesional.id_usuario}
                       >
-
                         {/* ===== FOTOGRAFÍA DEL ARTISTA ===== */}
-                        {(profesional.imagen_tarjeta || profesional.imagen) && (
-
-                          <img
-                            src={
-                              profesional.imagen_tarjeta ||
-                              profesional.imagen
-                            }
-                            alt={`Fotografía de ${profesional.nombre}`}
-                            className="foto-tarjeta-artista"
-                          />
-
-                        )}
-
+                        <div className="profesional-foto">
+                          {(profesional.imagen_tarjeta || profesional.imagen) && (
+                            <img
+                              src={profesional.imagen_tarjeta || profesional.imagen}
+                              alt={`Fotografía de ${profesional.nombre}`}
+                              className="foto-tarjeta-artista"
+                            />
+                          )}
+                        </div>
 
                         {/* ===== INFORMACIÓN DEL ARTISTA ===== */}
-                        <h3>{profesional.nombre}</h3>
+                        <div className="profesional-info">
 
-                        <p>{profesional.especialidad}</p>
+                          <h3>{profesional.nombre}</h3>
 
-                        <p>{profesional.descripcion}</p>
+                          <p className="profesional-especialidad">
+                            {profesional.especialidad}
+                          </p>
 
+                          <p className="profesional-descripcion">
+                            {profesional.descripcion}
+                          </p>
 
-                        <Link
-                          to={`/artistas/${profesional.id_usuario}`}
-                        >
-                          Ver perfil
-                        </Link>
+                          {/* ===== BOTÓN VER PERFIL ===== */}
+                          <Link
+                            className="profesional-boton"
+                            to={`/artistas/${profesional.id_usuario}`}
+                          >
+                            VER PERFIL <span aria-hidden="true">→</span>
+                          </Link>
 
+                        </div>
                       </div>
+
 
                     ))}
 

@@ -48,7 +48,13 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                 const datos = await respuesta.json();
 
-                setServicios(Array.isArray(datos) ? datos : []);
+                // ===== MOSTRAR SOLO SERVICIOS ACTIVOS =====
+
+                const serviciosActivos = Array.isArray(datos)
+                    ? datos.filter((servicio) => servicio.activo === true)
+                    : [];
+
+                setServicios(serviciosActivos);
 
             } catch (error) {
 
@@ -265,7 +271,7 @@ function PerfilArtista({ artistas, token, usuario }) {
             "fran_05.jpg"
         ],
 
-        
+
         // Estela - Gemas dentales
         27: [
             "E_1.jpeg",

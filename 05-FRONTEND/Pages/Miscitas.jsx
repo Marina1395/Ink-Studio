@@ -109,9 +109,7 @@ function MisCitas({ token }) {
 
                             <p>
                                 <strong>Fecha:</strong>{" "}
-                                {new Date(cita.fecha).toLocaleDateString("es-ES", {
-                                    timeZone: "UTC"
-                                })}
+                                {cita.fecha?.slice(0, 10).split("-").reverse().join("/")}
                             </p>
 
                             <p>

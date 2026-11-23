@@ -5,18 +5,29 @@ const pool = require("../db/connection");
 
 //=======OBTENER TODAS LAS CITAS=======//
 
-/*----Obtenemos todas las citas ordenadas por fecha y hora----*/
 const getCitas = async () => {
 
-    const resultado = await pool.query(
+    const resultado = await pool.query(`
 
-        `SELECT *
-         FROM cita
-         ORDER BY fecha ASC, hora ASC`
+        SELECT
+            cita.*,
+            TO_CHAR(cita.fecha, 'YYYY-MM-DD') AS fecha,
+            CONCAT(cliente.nombre, ' ', cliente.apellidos) AS nombre_cliente,
+            usuario.nombre AS nombre_artista,
+            servicio.nombre AS nombre_servicio
+        FROM cita
+        LEFT JOIN cliente
+            ON cita.id_cliente = cliente.id_cliente
+        LEFT JOIN artista
+            ON cita.id_artista = artista.id_usuario
+        LEFT JOIN usuario
+            ON artista.id_usuario = usuario.id_usuario
+        LEFT JOIN servicio
+            ON cita.id_servicio = servicio.id_servicio
+        ORDER BY cita.fecha ASC, cita.hora ASC
 
-    );
+    `);
 
-    /*----Devolvemos todas las citas encontradas----*/
     return resultado.rows;
 
 };
@@ -29,10 +40,12 @@ const getCitasByCliente = async (id_usuario) => {
 
     const resultado = await pool.query(
 
-        `SELECT cita.*
+        `SELECT
+            cita.*,
+            TO_CHAR(cita.fecha, 'YYYY-MM-DD') AS fecha
          FROM cita
          INNER JOIN cliente
-         ON cita.id_cliente = cliente.id_cliente
+             ON cita.id_cliente = cliente.id_cliente
          WHERE cliente.id_usuario = $1
          ORDER BY cita.fecha ASC, cita.hora ASC`,
 
@@ -53,16 +66,17 @@ const getCitasByArtista = async (id_usuario) => {
 
     const resultado = await pool.query(
 
-        `SELECT *
+        `SELECT
+            cita.*,
+            TO_CHAR(cita.fecha, 'YYYY-MM-DD') AS fecha
          FROM cita
          WHERE id_artista = $1
-         ORDER BY fecha ASC, hora ASC`,
+         ORDER BY cita.fecha ASC, cita.hora ASC`,
 
         [id_usuario]
 
     );
 
-    /*----Devolvemos las citas del artista----*/
     return resultado.rows;
 
 };
@@ -75,7 +89,11 @@ const getCitaById = async (id_cita) => {
 
     const resultado = await pool.query(
 
-        "SELECT * FROM cita WHERE id_cita = $1",
+        `SELECT
+            cita.*,
+            TO_CHAR(cita.fecha, 'YYYY-MM-DD') AS fecha
+         FROM cita
+         WHERE id_cita = $1`,
 
         [id_cita]
 
@@ -113,7 +131,9 @@ const createCita = async (
             duracion_minutos
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *`,
+        RETURNING
+            *,
+            TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha`,
 
         [
             id_cliente,
@@ -159,7 +179,9 @@ const updateCita = async (
             estado = $6,
             duracion_minutos = $7
          WHERE id_cita = $8
-         RETURNING *`,
+         RETURNING
+            *,
+            TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha`,
 
         [
             id_cliente,
@@ -296,6 +318,7 @@ const artistaOfreceServicio = async (id_artista, id_servicio) => {
 
 };
 
+
 //=======EXPORTAR FUNCIONES=======//
 
 /*----Exportamos las funciones para utilizarlas en el controlador de citas----*/
@@ -311,5 +334,4 @@ module.exports = {
     comprobarSolapamiento,
     getCitasOcupadas,
     artistaOfreceServicio
-
 };

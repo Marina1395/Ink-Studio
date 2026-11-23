@@ -262,13 +262,22 @@ const deleteServicio = async (req, res) => {
 
         /*----Devolvemos una confirmación junto con el servicio eliminado----*/
         return res.status(200).json({
-            mensaje: "Servicio eliminado correctamente",
+            mensaje: "Servicio desactivado correctamente",
             servicio: servicioEliminado
         });
 
     } catch (error) {
 
         console.error("Error al eliminar el servicio:", error);
+
+        // ===== BLOQUEAR DESACTIVACIÓN CON CITAS FUTURAS =====
+        if (error.status === 409) {
+
+            return res.status(409).json({
+                error: error.message
+            });
+
+        }
 
         /*----Comprobamos si existen registros relacionados que impiden eliminarlo----*/
         if (error.code === "23503") {

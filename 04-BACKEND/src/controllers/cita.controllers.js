@@ -6,6 +6,9 @@ const clienteModel = require("../models/cliente.model");
 /*----Importamos el modelo de artistas para comprobar su estado----*/
 const artistaModel = require("../models/artista.model");
 
+// ===== MODELO DE SERVICIOS =====
+const servicioModel = require("../models/servicio.model");
+
 
 //=======COMPROBACIONES Y VALIDACIONES========//
 
@@ -319,6 +322,19 @@ const createCita = async (req, res) => {
         }
 
 
+
+        // ===== COMPROBAR QUE EL SERVICIO ESTÉ ACTIVO =====
+        const servicio = await servicioModel.getServicioById(id_servicio);
+
+        if (!servicio || servicio.activo !== true) {
+
+            return res.status(404).json({
+                error: "El servicio seleccionado no está disponible"
+            });
+
+        }
+
+
         /*----NUEVA VALIDACIÓN: comprobar que el artista ofrece el servicio----*/
         const ofreceServicio = await citaModel.artistaOfreceServicio(
             id_artista,
@@ -481,7 +497,9 @@ const updateCita = async (req, res) => {
         const estadosPermitidos = [
             "pendiente",
             "confirmada",
+            "rechazada",
             "cancelada"
+
         ];
 
         if (!estadosPermitidos.includes(estado)) {
@@ -491,6 +509,44 @@ const updateCita = async (req, res) => {
             });
 
         }
+
+
+        // ===== VALIDAR CAMBIOS DE ESTADO =====
+
+        const transicionesPermitidas = {
+            pendiente: ["confirmada", "rechazada", "cancelada"],
+            confirmada: ["cancelada"],
+            rechazada: [],
+            cancelada: []
+        };
+
+        const estadoActual = citaExistente.estado;
+
+        // ===== PROTEGER CITAS FINALIZADAS =====
+
+        if (
+            estadoActual === "rechazada" ||
+            estadoActual === "cancelada"
+        ) {
+            return res.status(409).json({
+                error: "No se puede modificar una cita rechazada o cancelada"
+            });
+        }
+
+        if (estado !== estadoActual) {
+
+            const cambiosPermitidos = transicionesPermitidas[estadoActual] || [];
+
+            if (!cambiosPermitidos.includes(estado)) {
+
+                return res.status(409).json({
+                    error: `No se puede cambiar una cita de ${estadoActual} a ${estado}`
+                });
+
+            }
+
+        }
+
 
         /*----El artista no puede cambiar el profesional, cliente o servicio----*/
         if (req.usuario.rol === "artista") {
@@ -658,54 +714,37 @@ const updateCita = async (req, res) => {
 };
 
 
-//=======ELIMINAR CITA=======//
+
+// ===== PROTEGER EL HISTORIAL DE CITAS =====
 
 const deleteCita = async (req, res) => {
 
     try {
 
-        /*----Solo los administradores pueden eliminar citas----*/
+        // Solo los administradores pueden acceder a esta operación
         if (req.usuario.rol !== "admin") {
-
             return res.status(403).json({
-                error: "Solo los administradores pueden eliminar citas"
+                error: "Solo los administradores pueden gestionar la eliminación de citas"
             });
-
         }
 
-        const { id_cita } = req.params;
-
-        if (!validarId(id_cita)) {
-
-            return res.status(400).json({
-                error: "El identificador de la cita no es válido"
-            });
-
-        }
-
-        const resultado = await citaModel.deleteCita(id_cita);
-
-        if (!resultado) {
-
-            return res.status(404).json({
-                error: "Cita no encontrada"
-            });
-
-        }
-
-        return res.status(200).json(resultado);
+        // No permitimos borrar citas físicamente
+        return res.status(405).json({
+            error: "No se pueden eliminar citas. Debes cancelarlas para conservar el historial"
+        });
 
     } catch (error) {
 
         console.error(error);
 
         return res.status(500).json({
-            error: "Ha ocurrido un error al eliminar la cita"
+            error: "Ha ocurrido un error al gestionar la cita"
         });
 
     }
 
 };
+
 
 
 //=======CONSULTA HORARIOS DISPONIBLES=======//
