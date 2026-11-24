@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from "react";
 
+import Servicios from "../Pages/Servicios";
+
 import {
   Routes,
   Route,
@@ -466,7 +468,7 @@ function App() {
 
           }
         />
-
+        
 
         {/* ===== PÁGINA INDEPENDIENTE DE SERVICIOS ===== */}
         <Route
@@ -475,57 +477,14 @@ function App() {
 
             <main>
 
-              <section id="servicios">
-
-                <h2>Nuestros servicios</h2>
-
-                <div className="servicios-container">
-
-                  <div className="servicio">
-
-                    <h3>Tatuajes</h3>
-
-                    <p>
-                      Diseños personalizados realizados por nuestros artistas.
-                    </p>
-
-                  </div>
-
-
-                  <div className="servicio">
-
-                    <h3>Piercings</h3>
-
-                    <p>
-                      Perforaciones profesionales adaptadas a tu estilo.
-                    </p>
-
-                  </div>
-
-
-                  <div className="servicio">
-
-                    <h3>Gemas dentales</h3>
-
-                    <p>
-                      Un toque de brillo para tu sonrisa.
-                    </p>
-
-                  </div>
-
-                </div>
-
-
-                <Link to="/equipo">
-                  Conoce a nuestro equipo
-                </Link>
-
-              </section>
+              <Servicios />
 
             </main>
 
           }
         />
+
+
 
 
         {/* ===== PÁGINA INDEPENDIENTE DE NUESTRO EQUIPO ===== */}

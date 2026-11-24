@@ -252,49 +252,273 @@ section p {
 }
 
 /* ==========================================
-   SECCIÓN SERVICIOS
+   HACHE STUDIO - SERVICIOS CYBERPUNK
 ========================================== */
 
 #servicios {
-  background-color: #0b0e14;
+  background-color: #000000;
+  padding: 60px 25px 80px;
+  text-align: center;
 }
 
-.servicios-container {
+
+/* ===== TÍTULO PRINCIPAL ===== */
+
+#servicios h2 {
+  font-family: 'Audiowide', sans-serif;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #ffffff;
+
+  text-shadow:
+    0 0 5px rgba(255, 46, 219, 0.5),
+    0 0 12px rgba(255, 46, 219, 0.3);
+
+  margin-bottom: 45px;
+}
+
+
+/* ===== CONTENEDOR DE SERVICIOS ===== */
+
+.servicios-contenedor {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+
+  width: 100%;
+  max-width: 1150px;
+  margin: 0 auto 50px;
+}
+
+
+/* ===== TARJETAS CYBERPUNK ===== */
+
+.servicio-tarjeta {
+  position: relative;
+  isolation: isolate;
+
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 25px;
-  max-width: 1100px;
-  margin: 40px auto 0;
-}
+  align-items: center;
 
-/* ===== TARJETAS DE SERVICIOS ===== */
-
-.servicio {
-  background-color: var(--fondo-tarjeta);
-  border: 1px solid var(--azul-oscuro);
-  border-radius: 14px;
+  min-height: 230px;
   padding: 35px 25px;
-  width: 260px;
+
+  background: transparent;
+
+  filter:
+    drop-shadow(0 0 5px rgba(255, 46, 219, 0.35)) drop-shadow(0 0 5px rgba(0, 207, 255, 0.35));
 
   transition:
     transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+
+/* ===== BORDE DE NEÓN ===== */
+
+.servicio-tarjeta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  background: linear-gradient(135deg,
+      #ff2edb,
+      #8d3eff,
+      #00cfff,
+      #00e5ff,
+      #ff2edb);
+
+  clip-path: polygon(18px 0,
+      100% 0,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      0 100%,
+      0 18px);
+
+  pointer-events: none;
+}
+
+
+/* ===== INTERIOR DE LAS TARJETAS ===== */
+
+.servicio-tarjeta::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+
+  background: linear-gradient(135deg,
+      #151625,
+      #080c16);
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  clip-path: polygon(17px 0,
+      100% 0,
+      100% calc(100% - 17px),
+      calc(100% - 17px) 100%,
+      0 100%,
+      0 17px);
+
+  pointer-events: none;
+}
+
+/* ===== FOTOGRAFÍAS DE LOS SERVICIOS ===== */
+
+.servicio-tatuajes::before {
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.25),
+      rgba(0, 0, 0, 0.25)
+    ),
+    url('/servicios/tatuajes.png');
+}
+
+.servicio-piercings::before {
+  background-image:
+    linear-gradient(
+      110deg,
+      rgba(0, 90, 150, 0.30),
+      rgba(0, 0, 0, 0.35),
+      rgba(150, 0, 90, 0.30)
+    ),
+    url('/servicios/piercings.png');
+
+  filter: brightness(0.75) contrast(1.10);
+}
+
+.servicio-gemas::before {
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.25),
+      rgba(0, 0, 0, 0.25)
+    ),
+    url('/servicios/gemas.png');
+}
+
+/* ===== TÍTULOS DE LOS SERVICIOS ===== */
+
+.servicio-tarjeta h3 {
+  font-family: 'Audiowide', sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #00e5ff;
+
+  margin: 0 0 20px;
+
+  text-shadow:
+    0 0 8px rgba(0, 207, 255, 0.4);
+}
+
+
+/* ===== DESCRIPCIONES ===== */
+
+.servicio-tarjeta p {
+  color: #d0d6e2;
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+
+/* ===== EFECTO AL PASAR EL RATÓN ===== */
+
+.servicio-tarjeta:hover {
+  transform: translateY(-5px);
+
+  filter:
+    drop-shadow(0 0 9px rgba(255, 46, 219, 0.65)) drop-shadow(0 0 9px rgba(0, 207, 255, 0.55));
+}
+
+
+/* ===== BOTÓN CONOCE A NUESTRO EQUIPO ===== */
+
+.servicios-enlace {
+  display: inline-block;
+  padding: 16px 28px;
+
+  font-family: 'Audiowide', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1px;
+
+  color: #00e5ff;
+  background: rgba(0, 207, 255, 0.06);
+
+  border: 1px solid #00cfff;
+  text-decoration: none;
+
+  box-shadow:
+    0 0 8px rgba(0, 207, 255, 0.2);
+
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
     border-color 0.3s ease,
     box-shadow 0.3s ease;
 }
 
-.servicio h3 {
-  color: #ffffff;
-  font-size: 22px;
-}
 
-.servicio:hover {
-  transform: translateY(-6px);
-  border-color: var(--azul-neon);
+/* ===== EFECTO HOVER DEL BOTÓN ===== */
+
+.servicios-enlace:hover {
+  color: #ffffff;
+  background: rgba(255, 46, 219, 0.15);
+  border-color: #ff2edb;
 
   box-shadow:
-    0 0 15px rgba(0, 191, 255, 0.2),
-    0 0 30px rgba(0, 191, 255, 0.08);
+    0 0 10px rgba(255, 46, 219, 0.5),
+    0 0 20px rgba(255, 46, 219, 0.2);
+}
+
+
+.servicios-enlace:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+
+/* ===== ADAPTACIÓN A TABLETS Y MÓVILES ===== */
+
+@media (max-width: 850px) {
+
+  .servicios-contenedor {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    gap: 25px;
+  }
+
+  .servicio-tarjeta {
+    min-height: 190px;
+  }
+
+  .servicio-tarjeta h3 {
+    font-size: 21px;
+  }
+
+}
+
+
+/* ===== ACCESIBILIDAD ===== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .servicio-tarjeta,
+  .servicios-enlace {
+    transition: none;
+  }
+
+  .servicio-tarjeta:hover {
+    transform: none;
+  }
+
 }
 
 /* ==========================================
@@ -1855,7 +2079,7 @@ main:has(.registro-usuario) {
 
 /* ===== ENLACE INICIAR SESIÓN ===== */
 
-.registro-usuario > p:last-child {
+.registro-usuario>p:last-child {
   margin: 25px 0 0;
 }
 
