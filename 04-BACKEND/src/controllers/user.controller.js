@@ -305,109 +305,164 @@ const getUserById = async (req, res) => {
 
 
 
-
 //=======ACTUALIZAR USUARIO=======//
 
 const updateUser = async (req, res) => {
 
     try {
 
-        /*----Recogemos el ID del usuario que queremos actualizar----*/
+        /*----Recogemos el ID y los datos del usuario----*/
         const { id_usuario } = req.params;
-
-        /*----Recogemos los nuevos datos del usuario----*/
         const { nombre, email, contrasena, rol } = req.body;
+
 
         /*----Comprobamos que el usuario haya iniciado sesión----*/
         if (!req.usuario) {
 
             return res.status(401).json({
-
                 error: "Debes iniciar sesión"
-
             });
+
         }
 
-        /*----Comprobamos que sea administrador o que esté modificando su propia cuenta----*/
+
+        /*----Comprobamos los permisos del usuario----*/
         if (
             req.usuario.rol !== "admin" &&
             String(req.usuario.id_usuario) !== String(id_usuario)
         ) {
-            return res.status(403).json({
 
+            return res.status(403).json({
                 error: "No tienes permiso para modificar este usuario"
             });
 
         }
 
-        /*----Comprobamos que los datos obligatorios sean válidos----*/
-        if (
 
+        /*----Validamos el nombre y el correo electrónico----*/
+        if (
             typeof nombre !== "string" ||
             typeof email !== "string" ||
-            typeof contrasena !== "string" ||
-            typeof rol !== "string" ||
-            !nombre.trim() ||
-            !email.trim() ||
-            contrasena.length < 8 ||
-            contrasena.length > 72
-
+            nombre.trim().length < 2 ||
+            nombre.trim().length > 100
         ) {
+
             return res.status(400).json({
                 error: "Los datos del usuario no son válidos"
             });
+
         }
 
-        /*----Buscamos el usuario para comprobar que existe y conocer su rol actual----*/
+
+        /*----Normalizamos y validamos el correo electrónico----*/
+        const emailLimpio = email.trim().toLowerCase();
+
+        const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!formatoEmail.test(emailLimpio)) {
+
+            return res.status(400).json({
+                error: "El email no tiene un formato válido"
+            });
+
+        }
+
+
+        /*----Validamos la contraseña únicamente si se proporciona----*/
+        if (
+            contrasena != null &&
+            (
+                typeof contrasena !== "string" ||
+                contrasena.length < 8 ||
+                contrasena.length > 72
+            )
+        ) {
+
+            return res.status(400).json({
+                error: "La contraseña debe tener entre 8 y 72 caracteres"
+            });
+
+        }
+
+
+        /*----Comprobamos que el usuario exista----*/
         const usuarioActual = await usuarioModel.getUserById(id_usuario);
 
         if (!usuarioActual.rows[0]) {
 
             return res.status(404).json({
-
                 error: "Usuario no encontrado"
-
             });
+
         }
 
 
-        /*----Impedimos que un usuario que no sea administrador cambie su rol----*/
-        if (
+        /*----Conservamos el rol actual del usuario----*/
+        const rolActual = usuarioActual.rows[0].rol;
 
-            req.usuario.rol !== "admin" &&
-            rol !== usuarioActual.rows[0].rol
+        if (rol !== undefined && rol !== rolActual) {
 
-        ) {
             return res.status(403).json({
-
-                error: "No tienes permiso para cambiar tu rol"
-
+                error: "No se permite cambiar el rol desde esta operación"
             });
+
         }
 
-        /*----Enviamos los nuevos datos al modelo para actualizar el usuario----*/
+
+        /*----Comprobamos que el email no pertenezca a otra cuenta----*/
+        const usuarioExistente = await usuarioModel.getUserByEmail(emailLimpio);
+
+        if (
+            usuarioExistente &&
+            String(usuarioExistente.id_usuario) !== String(id_usuario)
+        ) {
+
+            return res.status(409).json({
+                error: "El email ya está registrado por otro usuario"
+            });
+
+        }
+
+
+        /*----Actualizamos los datos del usuario----*/
         const resultado = await usuarioModel.updateUser(
-
             id_usuario,
-            nombre,
-            email,
-            contrasena,
-            rol
-
+            nombre.trim(),
+            emailLimpio,
+            contrasena ?? null,
+            rolActual
         );
 
-        /*----Devolvemos los datos del usuario actualizado----*/
+
+        /*----Comprobamos que se haya actualizado el usuario----*/
+        if (resultado.rowCount === 0) {
+
+            return res.status(404).json({
+                error: "Usuario no encontrado"
+            });
+
+        }
+
+
+        /*----Devolvemos los datos actualizados----*/
         return res.status(200).json(resultado.rows[0]);
+
 
     } catch (error) {
 
         console.error(error);
 
-        /*----Devolvemos un error si no podemos actualizar el usuario----*/
+        /*----Controlamos los correos duplicados----*/
+        if (error.code === "23505") {
+
+            return res.status(409).json({
+                error: "El email ya está registrado"
+            });
+
+        }
+
         return res.status(500).json({
-
             error: "Error al actualizar el usuario"
-
         });
 
     }
@@ -415,76 +470,90 @@ const updateUser = async (req, res) => {
 };
 
 
-
-
-//=======ELIMINAR USUARIO=======//
+//=======DAR DE BAJA A UN USUARIO=======//
 
 const deleteUser = async (req, res) => {
 
     try {
 
-        /*----Recogemos el ID del usuario que queremos eliminar----*/
-        const { id_usuario } = req.params;
+        /*----Recogemos el ID del usuario indicado en la URL----*/
+        const id_usuario = Number(req.params.id_usuario);
+
 
         /*----Comprobamos que el usuario haya iniciado sesión----*/
         if (!req.usuario) {
 
             return res.status(401).json({
-
                 error: "Debes iniciar sesión"
             });
+
         }
 
-        /*----Comprobamos que sea administrador o que quiera eliminar su propia cuenta----*/
-        if (
 
-            req.usuario.rol !== "admin" &&
-            String(req.usuario.id_usuario) !== String(id_usuario)
+        /*----Comprobamos que el usuario sea administrador----*/
+        if (req.usuario.rol !== "admin") {
 
-        ) {
             return res.status(403).json({
-
-                error: "No tienes permiso para eliminar este usuario"
-
+                error: "No tienes permiso para dar de baja usuarios"
             });
+
         }
 
-        /*----Enviamos el ID al modelo para eliminar el usuario----*/
+
+        /*----Comprobamos que el ID sea válido----*/
+        if (!Number.isSafeInteger(id_usuario) || id_usuario <= 0) {
+
+            return res.status(400).json({
+                error: "ID de usuario no válido"
+            });
+
+        }
+
+
+        /*----Enviamos el ID al modelo para realizar la baja segura----*/
         const resultado = await usuarioModel.deleteUser(id_usuario);
 
-        /*----Comprobamos si se ha eliminado algún usuario----*/
+
+        /*----Comprobamos que se haya actualizado la cuenta----*/
         if (resultado.rowCount === 0) {
 
-            return res.status(404).json({
-
-                error: "Usuario no encontrado"
-
+            return res.status(409).json({
+                error: "No se ha podido dar de baja al usuario"
             });
+
         }
 
-        /*----Confirmamos que el usuario se ha eliminado correctamente----*/
+
+        /*----Confirmamos la baja y devolvemos los datos actualizados----*/
         return res.status(200).json({
 
-            mensaje: "Usuario eliminado correctamente"
+            mensaje: "Usuario dado de baja correctamente",
+            usuario: resultado.rows[0]
 
         });
 
     } catch (error) {
 
-        console.error(error);
+        /*----Gestionamos los errores controlados desde el modelo----*/
+        if ([403, 404, 409].includes(error.status)) {
 
-        /*----Devolvemos un error si no podemos eliminar el usuario----*/
+            return res.status(error.status).json({
+                error: error.message
+            });
+
+        }
+
+
+        /*----Gestionamos los errores inesperados----*/
+        console.error("Error al dar de baja al usuario:", error);
 
         return res.status(500).json({
-
-            error: "Error al eliminar el usuario"
+            error: "Error interno al dar de baja al usuario"
         });
 
     }
 
 };
-
-
 
 
 
@@ -542,6 +611,15 @@ const loginUser = async (req, res) => {
 
         }
 
+
+        /*----Impedimos iniciar sesión a los usuarios desactivados----*/
+        if (usuario.activo !== true) {
+
+            return res.status(403).json({
+                error: "Tu cuenta está desactivada"
+            });
+
+        }
 
 
         /*----Comprobamos que los artistas no estén dados de baja----*/
@@ -610,10 +688,6 @@ const loginUser = async (req, res) => {
     }
 
 };
-
-
-
-
 
 
 //======EXPORTAMOS FUNCIONES=======//

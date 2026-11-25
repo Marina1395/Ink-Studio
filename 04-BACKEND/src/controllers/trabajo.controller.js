@@ -1,6 +1,48 @@
-
 /*----Importamos el modelo de trabajos----*/
 const trabajoModel = require("../models/trabajo.model");
+
+/*----Importamos el modelo de artistas----*/
+const artistaModel = require("../models/artista.model");
+
+
+//=======COMPROBAR ARTISTA ACTIVO=======//
+
+/*----Comprobamos que el artista exista y esté activo----*/
+const comprobarArtistaActivo = async (id_artista) => {
+
+    const resultado = await artistaModel.getArtistaById(id_artista);
+
+    /*----Obtenemos los datos del artista----*/
+    const artista = Array.isArray(resultado?.rows)
+        ? resultado.rows[0]
+        : resultado;
+
+    /*----Comprobamos que el artista exista----*/
+    if (!artista) {
+
+        const error = new Error("El artista indicado no existe");
+        error.status = 404;
+
+        throw error;
+
+    }
+
+    /*----Comprobamos que el artista esté activo----*/
+    if (artista.activo !== true) {
+
+        const error = new Error(
+            "No se pueden asignar trabajos a un artista desactivado"
+        );
+
+        error.status = 409;
+
+        throw error;
+
+    }
+
+    return artista;
+
+};
 
 
 //=======OBTENER TODOS LOS TRABAJOS=======//
@@ -79,43 +121,6 @@ const createTrabajo = async (req, res) => {
 
     try {
 
-        /*----Recogemos los datos enviados por el cliente----*/
-        const { id_artista, titulo, descripcion, imagen } = req.body;
-
-        const idArtista = Number(id_artista);
-
-        /*----Comprobamos que el ID del artista sea válido----*/
-        if (!Number.isSafeInteger(idArtista) || idArtista <= 0) {
-
-            return res.status(400).json({
-                error: "ID de artista no válido"
-            });
-
-        }
-
-        /*----Comprobamos que los campos obligatorios sean válidos----*/
-        if (
-            typeof titulo !== "string" ||
-            titulo.trim() === "" ||
-            typeof descripcion !== "string" ||
-            descripcion.trim() === ""
-        ) {
-
-            return res.status(400).json({
-                error: "El título y la descripción son obligatorios"
-            });
-
-        }
-
-        /*----Comprobamos que la imagen sea un texto si se proporciona----*/
-        if (imagen !== undefined && imagen !== null && typeof imagen !== "string") {
-
-            return res.status(400).json({
-                error: "La imagen debe ser un texto válido"
-            });
-
-        }
-
         /*----Comprobamos que el usuario esté autenticado----*/
         if (!req.usuario) {
 
@@ -137,6 +142,20 @@ const createTrabajo = async (req, res) => {
 
         }
 
+        /*----Recogemos los datos enviados por el cliente----*/
+        const { id_artista, titulo, descripcion, imagen } = req.body;
+
+        const idArtista = Number(id_artista);
+
+        /*----Comprobamos que el ID del artista sea válido----*/
+        if (!Number.isSafeInteger(idArtista) || idArtista <= 0) {
+
+            return res.status(400).json({
+                error: "ID de artista no válido"
+            });
+
+        }
+
         /*----Impedimos que un artista cree trabajos a nombre de otro artista----*/
         if (
             req.usuario.rol !== "admin" &&
@@ -149,12 +168,47 @@ const createTrabajo = async (req, res) => {
 
         }
 
+        /*----Comprobamos que los campos obligatorios sean válidos----*/
+        if (
+            typeof titulo !== "string" ||
+            titulo.trim() === "" ||
+            typeof descripcion !== "string" ||
+            descripcion.trim() === ""
+        ) {
+
+            return res.status(400).json({
+                error: "El título y la descripción son obligatorios"
+            });
+
+        }
+
+        /*----Comprobamos que la imagen sea un texto si se proporciona----*/
+        if (
+            imagen !== undefined &&
+            imagen !== null &&
+            typeof imagen !== "string"
+        ) {
+
+            return res.status(400).json({
+                error: "La imagen debe ser un texto válido"
+            });
+
+        }
+
+        /*----Comprobamos que el artista exista y esté activo----*/
+        await comprobarArtistaActivo(idArtista);
+
+        /*----Normalizamos la ruta de la imagen----*/
+        const imagenTrabajo = typeof imagen === "string"
+            ? imagen.trim() || null
+            : null;
+
         /*----Creamos el trabajo utilizando el modelo----*/
         const resultado = await trabajoModel.createTrabajo(
             idArtista,
             titulo.trim(),
             descripcion.trim(),
-            imagen ?? null
+            imagenTrabajo
         );
 
         /*----Devolvemos el trabajo creado----*/
@@ -162,9 +216,18 @@ const createTrabajo = async (req, res) => {
 
     } catch (error) {
 
+        /*----Gestionamos los errores de validación del artista----*/
+        if ([404, 409].includes(error.status)) {
+
+            return res.status(error.status).json({
+                error: error.message
+            });
+
+        }
+
         console.error("Error al crear el trabajo:", error);
 
-        /*----Comprobamos si el artista indicado no existe en la base de datos----*/
+        /*----Controlamos los errores de integridad referencial----*/
         if (error.code === "23503") {
 
             return res.status(400).json({
@@ -189,6 +252,27 @@ const updateTrabajo = async (req, res) => {
 
     try {
 
+        /*----Comprobamos que el usuario esté autenticado----*/
+        if (!req.usuario) {
+
+            return res.status(401).json({
+                error: "Debes iniciar sesión"
+            });
+
+        }
+
+        /*----Comprobamos que el usuario tenga un rol autorizado----*/
+        if (
+            req.usuario.rol !== "admin" &&
+            req.usuario.rol !== "artista"
+        ) {
+
+            return res.status(403).json({
+                error: "No tienes permiso para modificar trabajos"
+            });
+
+        }
+
         const id_trabajo = Number(req.params.id_trabajo);
 
         /*----Comprobamos que el ID del trabajo sea válido----*/
@@ -211,22 +295,10 @@ const updateTrabajo = async (req, res) => {
 
         }
 
-        /*----Comprobamos que el usuario esté autenticado----*/
-        if (!req.usuario) {
-
-            return res.status(401).json({
-                error: "Debes iniciar sesión"
-            });
-
-        }
-
         /*----Solo el artista propietario o un administrador pueden modificarlo----*/
         if (
             req.usuario.rol !== "admin" &&
-            (
-                req.usuario.rol !== "artista" ||
-                Number(trabajo.id_artista) !== Number(req.usuario.id_usuario)
-            )
+            Number(trabajo.id_artista) !== Number(req.usuario.id_usuario)
         ) {
 
             return res.status(403).json({
@@ -249,6 +321,18 @@ const updateTrabajo = async (req, res) => {
 
         }
 
+        /*----Impedimos que un artista cambie el propietario del trabajo----*/
+        if (
+            req.usuario.rol !== "admin" &&
+            idArtista !== Number(trabajo.id_artista)
+        ) {
+
+            return res.status(403).json({
+                error: "No puedes cambiar el propietario de este trabajo"
+            });
+
+        }
+
         /*----Comprobamos que el título y la descripción sean válidos----*/
         if (
             typeof titulo !== "string" ||
@@ -264,7 +348,11 @@ const updateTrabajo = async (req, res) => {
         }
 
         /*----Comprobamos que la imagen sea un texto si se proporciona----*/
-        if (imagen !== undefined && imagen !== null && typeof imagen !== "string") {
+        if (
+            imagen !== undefined &&
+            imagen !== null &&
+            typeof imagen !== "string"
+        ) {
 
             return res.status(400).json({
                 error: "La imagen debe ser un texto válido"
@@ -272,17 +360,27 @@ const updateTrabajo = async (req, res) => {
 
         }
 
-        /*----Impedimos que un artista cambie el propietario del trabajo----*/
-        if (
-            req.usuario.rol !== "admin" &&
-            idArtista !== Number(trabajo.id_artista)
-        ) {
+        /*----Comprobamos si se está cambiando el propietario----*/
+        const cambioArtista =
+            idArtista !== Number(trabajo.id_artista);
 
-            return res.status(403).json({
-                error: "No puedes cambiar el propietario de este trabajo"
-            });
+        /*----Solo permitimos reasignar trabajos a artistas activos----*/
+        if (cambioArtista || req.usuario.rol === "artista") {
+
+            await comprobarArtistaActivo(idArtista);
 
         }
+
+        /*----Conservamos la imagen si no se proporciona una nueva----*/
+        const imagenTrabajo = imagen === undefined
+
+            ? trabajo.imagen
+
+            : typeof imagen === "string"
+
+                ? imagen.trim() || null
+
+                : null;
 
         /*----Enviamos los datos al modelo para actualizar el trabajo----*/
         const resultado = await trabajoModel.updateTrabajo(
@@ -290,7 +388,7 @@ const updateTrabajo = async (req, res) => {
             idArtista,
             titulo.trim(),
             descripcion.trim(),
-            imagen ?? null
+            imagenTrabajo
         );
 
         /*----Comprobamos que el trabajo siga existiendo----*/
@@ -306,9 +404,18 @@ const updateTrabajo = async (req, res) => {
 
     } catch (error) {
 
+        /*----Gestionamos los errores de validación del artista----*/
+        if ([404, 409].includes(error.status)) {
+
+            return res.status(error.status).json({
+                error: error.message
+            });
+
+        }
+
         console.error("Error al actualizar el trabajo:", error);
 
-        /*----Comprobamos si el artista indicado no existe----*/
+        /*----Controlamos los errores de integridad referencial----*/
         if (error.code === "23503") {
 
             return res.status(400).json({
@@ -333,6 +440,27 @@ const deleteTrabajo = async (req, res) => {
 
     try {
 
+        /*----Comprobamos que el usuario esté autenticado----*/
+        if (!req.usuario) {
+
+            return res.status(401).json({
+                error: "Debes iniciar sesión"
+            });
+
+        }
+
+        /*----Comprobamos que el usuario tenga un rol autorizado----*/
+        if (
+            req.usuario.rol !== "admin" &&
+            req.usuario.rol !== "artista"
+        ) {
+
+            return res.status(403).json({
+                error: "No tienes permiso para eliminar trabajos"
+            });
+
+        }
+
         const id_trabajo = Number(req.params.id_trabajo);
 
         /*----Comprobamos que el ID sea válido----*/
@@ -355,22 +483,10 @@ const deleteTrabajo = async (req, res) => {
 
         }
 
-        /*----Comprobamos que el usuario esté autenticado----*/
-        if (!req.usuario) {
-
-            return res.status(401).json({
-                error: "Debes iniciar sesión"
-            });
-
-        }
-
         /*----Solo el propietario o un administrador pueden eliminarlo----*/
         if (
             req.usuario.rol !== "admin" &&
-            (
-                req.usuario.rol !== "artista" ||
-                Number(trabajo.id_artista) !== Number(req.usuario.id_usuario)
-            )
+            Number(trabajo.id_artista) !== Number(req.usuario.id_usuario)
         ) {
 
             return res.status(403).json({
@@ -428,4 +544,3 @@ module.exports = {
     updateTrabajo,
     deleteTrabajo
 };
-

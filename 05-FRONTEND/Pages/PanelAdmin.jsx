@@ -5,6 +5,12 @@ import AdminGestionCitas from "./AdminGestionCitas";
 
 import AdminGestionServicios from "./AdminGestionServicios";
 
+import AdminGestionUsuarios from "./AdminGestionUsuarios";
+
+import AdminGestionTrabajos from "./AdminGestionTrabajos";
+
+
+
 /*----Componentes de administración----*/
 import AdminCrearArtista from "./AdminCrearArtista";
 import AdminEditarArtista from "./AdminEditarArtista";
@@ -134,6 +140,20 @@ function PanelAdmin({ token }) {
                     onClick={() => setSeccion("servicios")}
                 >
                     Gestionar servicios
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setSeccion("usuarios")}
+                >
+                    Gestionar usuarios
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setSeccion("trabajos")}
+                >
+                    Gestionar trabajos
                 </button>
 
             </nav>
@@ -300,6 +320,16 @@ function PanelAdmin({ token }) {
             {/* ===== GESTIÓN DE SERVICIOS ===== */}
             {seccion === "servicios" && (
                 <AdminGestionServicios token={token} />
+            )}
+
+            {/* ===== GESTIÓN DE USUARIOS ===== */}
+            {seccion === "usuarios" && (
+                <AdminGestionUsuarios token={token} />
+            )}
+
+            {/* ===== GESTIÓN DE TRABAJOS ===== */}
+            {seccion === "trabajos" && (
+                <AdminGestionTrabajos token={token} />
             )}
 
         </main>

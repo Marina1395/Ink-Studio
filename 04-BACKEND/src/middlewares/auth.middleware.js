@@ -1,6 +1,8 @@
-
 /*----Importamos la librería jsonwebtoken para verificar los tokens----*/
 const jwt = require("jsonwebtoken");
+
+/*----Importamos el modelo de usuarios para comprobar su estado----*/
+const usuarioModel = require("../models/user.model");
 
 /*----Importamos el modelo de artistas para comprobar su estado----*/
 const artistaModel = require("../models/artista.model");
@@ -67,6 +69,44 @@ const verificarToken = async (req, res, next) => {
 
     try {
 
+        /*----Consultamos el estado actual del usuario en la base de datos----*/
+        const resultado = await usuarioModel.getUserById(
+            usuario.id_usuario
+        );
+
+        const usuarioActual = resultado.rows[0];
+
+
+        /*----Comprobamos que la cuenta siga existiendo----*/
+        if (!usuarioActual) {
+
+            return res.status(401).json({
+                error: "La cuenta de usuario no existe"
+            });
+
+        }
+
+
+        /*----Bloqueamos el acceso si la cuenta está desactivada----*/
+        if (usuarioActual.activo !== true) {
+
+            return res.status(403).json({
+                error: "Tu cuenta está desactivada"
+            });
+
+        }
+
+
+        /*----Comprobamos que el rol del token siga siendo válido----*/
+        if (usuarioActual.rol !== usuario.rol) {
+
+            return res.status(401).json({
+                error: "Debes iniciar sesión nuevamente"
+            });
+
+        }
+
+
         /*----Comprobamos el estado de los usuarios con rol artista----*/
         if (usuario.rol === "artista") {
 
@@ -94,7 +134,7 @@ const verificarToken = async (req, res, next) => {
     } catch (error) {
 
         console.error(
-            "Error al comprobar el estado del artista:",
+            "Error al comprobar el estado del usuario:",
             error
         );
 
