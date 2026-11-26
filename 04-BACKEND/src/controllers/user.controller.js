@@ -16,6 +16,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 
+/*----Importamos crypto para generar y proteger los tokens de recuperación----*/
+const crypto = require("node:crypto");
+
+/*----Importamos el servicio de correo electrónico----*/
+const { enviarCorreoRecuperacion } = require("../services/email.service");
+
+
 
 //=======OBTENER TODOS LOS USUARIOS=======//
 
@@ -652,12 +659,12 @@ const loginUser = async (req, res) => {
         }
 
 
-        /*----Creamos un token JWT si el usuario se ha autenticado correctamente----*/
         const token = jwt.sign(
 
             {
                 id_usuario: usuario.id_usuario,
-                rol: usuario.rol
+                rol: usuario.rol,
+                version_token: usuario.version_token
             },
 
             process.env.JWT_SECRET,
@@ -701,6 +708,207 @@ const loginUser = async (req, res) => {
 };
 
 
+//=======RESTABLECER CONTRASEÑA=======//
+
+const restablecerContrasena = async (req, res) => {
+
+    try {
+
+        /*----Recogemos el token y las nuevas contraseñas----*/
+        const {
+            token,
+            nuevaContrasena,
+            confirmarContrasena
+        } = req.body || {};
+
+
+        /*----Comprobamos que el token tenga un formato válido----*/
+        if (
+            typeof token !== "string" ||
+            !/^[a-f0-9]{64}$/.test(token)
+        ) {
+
+            return res.status(400).json({
+                error: "El enlace de recuperación no es válido"
+            });
+
+        }
+
+
+        /*----Validamos la nueva contraseña----*/
+        if (
+            typeof nuevaContrasena !== "string" ||
+            nuevaContrasena.length < 8 ||
+            Buffer.byteLength(nuevaContrasena, "utf8") > 72
+        ) {
+
+            return res.status(400).json({
+                error: "La contraseña debe tener al menos 8 caracteres y no superar los 72 bytes"
+            });
+
+        }
+
+
+        /*----Comprobamos que ambas contraseñas coincidan----*/
+        if (nuevaContrasena !== confirmarContrasena) {
+
+            return res.status(400).json({
+                error: "Las contraseñas no coinciden"
+            });
+
+        }
+
+
+        /*----Generamos el hash del token recibido----*/
+        const tokenHash = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex");
+
+
+        /*----Restablecemos la contraseña e invalidamos el token----*/
+        await usuarioModel.restablecerContrasena(
+            tokenHash,
+            nuevaContrasena
+        );
+
+
+        /*----Confirmamos el restablecimiento de la contraseña----*/
+        return res.status(200).json({
+
+            mensaje: "Contraseña restablecida correctamente"
+
+        });
+
+    } catch (error) {
+
+        /*----Gestionamos los errores controlados desde el modelo----*/
+        if (error.status === 400) {
+
+            return res.status(400).json({
+                error: error.message
+            });
+
+        }
+
+
+        /*----Gestionamos los errores inesperados----*/
+        console.error("Error al restablecer la contraseña:", error);
+
+        return res.status(500).json({
+            error: "Error interno al restablecer la contraseña"
+        });
+
+    }
+
+};
+
+
+
+//=======SOLICITAR RECUPERACIÓN DE CONTRASEÑA=======//
+
+const solicitarRecuperacionContrasena = async (req, res) => {
+
+    try {
+
+        /*----Recogemos el correo electrónico del usuario----*/
+        const { email } = req.body || {};
+
+
+        /*----Comprobamos que el correo sea un texto válido----*/
+        if (typeof email !== "string") {
+
+            return res.status(400).json({
+                error: "Debes introducir un correo electrónico"
+            });
+
+        }
+
+
+        /*----Normalizamos y validamos el correo electrónico----*/
+        const emailLimpio = email.trim().toLowerCase();
+
+        const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!formatoEmail.test(emailLimpio)) {
+
+            return res.status(400).json({
+                error: "El email no tiene un formato válido"
+            });
+
+        }
+
+
+        /*----Preparamos una respuesta genérica por seguridad----*/
+        const mensaje = "Si existe una cuenta activa asociada a ese correo, recibirás un enlace de recuperación";
+
+
+        /*----Buscamos al usuario mediante su correo electrónico----*/
+        const usuario = await usuarioModel.getUserByEmail(emailLimpio);
+
+
+        /*----Impedimos recuperar cuentas inexistentes o desactivadas----*/
+        if (!usuario || usuario.activo !== true) {
+
+            return res.status(200).json({ mensaje });
+
+        }
+
+
+        /*----Comprobamos el estado de las cuentas de artistas----*/
+        if (usuario.rol === "artista") {
+
+            const artista = await artistaModel.getArtistaById(
+                usuario.id_usuario
+            );
+
+            if (!artista || artista.activo !== true) {
+
+                return res.status(200).json({ mensaje });
+
+            }
+
+        }
+
+
+        /*----Generamos un token aleatorio de recuperación----*/
+        const token = crypto.randomBytes(32).toString("hex");
+
+
+        /*----Generamos el hash del token mediante SHA-256----*/
+        const tokenHash = crypto
+            .createHash("sha256")
+            .update(token)
+            .digest("hex");
+
+
+        /*----Guardamos el hash del token y la versión de la cuenta----*/
+        await usuarioModel.guardarTokenRecuperacion(
+
+            usuario.id_usuario,
+            tokenHash,
+            usuario.version_token
+
+        );
+
+        /*----Enviamos el enlace de recuperación al usuario----*/
+        await enviarCorreoRecuperacion(emailLimpio, token);
+
+
+        return res.status(200).json({ mensaje });
+
+    } catch (error) {
+
+        console.error("Error al solicitar la recuperación:", error);
+
+        return res.status(500).json({
+            error: "Error interno al solicitar la recuperación"
+        });
+
+    }
+
+};
+
 //======EXPORTAMOS FUNCIONES=======//
 
 module.exports = {
@@ -710,7 +918,8 @@ module.exports = {
     getUserById,
     updateUser,
     deleteUser,
-    loginUser
+    loginUser,
+    solicitarRecuperacionContrasena,
+    restablecerContrasena
 
 };
-

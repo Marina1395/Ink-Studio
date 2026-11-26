@@ -107,6 +107,19 @@ const verificarToken = async (req, res, next) => {
         }
 
 
+        /*----Comprobamos que la versión del token siga siendo válida----*/
+        if (
+            !Number.isInteger(usuario.version_token) ||
+            usuarioActual.version_token !== usuario.version_token
+        ) {
+
+            return res.status(401).json({
+                error: "Tu sesión ya no es válida. Debes iniciar sesión nuevamente"
+            });
+
+        }
+
+
         /*----Comprobamos el estado de los usuarios con rol artista----*/
         if (usuario.rol === "artista") {
 

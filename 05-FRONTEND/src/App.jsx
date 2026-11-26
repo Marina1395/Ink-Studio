@@ -21,6 +21,10 @@ import PanelAdmin from "../Pages/PanelAdmin";
 /*----Importamos la página de registro de clientes----*/
 import Registro from "../Pages/Registro";
 
+/*----Importamos las páginas de recuperación de contraseña----*/
+import RecuperarContrasena from "../Pages/RecuperarContrasena";
+import RestablecerContrasena from "../Pages/RestablecerContrasena";
+
 /*----Importamos la página de citas del cliente----*/
 import MisCitas from "../Pages/Miscitas";
 
@@ -442,6 +446,36 @@ function App() {
                 {formularioLogin}
 
               </section>
+
+            </main>
+
+          }
+        />
+
+
+                {/* ===== PÁGINA DE RECUPERACIÓN DE CONTRASEÑA ===== */}
+        <Route
+          path="/recuperar-contrasena"
+          element={
+
+            <main>
+
+              <RecuperarContrasena />
+
+            </main>
+
+          }
+        />
+
+
+        {/* ===== PÁGINA DE RESTABLECIMIENTO DE CONTRASEÑA ===== */}
+        <Route
+          path="/restablecer-contrasena"
+          element={
+
+            <main>
+
+              <RestablecerContrasena />
 
             </main>
 

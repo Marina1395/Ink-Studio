@@ -1,6 +1,5 @@
-/*----Importamos Link para navegar a la página de registro----*/
+/*----Importamos Link para navegar entre las páginas de acceso----*/
 import { Link } from "react-router-dom";
-
 
 function Login({
 
@@ -90,7 +89,7 @@ function Login({
 
                         type="submit"
                         disabled={iniciandoSesion}
-                        
+
                     >
                         {iniciandoSesion
                             ? "Iniciando sesión..."
@@ -98,6 +97,22 @@ function Login({
                     </button>
 
                 </form>
+
+            )}
+
+
+            {/*----Enlace para recuperar la contraseña----*/}
+            {!usuario && (
+
+                <p>
+
+                    <Link to="/recuperar-contrasena">
+
+                        ¿Has olvidado tu contraseña?
+
+                    </Link>
+
+                </p>
 
             )}
 
@@ -113,7 +128,7 @@ function Login({
                         Regístrate
 
                     </Link>
-                    
+
                 </p>
             )}
 
