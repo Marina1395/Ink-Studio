@@ -149,7 +149,7 @@ const updateUser = async (
 
 //======DAR DE BAJA A UN USUARIO======//
 
-const deleteUser = async (id_usuario) => {
+const deleteUser = async (id_usuario, bajaVoluntaria = false) => {
 
     const conexion = await pool.connect();
 
@@ -228,16 +228,38 @@ const deleteUser = async (id_usuario) => {
 
         );
 
-
-        /*----Impedimos la baja si existen citas futuras pendientes o confirmadas----*/
+        /*----Gestionamos las citas futuras según el tipo de baja----*/
         if (resultadoCitas.rows[0].tiene_citas) {
 
-            const error = new Error(
-                "No se puede dar de baja al cliente porque tiene citas futuras pendientes o confirmadas"
-            );
+            /*----Impedimos la baja administrativa si existen citas futuras----*/
+            if (!bajaVoluntaria) {
 
-            error.status = 409;
-            throw error;
+                const error = new Error(
+                    "No se puede dar de baja al cliente porque tiene citas futuras pendientes o confirmadas"
+                );
+
+                error.status = 409;
+                throw error;
+
+            }
+
+            /*----Cancelamos las citas futuras si la baja es voluntaria----*/
+            await conexion.query(
+
+                `UPDATE cita
+         SET estado = 'cancelada'
+         WHERE id_cliente IN (
+             SELECT id_cliente
+             FROM cliente
+             WHERE id_usuario = $1
+         )
+         AND estado IN ('pendiente', 'confirmada')
+         AND (fecha + hora) >=
+             (CURRENT_TIMESTAMP AT TIME ZONE 'Europe/Madrid')`,
+
+                [id_usuario]
+
+            );
 
         }
 

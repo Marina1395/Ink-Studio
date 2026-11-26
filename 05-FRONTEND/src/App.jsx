@@ -24,6 +24,9 @@ import Registro from "../Pages/Registro";
 /*----Importamos la página de citas del cliente----*/
 import MisCitas from "../Pages/Miscitas";
 
+/*----Importamos el componente de baja voluntaria del cliente----*/
+import BajaCliente from "../Pages/BajaCliente";
+
 /*----Importamos el panel de gestión de citas para artistas----*/
 import MisCitasArtista from "../Pages/MisCitasArtista";
 
@@ -241,7 +244,6 @@ function App() {
 
     <header>
 
-
       <img
         src="/hache-cabecera.png"
         alt="Hache Studio - Cabecera"
@@ -249,8 +251,6 @@ function App() {
       />
 
       <nav className="nav-gotico">
-
-
 
 
         {/* ===== MENÚ DE NAVEGACIÓN ENTRE PÁGINAS ===== */}
@@ -392,6 +392,13 @@ function App() {
 
                 <MisCitas token={token} />
 
+                {/*----Gestión de la baja voluntaria del cliente----*/}
+                <BajaCliente
+                  token={token}
+                  usuario={usuario}
+                  cerrarSesion={cerrarSesion}
+                />
+
               </main>
 
             ) : (
@@ -468,7 +475,7 @@ function App() {
 
           }
         />
-        
+
 
         {/* ===== PÁGINA INDEPENDIENTE DE SERVICIOS ===== */}
         <Route
@@ -483,8 +490,6 @@ function App() {
 
           }
         />
-
-
 
 
         {/* ===== PÁGINA INDEPENDIENTE DE NUESTRO EQUIPO ===== */}
@@ -544,21 +549,26 @@ function App() {
 
                     {profesionalesFiltrados.map((profesional) => (
 
-
                       <div
                         className="profesional"
                         key={profesional.id_usuario}
                       >
+
                         {/* ===== FOTOGRAFÍA DEL ARTISTA ===== */}
                         <div className="profesional-foto">
+
                           {(profesional.imagen_tarjeta || profesional.imagen) && (
+
                             <img
                               src={profesional.imagen_tarjeta || profesional.imagen}
                               alt={`Fotografía de ${profesional.nombre}`}
                               className="foto-tarjeta-artista"
                             />
+
                           )}
+
                         </div>
+
 
                         {/* ===== INFORMACIÓN DEL ARTISTA ===== */}
                         <div className="profesional-info">
@@ -573,6 +583,7 @@ function App() {
                             {profesional.descripcion}
                           </p>
 
+
                           {/* ===== BOTÓN VER PERFIL ===== */}
                           <Link
                             className="profesional-boton"
@@ -582,10 +593,11 @@ function App() {
                           </Link>
 
                         </div>
+
                       </div>
 
-
                     ))}
+
 
                     {profesionalesFiltrados.length === 0 && (
 

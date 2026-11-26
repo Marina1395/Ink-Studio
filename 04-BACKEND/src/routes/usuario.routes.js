@@ -12,11 +12,11 @@ const usuarioController = require("../controllers/user.controller");
 /*----Importamos los middlewares para comprobar el token y los permisos----*/
 const {
 
-  verificarToken,
-  verificarAdmin ,
-  verificarPropietarioOAdmin
+    verificarToken,
+    verificarAdmin,
+    verificarPropietarioOAdmin
 
-} =require("../middlewares/auth.middleware");
+} = require("../middlewares/auth.middleware");
 
 
 
@@ -34,17 +34,17 @@ router.post("/login", usuarioController.loginUser);
 router.get(
 
     "/",
-     verificarToken,
-     verificarAdmin,
-      usuarioController.getUsers
+    verificarToken,
+    verificarAdmin,
+    usuarioController.getUsers
 
-    );
+);
 
 
 /*----Ruta para obtener un usuario por su ID----*/
 router.get(
 
-    "/:id_usuario", 
+    "/:id_usuario",
     verificarToken,
     verificarPropietarioOAdmin,
     usuarioController.getUserById
@@ -53,7 +53,7 @@ router.get(
 
 
 /*----Registrar un nuevo usuario----*/
-router.post("/", usuarioController.createUser); 
+router.post("/", usuarioController.createUser);
 
 
 /*----Actualizar los datos de un usuario----*/
@@ -65,12 +65,11 @@ router.put(
     usuarioController.updateUser);
 
 
-/*----Eliminar a un usuario(solo administradores)---*/
+/*----Dar de baja a un cliente (administrador o propio cliente)----*/
 router.delete(
 
     "/:id_usuario",
     verificarToken,
-    verificarAdmin,
     usuarioController.deleteUser
 
 );

@@ -469,7 +469,6 @@ const updateUser = async (req, res) => {
 
 };
 
-
 //=======DAR DE BAJA A UN USUARIO=======//
 
 const deleteUser = async (req, res) => {
@@ -490,16 +489,6 @@ const deleteUser = async (req, res) => {
         }
 
 
-        /*----Comprobamos que el usuario sea administrador----*/
-        if (req.usuario.rol !== "admin") {
-
-            return res.status(403).json({
-                error: "No tienes permiso para dar de baja usuarios"
-            });
-
-        }
-
-
         /*----Comprobamos que el ID sea válido----*/
         if (!Number.isSafeInteger(id_usuario) || id_usuario <= 0) {
 
@@ -510,8 +499,31 @@ const deleteUser = async (req, res) => {
         }
 
 
-        /*----Enviamos el ID al modelo para realizar la baja segura----*/
-        const resultado = await usuarioModel.deleteUser(id_usuario);
+        /*----Comprobamos si el usuario es administrador----*/
+        const esAdmin = req.usuario.rol === "admin";
+
+
+        /*----Comprobamos si el cliente solicita la baja de su propia cuenta----*/
+        const esClientePropietario =
+            req.usuario.rol === "cliente" &&
+            Number(req.usuario.id_usuario) === id_usuario;
+
+
+        /*----Impedimos dar de baja cuentas sin los permisos correspondientes----*/
+        if (!esAdmin && !esClientePropietario) {
+
+            return res.status(403).json({
+                error: "No tienes permiso para dar de baja esta cuenta"
+            });
+
+        }
+
+
+        /*----Enviamos el ID y el tipo de baja al modelo----*/
+        const resultado = await usuarioModel.deleteUser(
+            id_usuario,
+            esClientePropietario
+        );
 
 
         /*----Comprobamos que se haya actualizado la cuenta----*/
@@ -528,6 +540,7 @@ const deleteUser = async (req, res) => {
         return res.status(200).json({
 
             mensaje: "Usuario dado de baja correctamente",
+
             usuario: resultado.rows[0]
 
         });
@@ -554,8 +567,6 @@ const deleteUser = async (req, res) => {
     }
 
 };
-
-
 
 //=======LOGIN DE USUARIO=======//
 
