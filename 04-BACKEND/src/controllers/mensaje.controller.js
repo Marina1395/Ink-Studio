@@ -36,8 +36,8 @@ const validarMensaje = (nombre, email, asunto, mensaje) => {
     /*----Comprobamos que los campos no superen las longitudes permitidas----*/
     if (
         nombre.trim().length > 100 ||
-        email.trim().length > 254 ||
-        asunto.trim().length > 200 ||
+        email.trim().length > 150 ||
+        asunto.trim().length > 150 ||
         mensaje.trim().length > 5000
     ) {
 
@@ -128,7 +128,7 @@ const createMensaje = async (req, res) => {
     try {
 
         /*----Recogemos los datos enviados por el cliente----*/
-        const { nombre, email, asunto, mensaje } = req.body;
+        const { nombre, email, asunto, mensaje } = req.body || {};
 
         /*----Validamos los datos antes de guardarlos----*/
         const errorValidacion = validarMensaje(
@@ -192,7 +192,7 @@ const updateMensaje = async (req, res) => {
         }
 
         /*----Recogemos los nuevos datos del mensaje----*/
-        const { nombre, email, asunto, mensaje } = req.body;
+        const { nombre, email, asunto, mensaje } = req.body || {};
 
         /*----Comprobamos que los datos sean correctos----*/
         const errorValidacion = validarMensaje(

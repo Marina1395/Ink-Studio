@@ -1,7 +1,12 @@
-
 import { useState, useEffect } from "react";
 
 import Servicios from "../Pages/Servicios";
+
+/*----Importamos la página de trabajos----*/
+import Trabajos from "../Pages/Trabajos";
+
+/*----Importamos la página de contacto----*/
+import Contacto from "../Pages/Contacto";
 
 import {
   Routes,
@@ -55,14 +60,127 @@ function App() {
   const [email, setEmail] = useState("");
   const [contrasena, setContrasena] = useState("");
 
-  // Guardamos la autenticación en memoria.
-  // Al recargar será necesario iniciar sesión de nuevo.
+
+  // ===== PERSISTENCIA DE LA SESIÓN =====
   const [token, setToken] = useState("");
   const [usuario, setUsuario] = useState(null);
+
+  const [verificandoSesion, setVerificandoSesion] = useState(true);
 
   const [iniciandoSesion, setIniciandoSesion] = useState(false);
   const [errorLogin, setErrorLogin] = useState("");
   const [mensajeLogin, setMensajeLogin] = useState("");
+
+
+  // ===== RECUPERAR Y VERIFICAR LA SESIÓN =====
+  useEffect(() => {
+
+    const controlador = new AbortController();
+
+    const recuperarSesion = async () => {
+
+      try {
+
+        // Recuperamos los datos guardados en la pestaña.
+        const sesionGuardada = sessionStorage.getItem("hacheSesion");
+
+        if (!sesionGuardada) {
+          return;
+        }
+
+        const sesion = JSON.parse(sesionGuardada);
+
+        // Comprobamos que existen los datos necesarios.
+        if (
+          typeof sesion.token !== "string" ||
+          !sesion.token ||
+          !Number.isSafeInteger(sesion.id_usuario) ||
+          sesion.id_usuario <= 0
+        ) {
+
+          throw new Error("Sesión incorrecta.");
+
+        }
+
+        // Consultamos al backend para verificar el token.
+        const respuesta = await fetch(
+          `${API_URL}/usuarios/${sesion.id_usuario}`,
+          {
+            headers: {
+              Authorization: `Bearer ${sesion.token}`
+            },
+
+            signal: controlador.signal
+          }
+        );
+
+        if (!respuesta.ok) {
+
+          throw new Error(
+            "No se pudo validar la sesión."
+          );
+
+        }
+
+        const usuarioActual = await respuesta.json();
+
+        // Comprobamos la identidad y el rol del usuario.
+        if (
+          usuarioActual.id_usuario !== sesion.id_usuario ||
+          !["cliente", "artista", "admin"].includes(usuarioActual.rol)
+        ) {
+
+          throw new Error("Usuario no válido.");
+
+        }
+
+        if (controlador.signal.aborted) {
+          return;
+        }
+
+        // Recuperamos la sesión validada por el backend.
+        setToken(sesion.token);
+        setUsuario(usuarioActual);
+
+      } catch (error) {
+
+        if (controlador.signal.aborted) {
+          return;
+        }
+
+        // Eliminamos los datos de una sesión no válida.
+        sessionStorage.removeItem("hacheSesion");
+
+        setToken("");
+        setUsuario(null);
+
+        console.error(
+          "Error al recuperar la sesión:",
+          error
+        );
+
+      } finally {
+
+        if (!controlador.signal.aborted) {
+
+          setVerificandoSesion(false);
+
+        }
+
+      }
+
+    };
+
+    recuperarSesion();
+
+    // Cancelamos la petición si el componente se desmonta.
+    return () => {
+
+      controlador.abort();
+
+    };
+
+  }, []);
 
 
   // ===== INICIAR SESIÓN =====
@@ -102,13 +220,28 @@ function App() {
 
       }
 
-      if (!datos.token || !datos.usuario) {
+      if (
+        !datos.token ||
+        !datos.usuario ||
+        !Number.isSafeInteger(datos.usuario.id_usuario) ||
+        datos.usuario.id_usuario <= 0
+      ) {
 
         throw new Error(
           "El servidor no ha devuelto los datos de acceso."
         );
 
       }
+
+      // Guardamos únicamente el token y el identificador.
+      // Así podemos recuperar la sesión al recargar la página.
+      sessionStorage.setItem(
+        "hacheSesion",
+        JSON.stringify({
+          token: datos.token,
+          id_usuario: datos.usuario.id_usuario
+        })
+      );
 
       setToken(datos.token);
       setUsuario(datos.usuario);
@@ -137,6 +270,9 @@ function App() {
 
   // ===== CERRAR SESIÓN =====
   const cerrarSesion = () => {
+
+    // Eliminamos la sesión almacenada en el navegador.
+    sessionStorage.removeItem("hacheSesion");
 
     setToken("");
     setUsuario(null);
@@ -333,6 +469,16 @@ function App() {
 
 
   // ===== MOSTRAR PÁGINAS DE LA APLICACIÓN =====
+
+  // Esperamos a verificar la sesión antes de mostrar las rutas.
+  // Evitamos redirecciones al login durante la comprobación.
+  if (verificandoSesion) {
+
+    return <p>Comprobando sesión...</p>;
+
+  }
+
+
   return (
 
     <div className="app-hache">
@@ -453,7 +599,7 @@ function App() {
         />
 
 
-                {/* ===== PÁGINA DE RECUPERACIÓN DE CONTRASEÑA ===== */}
+        {/* ===== PÁGINA DE RECUPERACIÓN DE CONTRASEÑA ===== */}
         <Route
           path="/recuperar-contrasena"
           element={
@@ -657,59 +803,14 @@ function App() {
         {/* ===== PÁGINA INDEPENDIENTE DE TRABAJOS ===== */}
         <Route
           path="/trabajos"
-          element={
-
-            <main>
-
-              <section id="trabajos">
-
-                <h2>Nuestros trabajos</h2>
-
-                <p>
-                  Descubre los trabajos realizados por nuestros artistas.
-                </p>
-
-                <Link to="/equipo">
-                  Ver perfiles de los artistas
-                </Link>
-
-              </section>
-
-            </main>
-
-          }
+          element={<Trabajos />}
         />
 
 
         {/* ===== PÁGINA INDEPENDIENTE DE CONTACTO ===== */}
         <Route
           path="/contacto"
-          element={
-
-            <main>
-
-              <section id="contacto">
-
-                <h2>Contacto</h2>
-
-                <p>
-                  ¿Tienes alguna duda sobre nuestros servicios?
-                </p>
-
-                <p>
-                  Consulta los perfiles de nuestros profesionales
-                  y solicita una cita con el artista que prefieras.
-                </p>
-
-                <Link to="/equipo">
-                  Conoce a nuestro equipo
-                </Link>
-
-              </section>
-
-            </main>
-
-          }
+          element={<Contacto />}
         />
 
 
@@ -725,14 +826,6 @@ function App() {
             ) : (
 
               <main>
-
-                {/* ===== LOGIN DISPONIBLE EN EL PERFIL ===== */}
-                <section id="acceso-clientes">
-
-                  {formularioLogin}
-
-                </section>
-
 
                 {/* ===== INFORMACIÓN Y RESERVAS DEL ARTISTA ===== */}
                 <PerfilArtista

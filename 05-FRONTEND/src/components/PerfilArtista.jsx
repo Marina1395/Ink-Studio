@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -30,6 +29,77 @@ function PerfilArtista({ artistas, token, usuario }) {
     const [enviandoCita, setEnviandoCita] = useState(false);
     const [errorCita, setErrorCita] = useState("");
     const [mensajeCita, setMensajeCita] = useState("");
+
+    // ===== ESTADOS DE LOS TRABAJOS DEL ARTISTA =====
+
+    const [trabajos, setTrabajos] = useState([]);
+    const [cargandoTrabajos, setCargandoTrabajos] = useState(true);
+    const [errorTrabajos, setErrorTrabajos] = useState("");
+
+    // ===== CARGAR TRABAJOS DEL ARTISTA =====
+
+    useEffect(() => {
+
+        let activo = true;
+
+        const obtenerTrabajos = async () => {
+
+            setCargandoTrabajos(true);
+            setErrorTrabajos("");
+            setTrabajos([]);
+
+            try {
+
+                const respuesta = await fetch(
+                    `${API_URL}/trabajos`
+                );
+
+                if (!respuesta.ok) {
+                    throw new Error(
+                        "No se pudieron cargar los trabajos."
+                    );
+                }
+
+                const datos = await respuesta.json();
+
+                // Seleccionamos únicamente los trabajos
+                // del artista cuyo perfil estamos visitando.
+
+                const trabajosArtista = datos.filter(
+                    (trabajo) =>
+                        trabajo.id_artista === Number(id) &&
+                        trabajo.imagen
+                );
+
+                if (activo) {
+                    setTrabajos(trabajosArtista);
+                }
+
+            } catch (error) {
+
+                console.error("Error al cargar trabajos:", error);
+
+                if (activo) {
+                    setErrorTrabajos(error.message);
+                }
+
+            } finally {
+
+                if (activo) {
+                    setCargandoTrabajos(false);
+                }
+
+            }
+
+        };
+
+        obtenerTrabajos();
+
+        return () => {
+            activo = false;
+        };
+
+    }, [id]);
 
     // ===== CARGAR SERVICIOS =====
     useEffect(() => {
@@ -240,60 +310,6 @@ function PerfilArtista({ artistas, token, usuario }) {
 
     }
 
-    // ===== FOTOGRAFÍAS DE LOS ARTISTAS =====
-    const trabajosPorArtista = {
-
-        // José
-        23: [
-            "IMG_0006.jpeg",
-            "IMG_1338.jpeg",
-            "IMG_3468.jpeg",
-            "IMG_3704.jpeg",
-            "IMG_6182.jpeg",
-            "jose-06.jpeg"
-        ],
-
-        // Fanny
-        21: [
-            "f_01.jpg",
-            "f_02.jpg",
-            "f_03.jpg"
-        ],
-
-
-
-        // Fran
-        22: [
-            "fran_01.jpeg",
-            "fran_02.jpeg",
-            "fran_03.jpg",
-            "fran_04.jpg",
-            "fran_05.jpg"
-        ],
-
-
-        // Estela - Gemas dentales
-        27: [
-            "E_1.jpeg",
-            "E_2.jpeg",
-            "E_3.jpeg",
-            "E_4.jpeg",
-            "E_5.jpeg",
-            "E_6.jpeg"
-        ]
-
-    };
-
-    const carpetasPorArtista = {
-        23: "Jose",
-        21: "Fanny",
-        22: "Fran",
-        27: "Estela"
-    };
-
-    const trabajos = trabajosPorArtista[artista.id_usuario] || [];
-    const carpetaTrabajos = carpetasPorArtista[artista.id_usuario];
-
     return (
 
         <section id="perfil-artista">
@@ -349,27 +365,46 @@ function PerfilArtista({ artistas, token, usuario }) {
 
                 <h3>Trabajos realizados</h3>
 
-                {trabajos.length > 0 ? (
+                {cargandoTrabajos ? (
+
+                    <p>Cargando trabajos...</p>
+
+                ) : errorTrabajos ? (
+
+                    <p role="alert">
+                        {errorTrabajos}
+                    </p>
+
+                ) : trabajos.length > 0 ? (
 
                     <div className="galeria-trabajos">
 
-                        {trabajos.map((imagen) => (
+                        {trabajos
+                            .filter(
+                                (trabajo) =>
+                                    trabajo.id_artista === Number(id)
+                            )
+                            .map((trabajo) => (
 
-                            <img
-                                key={imagen}
-                                src={`/Trabajos/${carpetaTrabajos}/${imagen}`}
-                                alt={`Trabajo realizado por ${artista.nombre}`}
-                                className="imagen-trabajo"
-                            />
+                                <img
+                                    key={trabajo.id_trabajo}
+                                    src={trabajo.imagen}
+                                    alt={
+                                        trabajo.titulo ||
+                                        `Trabajo realizado por ${artista.nombre}`
+                                    }
+                                    className="imagen-trabajo"
+                                    loading="lazy"
+                                />
 
-                        ))}
+                            ))}
 
                     </div>
 
                 ) : (
 
                     <p>
-                        Aquí podrás ver los trabajos realizados por {artista.nombre}.
+                        Este artista todavía no tiene trabajos publicados.
                     </p>
 
                 )}

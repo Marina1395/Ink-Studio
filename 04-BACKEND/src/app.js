@@ -1,4 +1,3 @@
-
 /*----Importamos Express para crear nuestro servidor----*/
 const express = require("express");
 
@@ -26,9 +25,12 @@ const mensajeRoutes = require("./routes/mensaje.routes");
 /*----Creamos nuestra aplicación Express----*/
 const app = express();
 
-/*----Activamos CORS para permitir peticiones desde nuestro frontend React----*/
+/*----Activamos CORS para permitir peticiones desde desarrollo y producción local----*/
 app.use(cors({
-    origin: "http://localhost:5173"
+    origin: [
+        "http://localhost:5173",
+        "http://localhost:4173"
+    ]
 }));
 
 /*----Permitimos que Express reciba datos en formato JSON----*/
