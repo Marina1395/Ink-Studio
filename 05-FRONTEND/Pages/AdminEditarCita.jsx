@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // ===== COMPONENTE PARA EDITAR CITAS DESDE ADMINISTRACIÓN =====
 
@@ -10,47 +9,67 @@ function AdminEditarCita({
     onCancelar
 }) {
 
+    /*----Comprobamos que existe una cita seleccionada----*/
+    if (!cita) {
+        return null;
+    }
+
+    /*----Reiniciamos el formulario al seleccionar otra cita----*/
+    return (
+
+        <FormularioEditarCita
+            key={cita.id_cita}
+            cita={cita}
+            token={token}
+            onCitaActualizada={onCitaActualizada}
+            onCancelar={onCancelar}
+        />
+
+    );
+
+}
+
+
+// ===== FORMULARIO INTERNO DE EDICIÓN =====
+
+function FormularioEditarCita({
+    cita,
+    token,
+    onCitaActualizada,
+    onCancelar
+}) {
+
     // ===== DATOS DEL FORMULARIO =====
 
-    const [fecha, setFecha] = useState("");
-    const [hora, setHora] = useState("");
-    const [estado, setEstado] = useState("pendiente");
-    const [duracion, setDuracion] = useState("");
+    /*----Inicializamos los estados con los datos de la cita----*/
+
+    const [fecha, setFecha] = useState(
+        cita.fecha
+            ? String(cita.fecha).slice(0, 10)
+            : ""
+    );
+
+    const [hora, setHora] = useState(
+        cita.hora
+            ? String(cita.hora).slice(0, 5)
+            : ""
+    );
+
+    const [estado, setEstado] = useState(
+        cita.estado || "pendiente"
+    );
+
+    const [duracion, setDuracion] = useState(
+        cita.duracion_minutos != null
+            ? String(cita.duracion_minutos)
+            : ""
+    );
+
 
     // ===== ESTADOS DE LA PETICIÓN =====
 
     const [guardando, setGuardando] = useState(false);
     const [error, setError] = useState("");
-
-    // ===== CARGAR LOS DATOS DE LA CITA SELECCIONADA =====
-
-    useEffect(() => {
-
-        if (!cita) return;
-
-        setFecha(
-            cita.fecha
-                ? String(cita.fecha).slice(0, 10)
-                : ""
-        );
-
-        setHora(
-            cita.hora
-                ? String(cita.hora).slice(0, 5)
-                : ""
-        );
-
-        setEstado(cita.estado || "pendiente");
-
-        setDuracion(
-            cita.duracion_minutos != null
-                ? String(cita.duracion_minutos)
-                : ""
-        );
-
-        setError("");
-
-    }, [cita]);
 
 
     // ===== GUARDAR LOS CAMBIOS =====
@@ -270,10 +289,6 @@ function AdminEditarCita({
 
 
     // ===== FORMULARIO DE EDICIÓN =====
-
-    if (!cita) {
-        return null;
-    }
 
     return (
 

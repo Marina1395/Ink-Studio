@@ -1,4 +1,3 @@
-
 /*----Importamos los hooks para gestionar las citas del artista----*/
 import { useState, useEffect } from "react";
 
@@ -6,14 +5,38 @@ import { useState, useEffect } from "react";
 /*----Panel de gestión de citas para artistas----*/
 function MisCitasArtista({ token }) {
 
+    /*----Comprobamos que existe una sesión activa----*/
+    if (!token) {
+        return null;
+    }
+
+    /*----Reiniciamos el panel cuando cambia la sesión----*/
+    return (
+
+        <PanelCitasArtista
+            key={token}
+            token={token}
+        />
+
+    );
+
+}
+
+
+/*----Componente interno de gestión de citas----*/
+function PanelCitasArtista({ token }) {
+
     /*----Guardamos las citas asignadas al artista----*/
     const [citas, setCitas] = useState([]);
 
     /*----Controlamos la carga de las citas----*/
-    const [cargandoCitas, setCargandoCitas] = useState(false);
+    const [cargandoCitas, setCargandoCitas] = useState(true);
 
-    /*----Guardamos los posibles errores----*/
+    /*----Guardamos los errores de carga del listado----*/
     const [errorCitas, setErrorCitas] = useState("");
+
+    /*----Guardamos los errores al realizar operaciones----*/
+    const [errorOperacion, setErrorOperacion] = useState("");
 
     /*----Guardamos la duración elegida para cada cita----*/
     const [duraciones, setDuraciones] = useState({});
@@ -32,22 +55,37 @@ function MisCitasArtista({ token }) {
     };
 
 
+    /*----Comprobamos si la cita todavía no ha comenzado----*/
+    const esCitaFutura = (cita) => {
+
+        const ahora = new Date();
+
+        const fechaActual = obtenerFechaMadrid(ahora);
+
+        const horaActual = new Intl.DateTimeFormat("es-ES", {
+            timeZone: "Europe/Madrid",
+            hour: "2-digit",
+            minute: "2-digit",
+            hourCycle: "h23"
+        }).format(ahora);
+
+        const fechaCita = obtenerFechaMadrid(cita.fecha);
+        const horaCita = cita.hora.slice(0, 5);
+
+        return fechaCita > fechaActual ||
+            (fechaCita === fechaActual && horaCita > horaActual);
+
+    };
+
+
     /*----Consultamos las citas asignadas al artista autenticado----*/
     useEffect(() => {
 
-        /*----Si no hay token, limpiamos las citas----*/
-        if (!token) {
-            setCitas([]);
-            setErrorCitas("");
-            setCargandoCitas(false);
-            return;
-        }
+        /*----Creamos un controlador para cancelar la petición----*/
+        const controlador = new AbortController();
 
         /*----Preparamos la consulta al backend----*/
         const obtenerCitas = async () => {
-
-            setCargandoCitas(true);
-            setErrorCitas("");
 
             try {
 
@@ -55,9 +93,12 @@ function MisCitasArtista({ token }) {
                     "http://localhost:3000/citas",
                     {
                         method: "GET",
+
                         headers: {
                             Authorization: `Bearer ${token}`
-                        }
+                        },
+
+                        signal: controlador.signal
                     }
                 );
 
@@ -70,15 +111,28 @@ function MisCitasArtista({ token }) {
                 const datos = await respuesta.json();
 
                 /*----Guardamos las citas recibidas----*/
-                setCitas(datos);
+                if (!controlador.signal.aborted) {
+
+                    setCitas(datos);
+
+                }
 
             } catch (error) {
 
-                setErrorCitas(error.message);
+                /*----Mostramos errores de carga reales----*/
+                if (!controlador.signal.aborted) {
+
+                    setErrorCitas(error.message);
+
+                }
 
             } finally {
 
-                setCargandoCitas(false);
+                if (!controlador.signal.aborted) {
+
+                    setCargandoCitas(false);
+
+                }
 
             }
 
@@ -86,11 +140,21 @@ function MisCitasArtista({ token }) {
 
         obtenerCitas();
 
+        /*----Cancelamos la consulta al abandonar el componente----*/
+        return () => {
+
+            controlador.abort();
+
+        };
+
     }, [token]);
 
 
     /*----Confirmamos una solicitud de cita----*/
     const aceptarCita = async (cita) => {
+
+        /*----Limpiamos los errores de operaciones anteriores----*/
+        setErrorOperacion("");
 
         /*----Obtenemos la duración seleccionada----*/
         const duracion = Number(
@@ -146,28 +210,48 @@ function MisCitasArtista({ token }) {
             );
 
             /*----Limpiamos los errores anteriores----*/
-            setErrorCitas("");
+            setErrorOperacion("");
 
         } catch (error) {
 
-            setErrorCitas(error.message);
+            /*----Mostramos el error sin ocultar el listado----*/
+            setErrorOperacion(error.message);
 
         }
 
     };
 
 
-    /*----Rechazamos una solicitud de cita----*/
+    /*----Rechazamos solicitudes pendientes o cancelamos citas confirmadas----*/
     const rechazarCita = async (cita) => {
 
-        /*----Pedimos confirmación antes de rechazar----*/
+        /*----Identificamos la acción según el estado de la cita----*/
+        const accion = cita.estado === "confirmada"
+            ? "cancelar"
+            : "rechazar";
+
+        /*----Comprobamos que la cita confirmada sigue siendo futura----*/
+        if (cita.estado === "confirmada" && !esCitaFutura(cita)) {
+
+            window.alert(
+                "No puedes cancelar una cita que ya ha comenzado."
+            );
+
+            return;
+
+        }
+
+        /*----Pedimos confirmación antes de cambiar el estado----*/
         const confirmar = window.confirm(
-            `¿Seguro que quieres rechazar la solicitud #${cita.id_cita}?`
+            `¿Seguro que quieres ${accion} la cita #${cita.id_cita}?`
         );
 
         if (!confirmar) {
             return;
         }
+
+        /*----Limpiamos los errores de operaciones anteriores----*/
+        setErrorOperacion("");
 
         try {
 
@@ -207,7 +291,7 @@ function MisCitasArtista({ token }) {
             /*----Comprobamos si el backend devuelve un error----*/
             if (!respuesta.ok) {
                 throw new Error(
-                    datos.error || "No se pudo rechazar la cita."
+                    datos.error || `No se pudo ${accion} la cita.`
                 );
             }
 
@@ -220,16 +304,16 @@ function MisCitasArtista({ token }) {
                 )
             );
 
-            setErrorCitas("");
+            setErrorOperacion("");
 
         } catch (error) {
 
-            setErrorCitas(error.message);
+            /*----Mostramos el error sin ocultar el listado----*/
+            setErrorOperacion(error.message);
 
         }
 
     };
-
 
 
     return (
@@ -248,9 +332,14 @@ function MisCitasArtista({ token }) {
                 <p>Cargando solicitudes...</p>
             )}
 
-            {/*----Mostramos los errores----*/}
+            {/*----Mostramos los errores de carga----*/}
             {errorCitas && (
                 <p role="alert">{errorCitas}</p>
+            )}
+
+            {/*----Mostramos los errores de operaciones----*/}
+            {errorOperacion && (
+                <p role="alert">{errorOperacion}</p>
             )}
 
             {/*----Si el artista no tiene citas----*/}
@@ -378,10 +467,23 @@ function MisCitasArtista({ token }) {
                                             Rechazar cita
                                         </button>
 
-
                                     </div>
 
                                 )}
+
+
+                                {/*----Opciones para citas confirmadas y futuras----*/}
+                                {cita.estado === "confirmada" &&
+                                    esCitaFutura(cita) && (
+
+                                        <button
+                                            type="button"
+                                            onClick={() => rechazarCita(cita)}
+                                        >
+                                            Cancelar cita
+                                        </button>
+
+                                    )}
 
                             </div>
 

@@ -1,30 +1,57 @@
+import { useState } from "react";
 
-import { useState, useEffect } from "react";
 
-function AdminEditarArtista({ artista, token, onArtistaActualizado, onCancelar }) {
+// ===== COMPONENTE PARA EDITAR ARTISTAS =====
+function AdminEditarArtista({
+    artista,
+    token,
+    onArtistaActualizado,
+    onCancelar
+}) {
+
+    /*----Comprobamos que existe un artista seleccionado----*/
+    if (!artista) return null;
+
+    /*----Reiniciamos el formulario al seleccionar otro artista----*/
+    return (
+
+        <FormularioEditarArtista
+            key={artista.id_usuario}
+            artista={artista}
+            token={token}
+            onArtistaActualizado={onArtistaActualizado}
+            onCancelar={onCancelar}
+        />
+
+    );
+
+}
+
+
+// ===== FORMULARIO INTERNO DE EDICIÓN =====
+function FormularioEditarArtista({
+    artista,
+    token,
+    onArtistaActualizado,
+    onCancelar
+}) {
 
     // ===== DATOS DEL FORMULARIO =====
-    const [especialidad, setEspecialidad] = useState("");
-    const [descripcion, setDescripcion] = useState("");
+
+    /*----Inicializamos los estados con los datos del artista----*/
+    const [especialidad, setEspecialidad] = useState(
+        artista.especialidad || ""
+    );
+
+    const [descripcion, setDescripcion] = useState(
+        artista.descripcion || ""
+    );
+
 
     // ===== ESTADOS =====
     const [guardando, setGuardando] = useState(false);
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
-
-
-    // ===== CARGAR DATOS DEL ARTISTA =====
-    useEffect(() => {
-
-        if (!artista) return;
-
-        setEspecialidad(artista.especialidad || "");
-        setDescripcion(artista.descripcion || "");
-
-        setError("");
-        setMensaje("");
-
-    }, [artista]);
 
 
     // ===== GUARDAR CAMBIOS =====
@@ -97,8 +124,6 @@ function AdminEditarArtista({ artista, token, onArtistaActualizado, onCancelar }
 
 
     // ===== FORMULARIO =====
-    if (!artista) return null;
-
     return (
 
         <section className="admin-editar-artista">
@@ -175,4 +200,3 @@ function AdminEditarArtista({ artista, token, onArtistaActualizado, onCancelar }
 }
 
 export default AdminEditarArtista;
-

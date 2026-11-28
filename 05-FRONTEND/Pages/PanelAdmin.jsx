@@ -9,6 +9,8 @@ import AdminGestionUsuarios from "./AdminGestionUsuarios";
 
 import AdminGestionTrabajos from "./AdminGestionTrabajos";
 
+import AdminGestionMensajes from "./AdminGestionMensajes";
+
 
 
 /*----Componentes de administración----*/
@@ -154,6 +156,13 @@ function PanelAdmin({ token }) {
                     onClick={() => setSeccion("trabajos")}
                 >
                     Gestionar trabajos
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setSeccion("mensajes")}
+                >
+                    Gestionar mensajes
                 </button>
 
             </nav>
@@ -330,6 +339,11 @@ function PanelAdmin({ token }) {
             {/* ===== GESTIÓN DE TRABAJOS ===== */}
             {seccion === "trabajos" && (
                 <AdminGestionTrabajos token={token} />
+            )}
+
+            {/* ===== GESTIÓN DE MENSAJES ===== */}
+            {seccion === "mensajes" && (
+                <AdminGestionMensajes token={token} />
             )}
 
         </main>

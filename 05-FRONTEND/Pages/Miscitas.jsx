@@ -1,14 +1,36 @@
 /*----Importamos los hooks para guardar y consultar las citas----*/
 import { useState, useEffect } from "react";
 
+
 /*----Recibimos el token del usuario autenticado----*/
 function MisCitas({ token }) {
+
+    /*----Comprobamos que existe una sesión activa----*/
+    if (!token) {
+        return null;
+    }
+
+    /*----Reiniciamos el listado cuando cambia la sesión----*/
+    return (
+
+        <ListadoCitasCliente
+            key={token}
+            token={token}
+        />
+
+    );
+
+}
+
+
+/*----Componente interno para consultar las citas del cliente----*/
+function ListadoCitasCliente({ token }) {
 
     /*----Guardamos las citas del cliente----*/
     const [citas, setCitas] = useState([]);
 
     /*----Controlamos si las citas se están cargando----*/
-    const [cargandoCitas, setCargandoCitas] = useState(false);
+    const [cargandoCitas, setCargandoCitas] = useState(true);
 
     /*----Guardamos posibles errores de la consulta----*/
     const [errorCitas, setErrorCitas] = useState("");
@@ -17,19 +39,11 @@ function MisCitas({ token }) {
     /*----Consultamos las citas cuando el cliente inicia sesión----*/
     useEffect(() => {
 
-        /*----Si no hay token, limpiamos las citas----*/
-        if (!token) {
-            setCitas([]);
-            setErrorCitas("");
-            setCargandoCitas(false);
-            return;
-        }
+        /*----Creamos un controlador para cancelar la petición----*/
+        const controlador = new AbortController();
 
         /*----Preparamos la petición al backend----*/
         const obtenerCitas = async () => {
-
-            setCargandoCitas(true);
-            setErrorCitas("");
 
             try {
 
@@ -40,26 +54,44 @@ function MisCitas({ token }) {
 
                         headers: {
                             Authorization: `Bearer ${token}`
-                        }
+                        },
+
+                        signal: controlador.signal
                     }
                 );
 
                 if (!respuesta.ok) {
-                    throw new Error("No se pudieron obtener las citas.");
+                    throw new Error(
+                        "No se pudieron obtener las citas."
+                    );
                 }
 
                 const datos = await respuesta.json();
 
                 /*----Guardamos las citas recibidas----*/
-                setCitas(datos);
+                if (!controlador.signal.aborted) {
+
+                    setCitas(datos);
+
+                }
 
             } catch (error) {
 
-                setErrorCitas(error.message);
+                /*----Mostramos los errores de la consulta----*/
+                if (!controlador.signal.aborted) {
+
+                    setErrorCitas(error.message);
+
+                }
 
             } finally {
 
-                setCargandoCitas(false);
+                /*----Finalizamos el estado de carga----*/
+                if (!controlador.signal.aborted) {
+
+                    setCargandoCitas(false);
+
+                }
 
             }
 
@@ -67,7 +99,15 @@ function MisCitas({ token }) {
 
         obtenerCitas();
 
+        /*----Cancelamos la consulta al abandonar el componente----*/
+        return () => {
+
+            controlador.abort();
+
+        };
+
     }, [token]);
+
 
     return (
 

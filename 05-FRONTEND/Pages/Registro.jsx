@@ -1,4 +1,3 @@
-
 /*========== PÁGINA DE REGISTRO DE CLIENTES ==========*/
 
 import { useState } from "react";
@@ -20,6 +19,9 @@ function Registro() {
 
     /*----Guardamos la contraseña del cliente----*/
     const [contrasena, setContrasena] = useState("");
+
+    /*----Guardamos la confirmación de la contraseña----*/
+    const [confirmarContrasena, setConfirmarContrasena] = useState("");
 
     /*----Guardamos el teléfono del cliente----*/
     const [telefono, setTelefono] = useState("");
@@ -43,6 +45,17 @@ function Registro() {
         /*----Limpiamos los mensajes anteriores----*/
         setErrorRegistro("");
         setMensajeRegistro("");
+
+        /*----Comprobamos que las contraseñas coinciden----*/
+        if (contrasena !== confirmarContrasena) {
+
+            setErrorRegistro(
+                "Las contraseñas no coinciden."
+            );
+
+            return;
+
+        }
 
         try {
 
@@ -92,6 +105,7 @@ function Registro() {
             setApellidos("");
             setEmail("");
             setContrasena("");
+            setConfirmarContrasena("");
             setTelefono("");
             setDireccion("");
 
@@ -193,6 +207,26 @@ function Registro() {
                 />
 
 
+                {/*----Campo para confirmar la contraseña----*/}
+                <label htmlFor="confirmar-contrasena-registro">
+                    Confirmar contraseña:
+                </label>
+
+                <input
+                    id="confirmar-contrasena-registro"
+                    type="password"
+                    name="confirmarContrasena"
+                    value={confirmarContrasena}
+                    onChange={(evento) =>
+                        setConfirmarContrasena(evento.target.value)
+                    }
+                    autoComplete="new-password"
+                    minLength={8}
+                    maxLength={72}
+                    required
+                />
+
+
                 {/*----Campo para introducir el teléfono----*/}
                 <label htmlFor="telefono-registro">
                     Teléfono:
@@ -232,7 +266,7 @@ function Registro() {
 
                 {/*----Mostramos los errores del registro----*/}
                 {errorRegistro && (
-                    <p className="error-registro">
+                    <p className="error-registro" role="alert">
                         {errorRegistro}
                     </p>
                 )}
@@ -240,7 +274,7 @@ function Registro() {
 
                 {/*----Mostramos la confirmación del registro----*/}
                 {mensajeRegistro && (
-                    <p className="mensaje-registro">
+                    <p className="mensaje-registro" role="status">
                         {mensajeRegistro}
                     </p>
                 )}
@@ -255,7 +289,7 @@ function Registro() {
                 <Link to="/login">
 
                     Inicia sesión
-                    
+
                 </Link>
             </p>
 
